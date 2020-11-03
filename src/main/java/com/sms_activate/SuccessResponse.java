@@ -1,4 +1,4 @@
-package com.sms_activate.response;
+package com.sms_activate;
 
 public enum SuccessResponse {
     NO_BALANCE("Закончился баланс"),

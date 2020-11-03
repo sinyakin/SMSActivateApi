@@ -1,6 +1,5 @@
 package com.sms_activate;
 
-import com.sms_activate.response.ErrorResponse;
 import com.google.gson.Gson;
 import org.jetbrains.annotations.NotNull;
 
@@ -28,8 +27,8 @@ public final class SMSActivateApi {
     private final Gson gson = new Gson();
 
     /**
-     * Constructor API sms-activate witch API key.
-     * @param apiKey - API key (not be null).
+     * Constructor API sms-activate with API key.
+     * @param apiKey API key (not be null).
      */
     public SMSActivateApi(@NotNull String apiKey) {
         this.apiKey = apiKey;
@@ -39,7 +38,7 @@ public final class SMSActivateApi {
 
     /**
      * Sets the value apiKey.
-     * @param apiKey - API key (not be null).
+     * @param apiKey API key (not be null).
      */
     public void setApiKey(@NotNull String apiKey) {
         this.apiKey = apiKey;
@@ -47,7 +46,7 @@ public final class SMSActivateApi {
 
     /**
      * Returns the API key.
-     * @return apiKey - API key (not be null).
+     * @return apiKey API key (not be null).
      */
     public @NotNull String getApiKey() {
         return apiKey;
@@ -56,7 +55,7 @@ public final class SMSActivateApi {
     /**
      * Returns the current account balance.
      * @return current account balance.
-     * @throws IOException - if an I/O exception occurs.
+     * @throws IOException if an I/O exception occurs.
      * @throws RequestException
      */
     public float getBalance() throws IOException, RequestException {
@@ -79,7 +78,7 @@ public final class SMSActivateApi {
     /**
      * Returns the current account balance plus cashBack.
      * @return current account balance plus cashBack.
-     * @throws IOException - if an I/O exception occurs.
+     * @throws IOException if an I/O exception occurs.
      * @throws RequestException
      */
     public float getBalanceAndCashBack() throws IOException, RequestException {
@@ -103,7 +102,7 @@ public final class SMSActivateApi {
     /**
      * Returns a list counts of available services.
      * @return list counts of available services.
-     * @throws IOException - if an I/O exception occurs.
+     * @throws IOException if an I/O exception occurs.
      */
     public @NotNull List<Service> getNumbersStatus() throws IOException {
         return getNumbersStatus(Integer.MIN_VALUE, "");
@@ -111,17 +110,17 @@ public final class SMSActivateApi {
 
     /**
      * Return a list counts of available services by country and operator.
-     * @param country - id country
-     * @param operator - name operator mobile network
+     * @param countryNumber id country
+     * @param operator name operator mobile network
      * @return list counts of available services by county and operator
-     * @throws IOException - if an I/O exception occurs.
+     * @throws IOException if an I/O exception occurs.
      */
-    public @NotNull List<Service> getNumbersStatus(int country, @NotNull String operator) throws IOException {
+    public @NotNull List<Service> getNumbersStatus(int countryNumber, @NotNull String operator) throws IOException {
         String action = new Object() {}.getClass().getEnclosingMethod().getName();
         String url = BASE_URL + buildHttpUrl(new HashMap<>() {{
             put("api_key", apiKey);
             put("action", action);
-            put("country", country == Integer.MIN_VALUE ? "" : country + "");
+            put("country", countryNumber == Integer.MIN_VALUE ? "" : countryNumber + "");
             put("operator", operator);
         }});
 
@@ -130,7 +129,7 @@ public final class SMSActivateApi {
         List<Service> serviceList = new ArrayList<>();
 
         for (String key : serviceMap.keySet()) {
-            String[] partsKey = key.split("_");
+            String[] partsKey = "_".split(key);
 
             serviceList.add(new Service(
                 "",
@@ -144,28 +143,78 @@ public final class SMSActivateApi {
     }
 
     /**
-     *
-     * @param service
-     * @param ref
-     * @param country
-     * @return
-     * @throws IOException
+     * Returns the phone by service, ref, countryNumber.
+     * @param service service short name.
+     * @param ref referral link.
+     * @param countryNumber number country.
+     * @return object phone
+     * @throws IOException if an I/O exception occurs.
+     * @throws BadParametersException if one of parameters is incorrect.
+     * @throws BannedException if account has been banned.
      */
-    public @NotNull String getNumber(
+    public @NotNull Phone getNumber(
             @NotNull String service,
             @NotNull String ref,
-            @NotNull String country
-    ) throws IOException {
+            int countryNumber
+    ) throws IOException, BadParametersException, BannedException {
+        return getNumber(service, ref, countryNumber, "", "", false);
+    }
+
+    /**
+     * Returns the phone number by service, ref, countryNumber, phoneException, operator, forward
+     * @param service service short name.
+     * @param ref referral link.
+     * @param countryNumber number country.
+     * @param phoneException excepted phone number prefix. Specify separated by commas.
+     * <pre>{@code   7918,7900111}</pre>
+     * @param operator mobile operator. May be specify separated by commas.
+     * @param forward is it necessary to request a number with forwarding.
+     * @return object phone
+     * @throws IOException if an I/O occurs.
+     * @throws BadParametersException if one of parameters is incorrect.
+     * @throws BannedException if account has been banned.
+     */
+    public @NotNull Phone getNumber(
+            @NotNull String service,
+            @NotNull String ref,
+            int countryNumber,
+            @NotNull String phoneException,
+            @NotNull String operator,
+            boolean forward
+    ) throws IOException, BadParametersException, BannedException {
+
         String action = new Object(){}.getClass().getEnclosingMethod().getName();
-        String url = BASE_URL + buildHttpUrl(new HashMap<>(){{
+        String url = BASE_URL + buildHttpUrl(new HashMap<>() {{
             put("api_key", apiKey);
             put("action", action);
             put("ref", ref);
-            put("country", country);
             put("service", service);
+            put("country", countryNumber + "");
+            put("phoneException", phoneException);
+            put("operator", operator);
+            put("forward", forward + "");
         }});
 
-        return getDataByUrl(new URL(url));
+        String data = getDataByUrl(new URL(url));
+        if (!data.contains("ACCESS")) {
+            if (data.contains("BAD")) {
+                BadParameters parameter = BadParameters.valueOf(BadParameters.class, data);
+                throw new BadParametersException(parameter.getMessage());
+            } else if (data.equalsIgnoreCase("banned")) {
+                String dateFormat = ":".split(data)[1];
+                throw new BannedException("Акаунт забанен на ", dateFormat);
+            } else {
+
+            }
+        }
+
+        String[] parts = ":".split(data);
+
+        return new Phone(
+                parts[2],
+                Integer.parseInt(parts[1]),
+                forward
+        );
     }
 
     /**

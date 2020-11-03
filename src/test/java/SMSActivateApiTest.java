@@ -2,7 +2,6 @@ import com.google.gson.Gson;
 import com.sms_activate.SMSActivateApi;
 
 import com.sms_activate.Service;
-import com.sms_activate.response.ErrorResponse;
 import org.hamcrest.CoreMatchers;
 import org.junit.Assert;
 import org.junit.Before;

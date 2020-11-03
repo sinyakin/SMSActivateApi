@@ -1,5 +1,5 @@
 import com.sms_activate.SMSActivateApi;
-import com.sms_activate.response.ErrorResponse;
+import com.sms_activate.ErrorResponse;
 import org.hamcrest.CoreMatchers;
 import org.junit.Assert;
 import org.junit.Before;

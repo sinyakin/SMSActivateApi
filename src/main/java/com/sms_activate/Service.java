@@ -1,9 +1,21 @@
 package com.sms_activate;
 
 public class Service {
+    /**
+     *
+     */
     private String fullName;
+    /**
+     *
+     */
     private String shortName;
+    /**
+     *
+     */
     private final boolean forward;
+    /**
+     *
+     */
     private int countNumbers;
 
     public Service(String fullName, String shortName, boolean forward, int countNumbers) {
