@@ -15,7 +15,6 @@ import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.net.HttpURLConnection;
-import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.*;
 import java.util.regex.Matcher;
@@ -587,7 +586,7 @@ public final class SMSActivateApi {
      * @return
      * @throws IOException
      */
-    public @NotNull String getRentServicesAndCountries(
+    public String getRentServicesAndCountries(
             @NotNull String time,
             @NotNull String operator,
             @NotNull String country
@@ -614,7 +613,7 @@ public final class SMSActivateApi {
      * @return
      * @throws IOException
      */
-    public @NotNull String getRentNumber(
+    public String getRentNumber(
             @NotNull String service,
             @NotNull String time,
             @NotNull String operator,
@@ -641,7 +640,7 @@ public final class SMSActivateApi {
      * @return
      * @throws IOException
      */
-    public @NotNull String getRentStatus(@NotNull String id) throws IOException {
+    public String getRentStatus(@NotNull String id) throws IOException {
         String action = new Object(){}.getClass().getEnclosingMethod().getName();
         String url = BASE_URL + buildHttpUrl(new HashMap<>(){{
             put("api_key", apiKey);
@@ -659,7 +658,7 @@ public final class SMSActivateApi {
      * @return
      * @throws IOException
      */
-    public @NotNull String setRentStatus(String id, String status) throws IOException {
+    public String setRentStatus(String id, String status) throws IOException {
         String action = new Object(){}.getClass().getEnclosingMethod().getName();
         String url = BASE_URL + buildHttpUrl(new HashMap<>(){{
             put("api_key", apiKey);
@@ -676,7 +675,7 @@ public final class SMSActivateApi {
      * @return
      * @throws IOException
      */
-    public @NotNull String getRentList() throws IOException {
+    public String getRentList() throws IOException {
         String action = new Object(){}.getClass().getEnclosingMethod().getName();
         String url = BASE_URL + buildHttpUrl(new HashMap<>(){{
             put("api_key", apiKey);
@@ -715,7 +714,7 @@ public final class SMSActivateApi {
      * @param params url params.
      * @return http query string.
      */
-    private String buildHttpUrl(@NotNull Map<@NotNull String, @NotNull String> params) {
+    private String buildHttpUrl(@NotNull Map<String, String> params) {
         StringBuilder urlParams = new StringBuilder();
 
         for (String param : params.keySet()) {
