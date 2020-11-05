@@ -1,28 +1,20 @@
 package com.sms_activate;
 
-public class Service {
-    /**
-     *
-     */
-    private String fullName;
-    /**
-     *
-     */
-    private String shortName;
-    /**
-     *
-     */
-    private final boolean forward;
-    /**
-     *
-     */
-    private int countNumbers;
+import org.jetbrains.annotations.NotNull;
 
-    public Service(String fullName, String shortName, boolean forward, int countNumbers) {
+public class Service {
+    protected String fullName;
+    protected String shortName;
+    protected double countNumber;
+
+    protected Service() {
+
+    }
+
+    public Service(@NotNull String fullName, @NotNull String shortName, double countNumber) {
         this.fullName = fullName;
         this.shortName = shortName;
-        this.forward = forward;
-        this.countNumbers = countNumbers;
+        this.countNumber = countNumber;
     }
 
     public String getFullName() {
@@ -41,15 +33,11 @@ public class Service {
         this.shortName = shortName;
     }
 
-    public boolean isForward() {
-        return forward;
+    public double getCountNumber() {
+        return countNumber;
     }
 
-    public int getCountNumbers() {
-        return countNumbers;
-    }
-
-    public void setCountNumbers(int countNumbers) {
-        this.countNumbers = countNumbers;
+    public void setCountNumber(int countNumber) {
+        this.countNumber = countNumber;
     }
 }

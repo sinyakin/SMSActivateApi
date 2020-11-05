@@ -6,17 +6,21 @@ public class Phone {
     /**
      * Phone number
      */
-    private String number;
+    private final String number;
 
     /**
      * Id phone
      */
-    private int id;
+    private final  String id;
 
     /**
      * Forward phone number
      */
-    private boolean forward;
+    private final boolean forward;
+
+    public Phone(@NotNull String number, int id, boolean forward) {
+        this(number, id + "", forward);
+    }
 
     /**
      * Constructor Phone with number, id, forward
@@ -24,41 +28,33 @@ public class Phone {
      * @param id id operation
      * @param forward forward phone number (not be null)
      */
-    public Phone(@NotNull String number, int id, boolean forward) {
+    public Phone(@NotNull String number, @NotNull String id, boolean forward) {
         this.number = number;
         this.id = id;
         this.forward = forward;
     }
 
     /**
-     * Returns phone number
-     * @return phone number
+     * Returns the phone number.
+     * @return phone number (not be null).
      */
     public String getNumber() {
         return number;
     }
 
     /**
-     *
-     * @param number
+     * Returns the id operation.
+     * @return id operation.
      */
-    public void setNumber(String number) {
-        this.number = number;
-    }
-
-    public int getId() {
+    public  String getId() {
         return id;
     }
 
-    public void setId(int id) {
-        this.id = id;
-    }
-
+    /**
+     * Returns the phone is forward.
+     * @return phone is forward.
+     */
     public boolean isForward() {
         return forward;
-    }
-
-    public void setForward(boolean forward) {
-        this.forward = forward;
     }
 }
