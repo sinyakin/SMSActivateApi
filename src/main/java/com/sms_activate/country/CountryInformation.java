@@ -1,4 +1,4 @@
-package com.sms_activate;
+package com.sms_activate.country;
 
 import com.google.gson.annotations.SerializedName;
 import org.jetbrains.annotations.NotNull;

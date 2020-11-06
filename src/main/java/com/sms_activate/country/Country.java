@@ -1,5 +1,6 @@
-package com.sms_activate;
+package com.sms_activate.country;
 
+import com.sms_activate.service.ServiceCost;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.List;

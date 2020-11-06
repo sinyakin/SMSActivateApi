@@ -1,6 +1,6 @@
 package com.sms_activate.activation;
 
-public enum Status {
+public enum StatusActivation {
     SEND_READY_NUMBER(1, "Сообщить о готовности номера (смс на номер отправлено)."),
     REQUEST_ONE_MORE_CODE(3, "Запросить еще один код (бесплатно)."),
     FINISH(6, "Завершить активацию."),
@@ -22,7 +22,7 @@ public enum Status {
      * @param id special id status
      * @param message description status
      */
-    Status(int id, String message) {
+    StatusActivation(int id, String message) {
        this.id = id;
        this.message = message;
     }

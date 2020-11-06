@@ -1,14 +1,18 @@
-package com.sms_activate;
+package com.sms_activate.service;
 
 import org.jetbrains.annotations.NotNull;
 
 public class Service {
-    protected String fullName;
-    protected String shortName;
-    protected double countNumber;
+    private String fullName;
+    private String shortName;
+    private double countNumber;
 
-    protected Service() {
+    public Service(@NotNull String shortName) {
+        this("", shortName);
+    }
 
+    public Service(@NotNull String fullName, @NotNull String shortName) {
+        this(fullName, shortName, -1);
     }
 
     public Service(@NotNull String fullName, @NotNull String shortName, double countNumber) {

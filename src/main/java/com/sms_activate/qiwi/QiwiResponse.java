@@ -1,4 +1,4 @@
-package com.sms_activate;
+package com.sms_activate.qiwi;
 
 import org.jetbrains.annotations.NotNull;
 
@@ -20,11 +20,11 @@ public class QiwiResponse {
 
     /**
      * Constructor the qiwi response with status, walletNumber.
-     * @param qiwiStatus status qiwi wallet.
+     * @param qiwiStatus status qiwi wallet (not be null).
      * @param walletNumber number qiwi wallet.
      * @param comment comment specified in payment.
      */
-    public QiwiResponse(@NotNull QiwiStatus qiwiStatus, @NotNull String walletNumber, @NotNull String comment) {
+    public QiwiResponse(@NotNull QiwiStatus qiwiStatus, String walletNumber, String comment) {
         this.qiwiStatus = qiwiStatus;
         this.walletNumber = walletNumber;
         this.comment = comment;

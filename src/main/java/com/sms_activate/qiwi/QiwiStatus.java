@@ -1,4 +1,4 @@
-package com.sms_activate;
+package com.sms_activate.qiwi;
 
 public enum QiwiStatus {
     SUCCESS(1, "оплату можно проводить"),

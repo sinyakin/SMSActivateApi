@@ -1,16 +1,8 @@
-import com.google.gson.Gson;
 import com.sms_activate.*;
-import com.sms_activate.activation.AccessStatus;
-import com.sms_activate.activation.State;
-import com.sms_activate.activation.Status;
-
-import java.text.SimpleDateFormat;
-import java.time.LocalDate;
-import java.time.LocalDateTime;
-import java.time.format.DateTimeFormatter;
-import java.util.Collections;
-import java.util.Date;
-import java.util.List;
+import com.sms_activate.phone.Phone;
+import com.sms_activate.rent.StateRent;
+import com.sms_activate.rent.StatusRent;
+import com.sms_activate.service.Service;
 
 public class Main {
     public static void main(String[] args) {
@@ -19,7 +11,9 @@ public class Main {
             final String TEST_KEY_2 = "65942e7978ce8d2fc9f31bAffd325160";
 
             SMSActivateApi smsActivateApi = new SMSActivateApi(TEST_KEY_2);
-
+            Phone phone = smsActivateApi.getRentNumber(new Service("go"));
+            StateRent stateRent = smsActivateApi.setRentStatus(phone, StatusRent.CANCEL);
+            System.out.println(stateRent.getMessage());
         } catch (Exception e) {
             e.printStackTrace();
         }

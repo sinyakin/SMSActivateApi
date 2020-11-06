@@ -1,6 +1,6 @@
 package com.sms_activate.activation;
 
-public enum State {
+public enum StateActivation {
     STATUS_WAIT_CODE("Ожидание смс."),
     STATUS_WAIT_RETRY("Ожидание уточнения кода."),
     STATUS_WAIT_RESEND("Ожидание повторной отправки смс."),
@@ -15,9 +15,14 @@ public enum State {
 
     /**
      *
+     */
+    private String code;
+
+    /**
+     *
      * @param message
      */
-    State(String message) {
+    StateActivation(String message) {
         this.message = message;
     }
 
@@ -27,5 +32,13 @@ public enum State {
      */
     public String getMessage() {
         return message;
+    }
+
+    public String getCode() {
+        return code;
+    }
+
+    public void setCode(String message) {
+        this.code = code;
     }
 }

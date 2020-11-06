@@ -1,6 +1,6 @@
 package com.sms_activate.activation;
 
-public enum AccessStatus {
+public enum AccessStatusActivation {
     ACCESS_READY("Готовность номера подтверждена."),
     ACCESS_RETRY_GET("Ожидание нового смс."),
     ACCESS_ACTIVATION("Сервис успешно активирован."),
@@ -9,7 +9,7 @@ public enum AccessStatus {
 
     private final String message;
 
-    AccessStatus(String message) {
+    AccessStatusActivation(String message) {
         this.message = message;
     }
 
