@@ -2,8 +2,8 @@ package com.sms_activate.error;
 
 import org.jetbrains.annotations.NotNull;
 
-public class WrongParameterException extends Exception {
-    public WrongParameterException(@NotNull String message) {
-        super(message);
+public class WrongParameterException extends BaseSMSActivateException {
+    public WrongParameterException(@NotNull String englandMessage, @NotNull String russianMessage) {
+        super(englandMessage, russianMessage);
     }
 }

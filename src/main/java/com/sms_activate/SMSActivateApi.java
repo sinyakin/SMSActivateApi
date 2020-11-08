@@ -21,6 +21,7 @@ import com.sms_activate.error.rent.TimeOutRentException;
 import com.sms_activate.qiwi.QiwiResponse;
 import com.sms_activate.qiwi.QiwiStatus;
 import com.sms_activate.error.rent.StateErrorRent;
+import com.sms_activate.rent.Rent;
 import com.sms_activate.rent.StatusRent;
 import com.sms_activate.rent.StateRent;
 import com.sms_activate.rent.StatusRentNumber;
@@ -32,6 +33,7 @@ import org.jetbrains.annotations.NotNull;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
+import java.lang.reflect.Type;
 import java.math.BigDecimal;
 import java.net.HttpURLConnection;
 import java.net.URL;
@@ -45,17 +47,12 @@ import java.util.regex.Pattern;
 
 /**
  * TODO:
- *  Refactoring with exception
- *  Add rent methods
- *  Change money volume to BigDecimal
- *  Refactoring getDataByUrl
- *  methods with API -> SMSActivateUrls
  *  keySet -> Entry
  *  condition on gzip
  *  countryNumber -> countryId
  *  change method POST -> GET
- *  create parent LOCALE_Exception
- *  validate data from getting.
+ *  add multilang
+ *  add comments
  */
 public final class SMSActivateApi {
     /**
@@ -110,7 +107,8 @@ public final class SMSActivateApi {
      * @throws WrongParameterException if parameter is incorrect.
      */
     @NotNull
-    public BigDecimal getBalance() throws IOException, WrongParameterException {
+    public BigDecimal getBalance()
+            throws IOException, WrongParameterException, NoBalanceException, BannedException, RentException, NoNumberException, SQLServerException {
         String action = new Object(){}.getClass().getEnclosingMethod().getName();
         String url = BASE_URL + buildHttpUrl(new HashMap<>(){{
             put("api_key", apiKey);
@@ -121,14 +119,7 @@ public final class SMSActivateApi {
 
         Matcher matcher = digitPattern.matcher(data);
 
-        if (!matcher.find()) {
-            if (data.contains("BAD")) {
-                WrongParameter parameter = WrongParameter.valueOf(WrongParameter.class, data);
-                throw new WrongParameterException(parameter.getMessage());
-            } else {
-                throw new IOException();
-            }
-        }
+        validateData(data);
 
         return new BigDecimal(matcher.group());
     }
@@ -140,7 +131,8 @@ public final class SMSActivateApi {
      * @throws WrongParameterException if parameter is incorrect.
      */
     @NotNull
-    public BigDecimal getBalanceAndCashBack() throws IOException, WrongParameterException {
+    public BigDecimal getBalanceAndCashBack()
+            throws IOException, WrongParameterException, NoBalanceException, BannedException, RentException, NoNumberException, SQLServerException {
         String action = new Object(){}.getClass().getEnclosingMethod().getName();
 
         String url = BASE_URL + buildHttpUrl(new HashMap<>(){{
@@ -149,12 +141,8 @@ public final class SMSActivateApi {
         }});
 
         String data = getDataByUrl(new URL(url), "GET");
+        validateData(data);
         Matcher matcher = digitPattern.matcher(data);
-
-        if (!matcher.find()) {
-            WrongParameter parameter = WrongParameter.valueOf(WrongParameter.class, data);
-            throw new WrongParameterException(parameter.getMessage());
-        }
 
         return new BigDecimal(matcher.group());
     }
@@ -166,7 +154,8 @@ public final class SMSActivateApi {
      * @throws WrongParameterException if parameter is incorrect.
      */
     @NotNull
-    public List<ServiceForward> getNumbersStatus() throws IOException, WrongParameterException {
+    public List<ServiceForward> getNumbersStatus()
+            throws IOException, WrongParameterException, NoBalanceException, BannedException, RentException, SQLServerException, NoNumberException {
         return getNumbersStatus(-1, "");
     }
 
@@ -179,7 +168,8 @@ public final class SMSActivateApi {
      * @throws WrongParameterException if parameter is incorrect.
      */
     @NotNull
-    public List<ServiceForward> getNumbersStatus(int countryNumber, @NotNull String operator) throws IOException, WrongParameterException {
+    public List<ServiceForward> getNumbersStatus(int countryNumber, @NotNull String operator)
+            throws IOException, WrongParameterException, NoBalanceException, BannedException, RentException, NoNumberException, SQLServerException {
         String action = new Object() {}.getClass().getEnclosingMethod().getName();
         String url = BASE_URL + buildHttpUrl(new HashMap<>() {{
             put("api_key", apiKey);
@@ -189,26 +179,28 @@ public final class SMSActivateApi {
         }});
 
         String data = getDataByUrl(new URL(url), "GET");
+        validateData(data);
 
         try {
-            Map<String, String> serviceMap = gson.fromJson(data, HashMap.class);
+            Type type = new TypeToken<Map<String, String>>(){}.getType();
+            Map<String, String> serviceMap = gson.fromJson(data, type);
             List<ServiceForward> serviceList = new ArrayList<>();
 
-            for (String key : serviceMap.keySet()) {
+            serviceMap.forEach((key, value) -> {
                 String[] partsKey = key.split("_");
 
                 serviceList.add(new ServiceForward(
-                    "",
-                    partsKey[0],
-                    Integer.parseInt(serviceMap.get(key)),
-                    Boolean.parseBoolean(partsKey[1])
+                        "",
+                        partsKey[0],
+                        Integer.parseInt(value),
+                        Boolean.parseBoolean(partsKey[1])
                 ));
-            }
+            });
 
             return serviceList;
         } catch (JsonSyntaxException e) {
             WrongParameter parameter = WrongParameter.valueOf(WrongParameter.class, data);
-            throw new WrongParameterException(parameter.getMessage());
+            throw new WrongParameterException(parameter.getEnglandMessage(), parameter.getRussianMessage());
         }
     }
 
@@ -250,7 +242,8 @@ public final class SMSActivateApi {
      * @throws BannedException if account has been banned.
      * @throws SQLServerException if error happened on SQL-server.
      */
-    public @NotNull Phone getNumber(
+    @NotNull
+    public Phone getNumber(
             @NotNull Service service,
             @NotNull String ref,
             int countryNumber,
@@ -300,7 +293,7 @@ public final class SMSActivateApi {
             @NotNull String multiService,
             @NotNull String ref,
             int countryCode
-    ) throws IOException, WrongParameterException, BannedException, SQLServerException {
+    ) throws IOException, WrongParameterException, BannedException, SQLServerException, RentException, NoBalanceException, NoNumberException {
         return getMultiServiceNumber(multiService, ref, countryCode, "", "");
     }
 
@@ -326,7 +319,7 @@ public final class SMSActivateApi {
             int countryCode,
             @NotNull String multiForward,
             @NotNull String operator
-    ) throws IOException, WrongParameterException, BannedException, SQLServerException {
+    ) throws IOException, WrongParameterException, BannedException, SQLServerException, NoBalanceException, NoNumberException, RentException {
         String action = new Object(){}.getClass().getEnclosingMethod().getName();
         String trimMultiForward = multiForward.replace(" ", "");
         String trimMultiService = multiService.replace(" ", "");
@@ -342,40 +335,28 @@ public final class SMSActivateApi {
         }});
 
         String data = getDataByUrl(new URL(url), "POST");
+        validateData(data);
 
-        try {
-            List<Map<String, Object>> phoneMapList = gson.fromJson(data, List.class);
-            List<Phone> phoneList = new ArrayList<>();
-            int indexForwardPhoneNumber = Arrays.asList(multiForward.split(",")).indexOf("1"); //index phone where need forwarding
+        Type type = new TypeToken<List<Map<String, Object>>>(){}.getType();
+        List<Map<String, Object>> phoneMapList = gson.fromJson(data, type);
+        List<Phone> phoneList = new ArrayList<>();
+        int indexForwardPhoneNumber = Arrays.asList(multiForward.split(",")).indexOf("1"); //index phone where need forwarding
 
-            for (int i = 0; i < phoneMapList.size(); i++) {
-                Map<String, Object> phoneMap = phoneMapList.get(i);
-                int id = (int) Math.round((Double)phoneMap.get("activation"));
-                String phone = phoneMap.get("phone").toString();
-                String serviceName = phoneMap.get("service").toString();
+        for (int i = 0; i < phoneMapList.size(); i++) {
+            Map<String, Object> phoneMap = phoneMapList.get(i);
+            int id = (int) Math.round((Double)phoneMap.get("activation"));
+            String phone = phoneMap.get("phone").toString();
+            String serviceName = phoneMap.get("service").toString();
 
-                phoneList.add(new Phone(
-                    phone,
-                    id,
-                    i == indexForwardPhoneNumber,
-                    new Service("" , serviceName)
-                ));
-            }
-
-            return phoneList;
-        } catch (JsonSyntaxException e) {
-            if (data.equalsIgnoreCase("banned")) {
-                String date = ":".split(data)[1];
-                throw new BannedException("Акаунт забанен на " + date);
-            } else if (data.contains("SQL")) {
-                throw new SQLServerException("Ошибка SQL-сервера.");
-            } else if (data.contains("NO")) {
-                return null;
-            }
-
-            WrongParameter parameter = WrongParameter.valueOf(WrongParameter.class, data);
-            throw new WrongParameterException(parameter.getMessage());
+            phoneList.add(new Phone(
+                phone,
+                id,
+                i == indexForwardPhoneNumber,
+                new Service("" , serviceName)
+            ));
         }
+
+        return phoneList;
     }
 
     /**
@@ -388,10 +369,8 @@ public final class SMSActivateApi {
      * @throws SQLServerException if error happened on SQL-server.
      */
     @NotNull
-    public AccessStatusActivation setStatus(
-            @NotNull Phone phone,
-            @NotNull StatusActivation status
-    ) throws IOException, SQLServerException, WrongParameterException {
+    public AccessStatusActivation setStatus(@NotNull Phone phone, @NotNull StatusActivation status)
+            throws IOException, SQLServerException, WrongParameterException, NoBalanceException, BannedException, RentException, NoNumberException {
         return setStatus(phone, status, false);
     }
 
@@ -406,11 +385,9 @@ public final class SMSActivateApi {
      * @throws SQLServerException if error happened on SQL-server.
      */
     @NotNull
-    public AccessStatusActivation setStatus(
-            @NotNull Phone phone,
-            @NotNull StatusActivation status,
-            boolean forward
-    ) throws IOException, SQLServerException, WrongParameterException {
+    public AccessStatusActivation setStatus(@NotNull Phone phone, @NotNull StatusActivation status,
+                                            boolean forward)
+            throws IOException, SQLServerException, WrongParameterException, NoBalanceException, BannedException, RentException, NoNumberException {
         String action = new Object(){}.getClass().getEnclosingMethod().getName();
         String url = BASE_URL + buildHttpUrl(new HashMap<>(){{
             put("api_key", apiKey);
@@ -425,18 +402,9 @@ public final class SMSActivateApi {
 
         String data = getDataByUrl(new URL(url), "POST");
 
-        try {
-            return AccessStatusActivation.valueOf(AccessStatusActivation.class, data);
-        } catch (Exception e) {
-            if (data.contains("SQL")) {
-                throw new SQLServerException();
-            } else if (data.contains("NO")) {
-                return null;
-            }
+        validateData(data);
 
-            WrongParameter wrongParameter = WrongParameter.valueOf(WrongParameter.class, data);
-            throw new WrongParameterException(wrongParameter.getMessage());
-        }
+        return AccessStatusActivation.valueOf(AccessStatusActivation.class, data);
     }
 
     /**
@@ -448,7 +416,7 @@ public final class SMSActivateApi {
      * @throws SQLServerException if error happened on SQL-server.
      */
     @NotNull
-    public StateActivation getStatus(@NotNull Phone phone) throws IOException, WrongParameterException, SQLServerException {
+    public StateActivation getStatus(@NotNull Phone phone) throws IOException, WrongParameterException, SQLServerException, NoBalanceException, BannedException, RentException, NoNumberException {
         String action = new Object(){}.getClass().getEnclosingMethod().getName();
         String url = BASE_URL + buildHttpUrl(new HashMap<>(){{
             put("api_key", apiKey);
@@ -458,31 +426,22 @@ public final class SMSActivateApi {
 
         String data = getDataByUrl(new URL(url), "GET");
 
-        try {
-            String name = data;
-            String code = null;
+        String name = data;
+        String code = null;
 
-            if (data.contains(":")) {
-                String[] parts = data.split(":");
+        validateData(data);
 
-                name = parts[0];
-                code = parts[1];
-            }
+        if (data.contains(":")) {
+            String[] parts = data.split(":");
 
-            StateActivation state = StateActivation.valueOf(StateActivation.class, data);
-            state.setCode(code);
-
-            return state;
-        } catch (Exception e) {
-            if (data.contains("NO")) {
-                return null;
-            } else if (data.contains("SQL")) {
-                throw new SQLServerException();
-            }
-
-            WrongParameter parameter = WrongParameter.valueOf(WrongParameter.class, data);
-            throw new WrongParameterException(parameter.getMessage());
+            name = parts[0];
+            code = parts[1];
         }
+
+        StateActivation state = StateActivation.valueOf(StateActivation.class, data);
+        state.setCode(code);
+
+        return state;
     }
 
     /**
@@ -494,7 +453,8 @@ public final class SMSActivateApi {
      * @throws SQLServerException if error happened on SQL-server.
      */
     @NotNull
-    public String getFullSms(@NotNull String id) throws IOException, SQLServerException, WrongParameterException {
+    public String getFullSms(@NotNull String id)
+            throws IOException, SQLServerException, WrongParameterException, NoBalanceException, BannedException, RentException, NoNumberException {
         String action = new Object(){}.getClass().getEnclosingMethod().getName();
         String url = BASE_URL + buildHttpUrl(new HashMap<>(){{
             put("api_key", apiKey);
@@ -504,21 +464,12 @@ public final class SMSActivateApi {
 
         String data = getDataByUrl(new URL(url), "GET");
 
-        try {
-            if (data.contains("FULL")) {
-                return data;
-            } else {
-                return StateActivation.valueOf(StateActivation.class, data).getMessage();
-            }
-        } catch (Exception e) {
-            if (data.contains("NO")) {
-                return null;
-            } else if (data.contains("SQL")) {
-                throw new SQLServerException();
-            }
+        validateData(data);
 
-            WrongParameter parameter = WrongParameter.valueOf(WrongParameter.class, data);
-            throw new WrongParameterException(parameter.getMessage());
+        if (data.contains("FULL")) {
+            return data;
+        } else {
+            return StateActivation.valueOf(StateActivation.class, data).getMessage();
         }
     }
 
@@ -534,7 +485,8 @@ public final class SMSActivateApi {
      * @throws SQLServerException if error happened on SQL-server.
      */
     @NotNull
-    public List<Country> getPrices(@NotNull Service service, int countryNumber) throws IOException, SQLServerException, WrongParameterException {
+    public List<Country> getPrices(@NotNull Service service, int countryNumber)
+            throws IOException, SQLServerException, WrongParameterException, NoBalanceException, BannedException, RentException, NoNumberException {
         String action = new Object(){}.getClass().getEnclosingMethod().getName();
         String shortNameService = service.getShortName();
         String url = BASE_URL + buildHttpUrl(new HashMap<>(){{
@@ -550,37 +502,31 @@ public final class SMSActivateApi {
 
         String data = getDataByUrl(new URL(url), "GET");
 
-        try {
-            Map<String, Map<String, Map<String, Double>>> countryMap = gson.fromJson(data, Map.class);
-            List<Country> countryList = new ArrayList<>();
+        validateData(data);
 
-            countryMap.forEach((countryCode, serviceMap) -> {
-                List<ServiceCost> serviceCostList = new ArrayList<>();
+        Type type = new TypeToken<Map<String, Map<String, Map<String, Double>>>>(){}.getType();
+        Map<String, Map<String, Map<String, Double>>> countryMap = gson.fromJson(data, type);
+        List<Country> countryList = new ArrayList<>();
 
-                serviceMap.forEach((shortName, value) -> {
-                    serviceCostList.add(new ServiceCost(
-                        "",
-                        shortName,
-                        (int)Math.round(value.get("count")), 
-                        BigDecimal.valueOf(value.get("cost"))
-                    ));
-                });
+        countryMap.forEach((countryCode, serviceMap) -> {
+            List<ServiceCost> serviceCostList = new ArrayList<>();
 
-                countryList.add(new Country(
-                    new CountryInformation(Integer.parseInt(countryCode)),
-                    serviceCostList
+            serviceMap.forEach((shortName, value) -> {
+                serviceCostList.add(new ServiceCost(
+                    "",
+                    shortName,
+                    (int)Math.round(value.get("count")),
+                    BigDecimal.valueOf(value.get("cost"))
                 ));
             });
 
-            return countryList;
-        } catch (Exception e) {
-            if (data.contains("SQL")) {
-                throw new SQLServerException();
-            }
+            countryList.add(new Country(
+                new CountryInformation(Integer.parseInt(countryCode)),
+                serviceCostList
+            ));
+        });
 
-            WrongParameter parameter = WrongParameter.valueOf(WrongParameter.class, data);
-            throw new WrongParameterException(parameter.getMessage());
-        }
+        return countryList;
     }
 
     /**
@@ -591,7 +537,8 @@ public final class SMSActivateApi {
      * @throws SQLServerException if error happened on SQL-server.
      */
     @NotNull
-    public List<CountryInformation> getCountries() throws IOException, WrongParameterException, SQLServerException {
+    public List<CountryInformation> getCountries()
+            throws IOException, WrongParameterException, SQLServerException, NoBalanceException, BannedException, RentException, NoNumberException {
         String action = new Object(){}.getClass().getEnclosingMethod().getName();
         String url = BASE_URL + buildHttpUrl(new HashMap<>(){{
             put("api_key", apiKey);
@@ -600,35 +547,28 @@ public final class SMSActivateApi {
 
         String data = getDataByUrl(new URL(url), "GET");
 
-        try {
-            Map<String, Map<String, Object>> countryInformationMap = gson.fromJson(data, Map.class);
-            List<CountryInformation> countryInformationList = new ArrayList<>();
+        validateData(data);
 
-            for (Map<String, Object> countryMap : countryInformationMap.values()) {
-                int id = (int)Math.round(Double.parseDouble(countryMap.get("id") + ""));
-                String rus = countryMap.get("rus") + "";
-                String eng = countryMap.get("eng") + "";
-                String chn = countryMap.get("chn") + "";
-                boolean isVisible = Boolean.parseBoolean(countryMap.get("visible") + "");
-                boolean isSupportRetry = Boolean.parseBoolean(countryMap.get("retry") + "");
-                boolean isSupportRent = Boolean.parseBoolean(countryMap.get("rent") + "");
-                boolean isSupportMultiService = Boolean.parseBoolean(countryMap.get("multiService") + "");
+        Type type = new TypeToken<Map<String, Map<String, Object>>>(){}.getType();
+        Map<String, Map<String, Object>> countryInformationMap = gson.fromJson(data, type);
+        List<CountryInformation> countryInformationList = new ArrayList<>();
 
-                countryInformationList.add(new CountryInformation(id, rus, eng, chn,
-                        isVisible, isSupportRetry, isSupportRent, isSupportMultiService));
-            }
+        for (Map<String, Object> countryMap : countryInformationMap.values()) {
+            int id = (int)Math.round(Double.parseDouble(countryMap.get("id") + ""));
+            String rus = countryMap.get("rus") + "";
+            String eng = countryMap.get("eng") + "";
+            String chn = countryMap.get("chn") + "";
+            boolean isVisible = Boolean.parseBoolean(countryMap.get("visible") + "");
+            boolean isSupportRetry = Boolean.parseBoolean(countryMap.get("retry") + "");
+            boolean isSupportRent = Boolean.parseBoolean(countryMap.get("rent") + "");
+            boolean isSupportMultiService = Boolean.parseBoolean(countryMap.get("multiService") + "");
 
-            return countryInformationList;
-        } catch (JsonSyntaxException ignored) {
-            if (data.contains("SQL")) {
-                throw new SQLServerException();
-            } else if (data.contains("NO")) {
-                return null;
-            }
-
-            WrongParameter parameter = WrongParameter.valueOf(WrongParameter.class, data);
-            throw new WrongParameterException(parameter.getMessage());
+            countryInformationList.add(new CountryInformation(id, rus, eng, chn,
+                    isVisible, isSupportRetry, isSupportRent, isSupportMultiService));
         }
+
+        return countryInformationList;
+
     }
 
     /**
@@ -639,7 +579,8 @@ public final class SMSActivateApi {
      * @throws WrongParameterException if parameter is incorrect.
      */
     @NotNull
-    public QiwiResponse getQiwiRequisites() throws IOException, SQLServerException, WrongParameterException {
+    public QiwiResponse getQiwiRequisites()
+            throws IOException, SQLServerException, WrongParameterException, NoBalanceException, BannedException, RentException, NoNumberException {
         String action = new Object(){}.getClass().getEnclosingMethod().getName();
         String url = BASE_URL + buildHttpUrl(new HashMap<>(){{
             put("api_key", apiKey);
@@ -647,19 +588,13 @@ public final class SMSActivateApi {
         }});
         String data = getDataByUrl(new URL(url), "GET");
 
-        try {
-            Map<String, String> qiwiMap = gson.fromJson(data, Map.class);
-            QiwiStatus qiwiStatus = QiwiStatus.valueOf(QiwiStatus.class, qiwiMap.get("status").toUpperCase());
+        validateData(data);
 
-            return new QiwiResponse(qiwiStatus, qiwiMap.get("wallet"), qiwiMap.get("comment"));
-        } catch (JsonSyntaxException ignored) {
-            if (data.contains("SQL")) {
-                throw new SQLServerException();
-            }
+        Type type = new TypeToken<Map<String, String>>(){}.getType();
+        Map<String, String> qiwiMap = gson.fromJson(data, type);
+        QiwiStatus qiwiStatus = QiwiStatus.valueOf(QiwiStatus.class, qiwiMap.get("status").toUpperCase());
 
-            WrongParameter parameter = WrongParameter.valueOf(data);
-            throw new WrongParameterException(parameter.getMessage());
-        }
+        return new QiwiResponse(qiwiStatus, qiwiMap.get("wallet"), qiwiMap.get("comment"));
     }
 
     /**
@@ -669,7 +604,8 @@ public final class SMSActivateApi {
      * @throws IOException if an I/O exception occurs.
      */
     @NotNull
-    public Phone getAdditionalService(Phone phone) throws IOException {
+    public Phone getAdditionalService(@NotNull Phone phone)
+            throws IOException, SQLServerException, BannedException, RentException, NoNumberException, NoBalanceException, WrongParameterException {
         String action = new Object(){}.getClass().getEnclosingMethod().getName();
         String url = BASE_URL + buildHttpUrl(new HashMap<>(){{
             put("api_key", apiKey);
@@ -678,6 +614,7 @@ public final class SMSActivateApi {
         }});
 
         String data = getDataByUrl(new URL(url), "POST");
+        validateData(data);
         String[] parts = data.split(":");
 
         String number = parts[2];
@@ -686,16 +623,14 @@ public final class SMSActivateApi {
         return new Phone(number, id, false, phone.getService());
     }
 
-
-
-
-
     /**
      *
      * @return
      * @throws IOException
      */
-    public String getRentServicesAndCountries() throws IOException {
+    @NotNull
+    public Rent getRentServicesAndCountries()
+            throws IOException, SQLServerException, BannedException, RentException, WrongParameterException, NoNumberException, NoBalanceException {
         return getRentServicesAndCountries(1, "", 0);
     }
 
@@ -707,11 +642,12 @@ public final class SMSActivateApi {
      * @return
      * @throws IOException
      */
-    public String getRentServicesAndCountries(
+    @NotNull
+    public Rent getRentServicesAndCountries(
             int time,
             @NotNull String operator,
             int countryId
-    ) throws IOException {
+    ) throws IOException, SQLServerException, BannedException, RentException, NoNumberException, NoBalanceException, WrongParameterException {
         String action = new Object(){}.getClass().getEnclosingMethod().getName();
         String url = BASE_URL + buildHttpUrl(new HashMap<>(){{
             put("api_key", apiKey);
@@ -724,14 +660,23 @@ public final class SMSActivateApi {
             }
         }});
 
+        String data = getDataByUrl(new URL(url), "POST");
 
+        validateData(data);
 
-        return getDataByUrl(new URL(url), "POST");
+        Type type = new TypeToken<Map<String, Map<String, Object>>>(){}.getType();
+        Map<String, Map<String, Object>> rentCountriesServices = gson.fromJson(data, type);
+
+        List<String> operatorNameList = new ArrayList<>();
+        List<Integer> countryIdList = new ArrayList<>();
+        List<ServiceCost> serviceCostList = new ArrayList<>();
+
+        CountryInformation countryInformation = new CountryInformation(countryId);
+
+        /** CODE VLADISLAVBAKSHANSKIJ */
+
+        return new Rent(operatorNameList, new Country(countryInformation, serviceCostList), countryIdList);
     }
-
-
-
-
 
     /**
      * Returns the rent phone.
@@ -743,8 +688,10 @@ public final class SMSActivateApi {
      * @throws NoBalanceException if no numbers.
      * @throws NoNumberException if in account balance is zero.
      */
-    public PhoneRent getRentNumber(@NotNull Service service) throws IOException, SQLServerException, RentException, WrongParameterException, NoBalanceException, NoNumberException {
-       return getRentNumber(service, 1, "", "", "");
+    @NotNull
+    public PhoneRent getRentNumber(@NotNull Service service)
+            throws IOException, SQLServerException, RentException, WrongParameterException, NoBalanceException, NoNumberException, BannedException {
+       return getRentNumber(service, 1, "", 0, "");
     }
 
     /**
@@ -752,7 +699,7 @@ public final class SMSActivateApi {
      * @param service service to which you need to get a number.
      * @param time time rent (default 1 hour).
      * @param operator mobile operator.
-     * @param country countryCode.
+     * @param countryId id country (default 0).
      * @param urlWebhook url for webhook.
      * @return rent phone.
      * @throws IOException if an I/O exception occurs.
@@ -761,13 +708,14 @@ public final class SMSActivateApi {
      * @throws NoBalanceException if no numbers.
      * @throws NoNumberException if in account balance is zero.
      */
+    @NotNull
     public PhoneRent getRentNumber(
             @NotNull Service service,
             int time,
             @NotNull String operator,
-            @NotNull String country,
+            int countryId,
             @NotNull String urlWebhook
-    ) throws IOException, SQLServerException, WrongParameterException, RentException, NoBalanceException, NoNumberException {
+    ) throws IOException, SQLServerException, WrongParameterException, RentException, NoBalanceException, NoNumberException, BannedException {
         String action = new Object(){}.getClass().getEnclosingMethod().getName();
         String url = BASE_URL + buildHttpUrl(new HashMap<>(){{
             String serviceShortName = service.getShortName();
@@ -775,44 +723,38 @@ public final class SMSActivateApi {
             put("api_key", apiKey);
             put("action", action);
             put("time", time + "");
+            put("country", countryId + "");
 
             if (!serviceShortName.isEmpty()) {
                 put("service", serviceShortName);
             } if (!operator.isEmpty()){
                 put("operator", operator);
-            } if (!country.isEmpty()) {
-                put("country", country);
             } if (!urlWebhook.isEmpty()) {
                 put("url", urlWebhook);
             }
         }});
 
         String data = getDataByUrl(new URL(url), "POST");
+        validateData(data);
 
-        try {
-            Map<String, Object> phoneMap = gson.fromJson(data, Map.class);
-            StatusRentNumber statusRent = StatusRentNumber.valueOf(StatusRentNumber.class, phoneMap.get("status").toString().toUpperCase());
+        Type type = new TypeToken<Map<String, Object>>(){}.getType();
+        Map<String, Object> phoneMap = gson.fromJson(data, type);
+        StatusRentNumber statusRent = StatusRentNumber.valueOf(StatusRentNumber.class, phoneMap.get("status").toString().toUpperCase());
 
-            if (statusRent == StatusRentNumber.ERROR) {
-                String errorMessage = phoneMap.get("message").toString();
-                StateErrorRent stateErrorRent = StateErrorRent.valueOf(StateErrorRent.class, errorMessage);
+        if (statusRent == StatusRentNumber.ERROR) {
+            String errorMessage = phoneMap.get("message").toString();
+            StateErrorRent stateErrorRent = StateErrorRent.valueOf(StateErrorRent.class, errorMessage);
 
-                throwStateErrorRent(stateErrorRent);
-            }
-
-            phoneMap = (Map<String, Object>) phoneMap.get("phone");
-
-            String number = phoneMap.get("number").toString();
-            int id = (int)Math.round(Double.parseDouble(phoneMap.get("id").toString()));
-            String endDate = phoneMap.get("endDate").toString();
-
-            return new PhoneRent(number, id, false, service, endDate);
-        } catch (JsonSyntaxException e) {
-            throwErrorByName(data);
-
-            WrongParameter parameter = WrongParameter.valueOf(WrongParameter.class, data);
-            throw new WrongParameterException(parameter.getMessage());
+            throwStateErrorRent(stateErrorRent);
         }
+
+        phoneMap = (Map<String, Object>) phoneMap.get("phone");
+
+        String number = phoneMap.get("number").toString();
+        int id = (int)Math.round(Double.parseDouble(phoneMap.get("id").toString()));
+        String endDate = phoneMap.get("endDate").toString();
+
+        return new PhoneRent(number, id, false, service, endDate);
     }
 
     /**
@@ -826,7 +768,8 @@ public final class SMSActivateApi {
      * @throws NoBalanceException if no numbers.
      * @throws NoNumberException if in account balance is zero.
      */
-    public List<Sms> getRentStatus(@NotNull Phone phone) throws IOException, SQLServerException, WrongParameterException, RentException, NoBalanceException, NoNumberException {
+    @NotNull
+    public List<Sms> getRentStatus(@NotNull Phone phone) throws IOException, SQLServerException, WrongParameterException, RentException, NoBalanceException, NoNumberException, BannedException {
         String action = new Object(){}.getClass().getEnclosingMethod().getName();
         String url = BASE_URL + buildHttpUrl(new HashMap<>(){{
             put("api_key", apiKey);
@@ -835,35 +778,30 @@ public final class SMSActivateApi {
         }});
 
         String data = getDataByUrl(new URL(url), "POST");
+        validateData(data);
 
-        try {
-            Map<String, Object> responseMap = gson.fromJson(data, Map.class);
-            StateRent stateRent = StateRent.valueOf(StateRent.class, responseMap.get("status").toString());
+        Type type = new TypeToken<Map<String, Object>>(){}.getType();
+        Map<String, Object> responseMap = gson.fromJson(data, type);
+        StateRent stateRent = StateRent.valueOf(StateRent.class, responseMap.get("status").toString());
 
-            if (stateRent == StateRent.ERROR) {
-                StateErrorRent stateErrorRent = StateErrorRent.valueOf(StateErrorRent.class, responseMap.get("message").toString());
-                throwStateErrorRent(stateErrorRent);
-            }
-
-            Map<String, Map<String, Object>> valuesMap = (Map<String, Map<String, Object>>) responseMap.get("values");
-            List<Sms> smsList = new ArrayList<>();
-
-            for (Map<String, Object> phoneMap : valuesMap.values()) {
-                String number = phoneMap.get("phoneFrom").toString();
-                String text = phoneMap.get("text").toString();
-                String serviceShortName = phoneMap.get("service").toString();
-                String date = phoneMap.get("date").toString();
-
-                smsList.add(new Sms(new Phone(number, new Service(serviceShortName)), text, date));
-            }
-
-            return smsList;
-        } catch (JsonSyntaxException ignored) {
-            throwErrorByName(data);
-
-            WrongParameter parameter = WrongParameter.valueOf(WrongParameter.class, data);
-            throw new WrongParameterException(parameter.getMessage());
+        if (stateRent == StateRent.ERROR) {
+            StateErrorRent stateErrorRent = StateErrorRent.valueOf(StateErrorRent.class, responseMap.get("message").toString());
+            throwStateErrorRent(stateErrorRent);
         }
+
+        Map<String, Map<String, Object>> valuesMap = (Map<String, Map<String, Object>>) responseMap.get("values");
+        List<Sms> smsList = new ArrayList<>();
+
+        for (Map<String, Object> phoneMap : valuesMap.values()) {
+            String number = phoneMap.get("phoneFrom").toString();
+            String text = phoneMap.get("text").toString();
+            String serviceShortName = phoneMap.get("service").toString();
+            String date = phoneMap.get("date").toString();
+
+            smsList.add(new Sms(new Phone(number, new Service(serviceShortName)), text, date));
+        }
+
+        return smsList;
     }
 
     /**
@@ -878,6 +816,7 @@ public final class SMSActivateApi {
      * @throws NoBalanceException if no numbers.
      * @throws NoNumberException if in account balance is zero.
      */
+    @NotNull
     public StateRent setRentStatus(Phone phone, @NotNull StatusRent status)
             throws IOException, SQLServerException, WrongParameterException, RentException, NoBalanceException, NoNumberException {
         String action = new Object(){}.getClass().getEnclosingMethod().getName();
@@ -889,22 +828,17 @@ public final class SMSActivateApi {
         }});
 
         String data = getDataByUrl(new URL(url), "POST");
-        try {
-            Map<String, String> stateMap = gson.fromJson(data, Map.class);
-            StateRent stateRent = StateRent.valueOf(StateRent.class, stateMap.get("status").toUpperCase());
 
-            if (stateRent == StateRent.ERROR) {
-                StateErrorRent stateErrorRent = StateErrorRent.valueOf(StateErrorRent.class, stateMap.get("message"));
-                throwStateErrorRent(stateErrorRent);
-            }
+        Type type = new TypeToken<Map<String, String>>(){}.getType();
+        Map<String, String> stateMap = gson.fromJson(data, type);
+        StateRent stateRent = StateRent.valueOf(StateRent.class, stateMap.get("status").toUpperCase());
 
-            return StateRent.SUCCESS;
-        } catch (JsonSyntaxException ignored) {
-            throwErrorByName(data);
-
-            WrongParameter parameter = WrongParameter.valueOf(WrongParameter.class, data);
-            throw new WrongParameterException(parameter.getMessage());
+        if (stateRent == StateRent.ERROR) {
+            StateErrorRent stateErrorRent = StateErrorRent.valueOf(StateErrorRent.class, stateMap.get("message"));
+            throwStateErrorRent(stateErrorRent);
         }
+
+        return StateRent.SUCCESS;
     }
 
     /**
@@ -916,8 +850,9 @@ public final class SMSActivateApi {
      * @throws NoBalanceException if no numbers.
      * @throws NoNumberException if in account balance is zero.
      */
+    @NotNull
     public List<Phone> getRentList()
-            throws IOException, SQLServerException, WrongParameterException, RentException, NoBalanceException, NoNumberException {
+            throws IOException, SQLServerException, WrongParameterException, RentException, NoBalanceException, NoNumberException, BannedException {
         String action = new Object(){}.getClass().getEnclosingMethod().getName();
         String url = BASE_URL + buildHttpUrl(new HashMap<>(){{
             put("api_key", apiKey);
@@ -925,64 +860,29 @@ public final class SMSActivateApi {
         }});
 
         String data = getDataByUrl(new URL(url), "GET");
+        validateData(data);
 
-        try {
-            Map<String, Object> responseMap = gson.fromJson(data, Map.class);
-            StateRent stateRent = StateRent.valueOf(StateRent.class, responseMap.get("status").toString().toUpperCase());
+        Type type = new TypeToken<Map<String, Object>>(){}.getType();
+        Map<String, Object> responseMap = gson.fromJson(data, type);
+        StateRent stateRent = StateRent.valueOf(StateRent.class, responseMap.get("status").toString().toUpperCase());
 
-            if (stateRent == StateRent.SUCCESS) {
-                Map<String, Map<String, Object>> valuesMap = (Map<String, Map<String, Object>>)responseMap.get("values");
-                List<Phone> phoneList = new ArrayList<>();
-
-                for (Map<String, Object> phoneMap : valuesMap.values()) {
-                    String number = phoneMap.get("phone").toString();
-                    int id = (int)Math.round(Double.parseDouble(phoneMap.get("id").toString()));
-
-                    phoneList.add(new Phone(number, id, false, new Service("")));
-                }
-
-                return phoneList;
-            }
-
+        if (stateRent != StateRent.SUCCESS) {
             StateErrorRent stateErrorRent = StateErrorRent.valueOf(StateErrorRent.class,
                     responseMap.get("message").toString().toUpperCase());
-
-            if (stateErrorRent == StateErrorRent.NO_NUMBERS) {
-                throw new NoNumberException(StateErrorRent.NO_NUMBERS.getMessage());
-            }
-
-            throw new SQLServerException();
-        } catch (JsonSyntaxException ignored) {
-            throwErrorByName(data);
-
-            WrongParameter parameter = WrongParameter.valueOf(WrongParameter.class, data);
-            throw new WrongParameterException(parameter.getMessage());
+            throwStateErrorRent(stateErrorRent);
         }
-    }
 
-    /**
-     * Throws error by name
-     * @param name name error.
-     * @throws SQLServerException if error happened on SQL-server.
-     * @throws RentException if rent is cancel or finish.
-     */
-    private void throwErrorByName(@NotNull String name)
-            throws SQLServerException, RentException, NoNumberException, NoBalanceException {
-        if (name.contains("SQL")) {
-            throw new SQLServerException();
-        } else if (name.contains("NO")) {
-            if (name.equalsIgnoreCase("no_balance")) {
-                throw new NoBalanceException();
-            }
+        Map<String, Map<String, Object>> valuesMap = (Map<String, Map<String, Object>>)responseMap.get("values");
+        List<Phone> phoneList = new ArrayList<>();
 
-            StateErrorRent stateErrorRent = StateErrorRent.valueOf(StateErrorRent.class, name);
+        for (Map<String, Object> phoneMap : valuesMap.values()) {
+            String number = phoneMap.get("phone").toString();
+            int id = (int)Math.round(Double.parseDouble(phoneMap.get("id").toString()));
 
-            if (stateErrorRent == StateErrorRent.NO_NUMBERS) {
-                throw new NoNumberException(stateErrorRent.getMessage());
-            }
-
-            throw new RentException(stateErrorRent.getMessage());
+            phoneList.add(new Phone(number, id, false, new Service("")));
         }
+
+        return phoneList;
     }
 
     /**
@@ -996,16 +896,47 @@ public final class SMSActivateApi {
     private void throwStateErrorRent(@NotNull StateErrorRent stateErrorRent)
             throws RentException, SQLServerException, NoBalanceException, NoNumberException {
         switch (stateErrorRent) {
-            case ALREADY_FINISH: throw new RentException(StateErrorRent.ALREADY_FINISH.getMessage());
-            case ALREADY_CANCEL: throw new RentException(StateErrorRent.ALREADY_CANCEL.getMessage());
-            case NO_ID_RENT: throw new RentException(StateErrorRent.NO_ID_RENT.getMessage());
-            case INCORECT_STATUS:throw new RentException(StateErrorRent.INCORECT_STATUS.getMessage());
-            case CANT_CANCEL: throw new TimeOutRentException();
-            case INVALID_PHONE: throw new RentException(StateErrorRent.INVALID_PHONE.getMessage());
-            case NO_NUMBERS: throw new NoNumberException(StateErrorRent.NO_NUMBERS.getMessage());
-            case SQL_ERROR: throw new SQLServerException();
-            case ACCOUNT_INACTIVE: throw new RentException(StateErrorRent.ACCOUNT_INACTIVE.getMessage());
-            default: throw new NoBalanceException("Нет денег на счету.");
+            case ALREADY_FINISH:
+                throw new RentException(
+                    StateErrorRent.ALREADY_FINISH.getEnglandMessage(),
+                    StateErrorRent.ALREADY_FINISH.getRussianMessage()
+                );
+            case ALREADY_CANCEL:
+                throw new RentException(
+                    StateErrorRent.ALREADY_CANCEL.getEnglandMessage(),
+                    StateErrorRent.ALREADY_CANCEL.getRussianMessage()
+                );
+            case NO_ID_RENT:
+                throw new RentException(
+                    StateErrorRent.NO_ID_RENT.getEnglandMessage(),
+                    StateErrorRent.NO_ID_RENT.getRussianMessage()
+                );
+            case INCORECT_STATUS:
+                throw new RentException(
+                    StateErrorRent.INCORECT_STATUS.getEnglandMessage(),
+                    StateErrorRent.INCORECT_STATUS.getRussianMessage()
+                );
+            case CANT_CANCEL:
+                throw new TimeOutRentException("", "");
+            case INVALID_PHONE:
+                throw new RentException(
+                    StateErrorRent.INVALID_PHONE.getEnglandMessage(),
+                    StateErrorRent.INVALID_PHONE.getRussianMessage()
+                );
+            case NO_NUMBERS:
+                throw new NoNumberException(
+                    StateErrorRent.NO_NUMBERS.getEnglandMessage(),
+                    StateErrorRent.NO_NUMBERS.getRussianMessage()
+                );
+            case SQL_ERROR:
+                throw new SQLServerException("", "");
+            case ACCOUNT_INACTIVE:
+                throw new RentException(
+                    StateErrorRent.ACCOUNT_INACTIVE.getEnglandMessage(),
+                    StateErrorRent.ACCOUNT_INACTIVE.getRussianMessage()
+                );
+            default:
+                throw new NoBalanceException("", "Нет денег на счету.");
         }
     }
 
@@ -1038,17 +969,20 @@ public final class SMSActivateApi {
         if (!data.contains("ACCESS")) {
             if (data.contains("BAD")) {
                 WrongParameter parameter = WrongParameter.valueOf(WrongParameter.class, data);
-                throw new WrongParameterException(parameter.getMessage());
-            } else if (data.equalsIgnoreCase("banned")) {
-                String date = data.split(":")[1];
-                throw new BannedException("Акаунт забанен на " + date);
+                throw new WrongParameterException(parameter.getEnglandMessage(), parameter.getRussianMessage());
             } else if (data.contains("SQL")) {
-                throw new SQLServerException("Ошибка SQL-сервера.");
+                throw new SQLServerException("Error SQL server.", "Ошибка SQL-сервера.");
+            } else if (data.equalsIgnoreCase("banned")) {
+                String date = ":".split(data)[1];
+                throw new BannedException("Account has been banned to " + date, "Акаунт забанен на " + date);
+            } else if (data.contains("NO")) {
+                if (data.equalsIgnoreCase("no_balance")) {
+                    throw new NoBalanceException("", "");
+                } else if (data.equalsIgnoreCase("no_numbers")) {
+                    throw new NoNumberException("", "");
+                }
             }
         }
-
-        throwErrorByName(data);
-
     }
 
     /**

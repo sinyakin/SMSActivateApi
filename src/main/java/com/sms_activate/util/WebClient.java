@@ -2,28 +2,32 @@ package com.sms_activate.util;
 
 import org.jetbrains.annotations.NotNull;
 
-import java.io.*;
+import java.io.BufferedReader;
+import java.io.BufferedWriter;
+import java.io.IOException;
+import java.io.InputStreamReader;
+import java.io.OutputStreamWriter;
 import java.net.HttpURLConnection;
 import java.net.URL;
 import java.net.URLConnection;
 import java.util.List;
 
 public class WebClient {
-    public String get(@NotNull String url) throws IOException {
+    public static String get(@NotNull String url) throws IOException {
         return get(new URL(url));
     }
 
-    public String get(@NotNull URL url) throws IOException {
+    public static String get(@NotNull URL url) throws IOException {
         HttpURLConnection urlConnection = (HttpURLConnection) url.openConnection();
         urlConnection.setRequestMethod("GET");
         return load(urlConnection);
     }
 
-    public String post(@NotNull String url, @NotNull List<Object> dataList) throws IOException {
+    public static String post(@NotNull String url, @NotNull List<Object> dataList) throws IOException {
         return post(new URL(url), dataList);
     }
 
-    public String post(@NotNull URL url, @NotNull List<Object> dataList) throws IOException {
+    public static String post(@NotNull URL url, @NotNull List<Object> dataList) throws IOException {
         HttpURLConnection urlConnection = (HttpURLConnection) url.openConnection();
 
         urlConnection.setRequestMethod("POST");
@@ -43,7 +47,7 @@ public class WebClient {
         return load(urlConnection);
     }
 
-    private String load(URLConnection urlConnection) throws IOException {
+    private static String load(URLConnection urlConnection) throws IOException {
         try (BufferedReader reader = new BufferedReader(
                 new InputStreamReader(urlConnection.getInputStream()))) {
             String data;

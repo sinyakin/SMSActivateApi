@@ -2,7 +2,7 @@ package com.sms_activate.error;
 
 import org.jetbrains.annotations.NotNull;
 
-public abstract class BaseSMSActivateException extends Exception {
+public class BaseSMSActivateException extends Exception {
     private final String englandMessage;
     private final String russianMessage;
 
