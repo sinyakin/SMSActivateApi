@@ -2,7 +2,13 @@ package com.sms_activate;
 
 import com.google.gson.Gson;
 import com.google.gson.JsonSyntaxException;
-import com.sms_activate.error.*;
+import com.google.gson.reflect.TypeToken;
+import com.sms_activate.error.BannedException;
+import com.sms_activate.error.NoBalanceException;
+import com.sms_activate.error.NoNumberException;
+import com.sms_activate.error.SQLServerException;
+import com.sms_activate.error.WrongParameter;
+import com.sms_activate.error.WrongParameterException;
 import com.sms_activate.phone.Phone;
 import com.sms_activate.phone.PhoneRent;
 import com.sms_activate.activation.AccessStatusActivation;
@@ -26,6 +32,7 @@ import org.jetbrains.annotations.NotNull;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
+import java.math.BigDecimal;
 import java.net.HttpURLConnection;
 import java.net.URL;
 import java.util.ArrayList;
@@ -40,12 +47,36 @@ import java.util.regex.Pattern;
  * TODO:
  *  Refactoring with exception
  *  Add rent methods
+ *  Change money volume to BigDecimal
+ *  Refactoring getDataByUrl
+ *  methods with API -> SMSActivateUrls
+ *  keySet -> Entry
+ *  condition on gzip
+ *  countryNumber -> countryId
+ *  change method POST -> GET
+ *  create parent LOCALE_Exception
+ *  validate data from getting.
  */
 public final class SMSActivateApi {
-    private final String BASE_URL = "https://sms-activate.ru/stubs/handler_api.php?";
+    /**
+     * API url.
+     */
+    private static final String BASE_URL = "https://sms-activate.ru/stubs/handler_api.php?";
+
+    /**
+     * Regular expression for digit. Use for select balance and checking on matchers.
+     */
+    private static final Pattern digitPattern = Pattern.compile("\\d.*");
+
+    /**
+     * Json deserializer and serializer.
+     */
+    private static final Gson gson = new Gson();
+
+    /**
+     * Api key from personal
+     */
     private String apiKey;
-    private final Pattern digitPattern = Pattern.compile("\\d.*");
-    private final Gson gson = new Gson();
 
     /**
      * Constructor API sms-activate with API key.
@@ -67,7 +98,8 @@ public final class SMSActivateApi {
      * Returns the API key.
      * @return apiKey API key (not be null).
      */
-    public @NotNull String getApiKey() {
+    @NotNull
+    public String getApiKey() {
         return apiKey;
     }
 
@@ -77,7 +109,8 @@ public final class SMSActivateApi {
      * @throws IOException if an I/O exception occurs.
      * @throws WrongParameterException if parameter is incorrect.
      */
-    public float getBalance() throws IOException, WrongParameterException {
+    @NotNull
+    public BigDecimal getBalance() throws IOException, WrongParameterException {
         String action = new Object(){}.getClass().getEnclosingMethod().getName();
         String url = BASE_URL + buildHttpUrl(new HashMap<>(){{
             put("api_key", apiKey);
@@ -97,7 +130,7 @@ public final class SMSActivateApi {
             }
         }
 
-        return Float.parseFloat(matcher.group());
+        return new BigDecimal(matcher.group());
     }
 
     /**
@@ -106,7 +139,8 @@ public final class SMSActivateApi {
      * @throws IOException if an I/O exception occurs.
      * @throws WrongParameterException if parameter is incorrect.
      */
-    public float getBalanceAndCashBack() throws IOException, WrongParameterException {
+    @NotNull
+    public BigDecimal getBalanceAndCashBack() throws IOException, WrongParameterException {
         String action = new Object(){}.getClass().getEnclosingMethod().getName();
 
         String url = BASE_URL + buildHttpUrl(new HashMap<>(){{
@@ -122,7 +156,7 @@ public final class SMSActivateApi {
             throw new WrongParameterException(parameter.getMessage());
         }
 
-        return Float.parseFloat(matcher.group());
+        return new BigDecimal(matcher.group());
     }
 
     /**
@@ -131,7 +165,8 @@ public final class SMSActivateApi {
      * @throws IOException if an I/O exception occurs.
      * @throws WrongParameterException if parameter is incorrect.
      */
-    public @NotNull List<ServiceForward> getNumbersStatus() throws IOException, WrongParameterException {
+    @NotNull
+    public List<ServiceForward> getNumbersStatus() throws IOException, WrongParameterException {
         return getNumbersStatus(-1, "");
     }
 
@@ -143,7 +178,8 @@ public final class SMSActivateApi {
      * @throws IOException if an I/O exception occurs.
      * @throws WrongParameterException if parameter is incorrect.
      */
-    public @NotNull List<ServiceForward> getNumbersStatus(int countryNumber, @NotNull String operator) throws IOException, WrongParameterException {
+    @NotNull
+    public List<ServiceForward> getNumbersStatus(int countryNumber, @NotNull String operator) throws IOException, WrongParameterException {
         String action = new Object() {}.getClass().getEnclosingMethod().getName();
         String url = BASE_URL + buildHttpUrl(new HashMap<>() {{
             put("api_key", apiKey);
@@ -181,17 +217,21 @@ public final class SMSActivateApi {
      * @param service service short name.
      * @param ref referral link.
      * @param countryNumber number country.
-     * @return object phone
+     * @return phone for activation.
      * @throws IOException if an I/O exception occurs.
      * @throws WrongParameterException if one of parameters is incorrect.
      * @throws BannedException if account has been banned.
      * @throws SQLServerException if error happened on SQL-server.
+     * @throws RentException
+     * @throws NoBalanceException
+     * @throws NoNumberException
      */
-    public @NotNull Phone getNumber(
+    @NotNull
+    public Phone getNumber(
             @NotNull Service service,
             @NotNull String ref,
             int countryNumber
-    ) throws IOException, WrongParameterException, BannedException, SQLServerException {
+    ) throws IOException, WrongParameterException, BannedException, SQLServerException, RentException, NoBalanceException, NoNumberException {
         return getNumber(service, ref, countryNumber, "", "", false);
     }
 
@@ -217,7 +257,7 @@ public final class SMSActivateApi {
             @NotNull String phoneException,
             @NotNull String operator,
             boolean forward
-    ) throws IOException, WrongParameterException, BannedException, SQLServerException {
+    ) throws IOException, WrongParameterException, BannedException, SQLServerException, RentException, NoBalanceException, NoNumberException {
 
         String action = new Object(){}.getClass().getEnclosingMethod().getName();
         String url = BASE_URL + buildHttpUrl(new HashMap<>() {{
@@ -232,18 +272,8 @@ public final class SMSActivateApi {
         }});
 
         String data = getDataByUrl(new URL(url), "POST");
-        if (!data.contains("ACCESS")) {
-            if (data.contains("BAD")) {
-                WrongParameter parameter = WrongParameter.valueOf(WrongParameter.class, data);
-                throw new WrongParameterException(parameter.getMessage());
-            } else if (data.equalsIgnoreCase("banned")) {
-                String date = ":".split(data)[1];
-                throw new BannedException("Акаунт забанен на " + date);
-            } else if (data.contains("SQL")) {
-                throw new SQLServerException("Ошибка SQL-сервера.");
-            }
-        }
-
+        validateData(data);
+        
         String[] parts = data.split(":");
 
         String number = parts[2];
@@ -265,6 +295,7 @@ public final class SMSActivateApi {
      * @throws BannedException if account is banned.
      * @throws SQLServerException if error happened on SQL-server.
      */
+    @NotNull
     public List<Phone> getMultiServiceNumber(
             @NotNull String multiService,
             @NotNull String ref,
@@ -288,6 +319,7 @@ public final class SMSActivateApi {
      * @throws BannedException if account is banned.
      * @throws SQLServerException if error happened on SQL-server.
      */
+    @NotNull
     public List<Phone> getMultiServiceNumber(
             @NotNull String multiService,
             @NotNull String ref,
@@ -355,6 +387,7 @@ public final class SMSActivateApi {
      * @throws WrongParameterException if one of parameters is incorrect.
      * @throws SQLServerException if error happened on SQL-server.
      */
+    @NotNull
     public AccessStatusActivation setStatus(
             @NotNull Phone phone,
             @NotNull StatusActivation status
@@ -372,6 +405,7 @@ public final class SMSActivateApi {
      * @throws WrongParameterException if one of parameters is incorrect.
      * @throws SQLServerException if error happened on SQL-server.
      */
+    @NotNull
     public AccessStatusActivation setStatus(
             @NotNull Phone phone,
             @NotNull StatusActivation status,
@@ -413,6 +447,7 @@ public final class SMSActivateApi {
      * @throws WrongParameterException if one of parameters is incorrect.
      * @throws SQLServerException if error happened on SQL-server.
      */
+    @NotNull
     public StateActivation getStatus(@NotNull Phone phone) throws IOException, WrongParameterException, SQLServerException {
         String action = new Object(){}.getClass().getEnclosingMethod().getName();
         String url = BASE_URL + buildHttpUrl(new HashMap<>(){{
@@ -458,7 +493,8 @@ public final class SMSActivateApi {
      * @throws WrongParameterException if one of parameters is incorrect.
      * @throws SQLServerException if error happened on SQL-server.
      */
-    public @NotNull String getFullSms(@NotNull String id) throws IOException, SQLServerException, WrongParameterException {
+    @NotNull
+    public String getFullSms(@NotNull String id) throws IOException, SQLServerException, WrongParameterException {
         String action = new Object(){}.getClass().getEnclosingMethod().getName();
         String url = BASE_URL + buildHttpUrl(new HashMap<>(){{
             put("api_key", apiKey);
@@ -497,6 +533,7 @@ public final class SMSActivateApi {
      * @throws WrongParameterException if one of parameters is incorrect.
      * @throws SQLServerException if error happened on SQL-server.
      */
+    @NotNull
     public List<Country> getPrices(@NotNull Service service, int countryNumber) throws IOException, SQLServerException, WrongParameterException {
         String action = new Object(){}.getClass().getEnclosingMethod().getName();
         String shortNameService = service.getShortName();
@@ -524,8 +561,8 @@ public final class SMSActivateApi {
                     serviceCostList.add(new ServiceCost(
                         "",
                         shortName,
-                        (int)Math.round(value.get("count")),
-                        value.get("cost")
+                        (int)Math.round(value.get("count")), 
+                        BigDecimal.valueOf(value.get("cost"))
                     ));
                 });
 
@@ -553,6 +590,7 @@ public final class SMSActivateApi {
      * @throws WrongParameterException if one of parameters is incorrect.
      * @throws SQLServerException if error happened on SQL-server.
      */
+    @NotNull
     public List<CountryInformation> getCountries() throws IOException, WrongParameterException, SQLServerException {
         String action = new Object(){}.getClass().getEnclosingMethod().getName();
         String url = BASE_URL + buildHttpUrl(new HashMap<>(){{
@@ -600,6 +638,7 @@ public final class SMSActivateApi {
      * @throws SQLServerException if error happened on sql server.
      * @throws WrongParameterException if parameter is incorrect.
      */
+    @NotNull
     public QiwiResponse getQiwiRequisites() throws IOException, SQLServerException, WrongParameterException {
         String action = new Object(){}.getClass().getEnclosingMethod().getName();
         String url = BASE_URL + buildHttpUrl(new HashMap<>(){{
@@ -629,6 +668,7 @@ public final class SMSActivateApi {
      * @return phone for additional service by forwarding
      * @throws IOException if an I/O exception occurs.
      */
+    @NotNull
     public Phone getAdditionalService(Phone phone) throws IOException {
         String action = new Object(){}.getClass().getEnclosingMethod().getName();
         String url = BASE_URL + buildHttpUrl(new HashMap<>(){{
@@ -663,26 +703,28 @@ public final class SMSActivateApi {
      *
      * @param time
      * @param operator
-     * @param countyCode
+     * @param countryId
      * @return
      * @throws IOException
      */
     public String getRentServicesAndCountries(
             int time,
             @NotNull String operator,
-            int countyCode
+            int countryId
     ) throws IOException {
         String action = new Object(){}.getClass().getEnclosingMethod().getName();
         String url = BASE_URL + buildHttpUrl(new HashMap<>(){{
             put("api_key", apiKey);
             put("action", action);
             put("time", time + "");
-            put("county", countyCode + "");
+            put("county", countryId + "");
 
             if (!operator.isEmpty()) {
                 put("operator", operator);
             }
         }});
+
+
 
         return getDataByUrl(new URL(url), "POST");
     }
@@ -989,6 +1031,24 @@ public final class SMSActivateApi {
             data = response.toString();
         }
         return data;
+    }
+
+    private void validateData(@NotNull String data)
+            throws BannedException, SQLServerException, WrongParameterException, NoBalanceException, RentException, NoNumberException {
+        if (!data.contains("ACCESS")) {
+            if (data.contains("BAD")) {
+                WrongParameter parameter = WrongParameter.valueOf(WrongParameter.class, data);
+                throw new WrongParameterException(parameter.getMessage());
+            } else if (data.equalsIgnoreCase("banned")) {
+                String date = data.split(":")[1];
+                throw new BannedException("Акаунт забанен на " + date);
+            } else if (data.contains("SQL")) {
+                throw new SQLServerException("Ошибка SQL-сервера.");
+            }
+        }
+
+        throwErrorByName(data);
+
     }
 
     /**

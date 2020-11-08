@@ -1,6 +1,5 @@
 package com.sms_activate.country;
 
-import com.google.gson.annotations.SerializedName;
 import org.jetbrains.annotations.NotNull;
 
 public class CountryInformation {
@@ -8,10 +7,10 @@ public class CountryInformation {
     private String englandName;
     private String chineName;
     private int id;
-    private boolean isVisible;
-    private boolean isSupportRetry;
-    private boolean isSupportRent;
-    private boolean isSupportMultiService;
+    private boolean visible;
+    private boolean supportRetry;
+    private boolean supportRent;
+    private boolean supportMultiService;
 
     public CountryInformation(int id) {
         this(
@@ -31,19 +30,19 @@ public class CountryInformation {
         @NotNull String russianName,
         @NotNull String englandName,
         @NotNull String chineName,
-        boolean isVisible,
-        boolean isSupportRetry,
-        boolean isSupportRent,
-        boolean isSupportMultiService
+        boolean visible,
+        boolean supportRetry,
+        boolean supportRent,
+        boolean supportMultiService
     ) {
         this.russianName = russianName;
         this.englandName = englandName;
         this.chineName = chineName;
         this.id = Math.round(id);
-        this.isVisible = isVisible;
-        this.isSupportRetry = isSupportRetry;
-        this.isSupportRent = isSupportRent;
-        this.isSupportMultiService = isSupportMultiService;
+        this.visible = visible;
+        this.supportRetry = supportRetry;
+        this.supportRent = supportRent;
+        this.supportMultiService = supportMultiService;
     }
 
     public String getRussianName() {
@@ -63,14 +62,14 @@ public class CountryInformation {
     }
 
     public boolean isVisible() {
-        return isVisible;
+        return visible;
     }
 
     public boolean isSupportRetry() {
-        return isSupportRetry;
+        return supportRetry;
     }
 
     public boolean isSupportMultiService() {
-        return isSupportMultiService;
+        return supportMultiService;
     }
 }

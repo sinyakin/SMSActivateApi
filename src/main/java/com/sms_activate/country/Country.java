@@ -9,12 +9,12 @@ public class Country {
     /**
      *
      */
-    private CountryInformation countryInformation;
+    private final CountryInformation countryInformation;
 
     /**
      *
      */
-    private List<ServiceCost> serviceCostList;
+    private final List<ServiceCost> serviceCostList;
 
     /**
      *
@@ -26,10 +26,18 @@ public class Country {
         this.serviceCostList = serviceCostList;
     }
 
+    /**
+     *
+     * @return
+     */
     public List<ServiceCost> getServiceCostList() {
         return serviceCostList;
     }
 
+    /**
+     *
+     * @return
+     */
     public CountryInformation getCountryInformation() {
         return countryInformation;
     }

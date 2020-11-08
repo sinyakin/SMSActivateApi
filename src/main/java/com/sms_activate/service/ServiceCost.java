@@ -2,19 +2,17 @@ package com.sms_activate.service;
 
 import org.jetbrains.annotations.NotNull;
 
-public class ServiceCost extends Service {
-    private double cost;
+import java.math.BigDecimal;
 
-    public ServiceCost(@NotNull String fullName, @NotNull String shortName, int countNumber, double cost) {
+public class ServiceCost extends Service {
+    private final BigDecimal cost;
+
+    public ServiceCost(@NotNull String fullName, @NotNull String shortName, int countNumber, @NotNull BigDecimal cost) {
         super(fullName, shortName, Math.round(countNumber));
         this.cost = cost;
     }
 
-    public double getCost() {
+    public BigDecimal getCost() {
         return cost;
-    }
-
-    public void setCost(double cost) {
-        this.cost = cost;
     }
 }
