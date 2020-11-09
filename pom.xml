@@ -8,6 +8,23 @@
     <artifactId>sms-activate</artifactId>
     <version>1.0-SNAPSHOT</version>
 
+    <name>SmsActivateApi</name>
+    <description>Lib for working with sms activate API.</description>
+    <url>https://github.com/VladislavBakshanskij/SMSActivateApi</url>
+
+    <licenses>
+        <license>
+            <name>The Apache Software License, Version 2.0</name>
+            <url>http://www.apache.org/licenses/LICENSE-2.0.txt</url>
+        </license>
+    </licenses>
+
+    <scm>
+        <connection>scm:git:git://github.com/VladislavBakshanskij/SMSActivateApi.git</connection>
+        <developerConnection>scm:git:ssh://github.com:VladislavBakshanskij/SMSActivateApi.git</developerConnection>
+        <url>http://github.com/VladislavBakshanskij/SMSActivateApi/tree/master</url>
+    </scm>
+
     <dependencies>
         <dependency>
             <groupId>junit</groupId>
@@ -28,7 +45,25 @@
         </dependency>
     </dependencies>
 
+    <build>
+        <pluginManagement>
+            <plugins>
+                <plugin>
+                    <groupId>org.apache.maven.plugins</groupId>
+                    <artifactId>maven-compiler-plugin</artifactId>
+                    <version>3.8.1</version>
+                </plugin>
+                <plugin>
+                    <groupId>org.apache.maven.plugins</groupId>
+                    <artifactId>maven-javadoc-plugin</artifactId>
+                    <version>2.10.4</version>
+                </plugin>
+            </plugins>
+        </pluginManagement>
+    </build>
+
     <properties>
+        <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <maven.compiler.source>11</maven.compiler.source>
         <maven.compiler.target>11</maven.compiler.target>
     </properties>
