@@ -24,19 +24,24 @@ public class Phone {
      */
     private final Service service;
 
+    /**
+     * Constructor Phone with number, service.
+     * @param number number phone (not be null).
+     * @param service service for phone number (not be null).
+     */
     public Phone(@NotNull String number, @NotNull Service service) {
         this.number = number;
         this.service = service;
     }
 
     /**
-     * Constructor Phone with number, id, forward.
+     * Constructor Phone with number, id, forward, service.
      * @param number number phone (not be null).
      * @param id id operation.
      * @param forward forward phone number (not be null).
      * @param service service for phone number (not be null).
      */
-    public Phone(@NotNull String number, int id, boolean forward, @NotNull Service service) {
+    public Phone(@NotNull String number, int id, boolean forward, Service service) {
         this.number = number;
         this.id = id;
         this.forward = forward;

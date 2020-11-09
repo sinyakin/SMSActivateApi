@@ -5,17 +5,14 @@ import org.jetbrains.annotations.NotNull;
 
 import java.util.List;
 
-/**
- *
- */
 public class Rent {
     /**
-     *
+     * Country current phone activation.
      */
     private final Country country;
 
     /**
-     *
+     * List countries supports activation.
      */
     private final List<Integer> countryIdList;
 
@@ -27,8 +24,8 @@ public class Rent {
     /**
      * Constructor rent with operatorNameList, countryList.
      * @param operatorNameList list name operator in country.
-     * @param country
-     * @param countryIdList
+     * @param country country rent phone.
+     * @param countryIdList list countries supports activation.
      */
     public Rent(@NotNull List<String> operatorNameList, @NotNull Country country, @NotNull List<Integer> countryIdList) {
        this.operatorNameList = operatorNameList;
@@ -37,16 +34,16 @@ public class Rent {
     }
 
     /**
-     *
-     * @return
+     * Returns the country rent phone.
+     * @return country rent phone.
      */
     public Country getCountry() {
         return country;
     }
 
     /**
-     *
-     * @return
+     * Returns the list countries supports activation.
+     * @return list countries supports activation.
      */
     public List<Integer> getCountryIdList() {
         return countryIdList;
@@ -54,7 +51,7 @@ public class Rent {
 
     /**
      * Returns the list name operator in country.
-     * @return
+     * @return list name operator in country.
      */
     public List<String> getOperatorNameList() {
         return operatorNameList;

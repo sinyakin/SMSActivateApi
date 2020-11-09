@@ -3,13 +3,13 @@ package com.sms_activate.error;
 import org.jetbrains.annotations.NotNull;
 
 public enum WrongParameter {
-    BAD_ACTION("Некорректное действие.", ""),
-    BAD_SERVICE("Некорректное наименование сервиса.", ""),
-    BAD_KEY("Неверный API-ключ.", ""),
-    BAD_STATUS("Попытка установить несущетвующий статус.", ""),
-    WRONG_OPERATOR("Некорректный оператор.", ""),
-    WRONG_EXCEPTION_PHONE("Некорректные исключающие префиксы.", ""),
-    WRONG_SERVICE("Некорректные сервисы.", "")
+    BAD_ACTION("Некорректное действие.", "Wrong action."),
+    BAD_SERVICE("Некорректное наименование сервиса.", "Wrong name service."),
+    BAD_KEY("Неверный API-ключ.", "Wrong api-key."),
+    BAD_STATUS("Попытка установить несуществующий статус.", "An attempt to establish a non-existent status."),
+    WRONG_OPERATOR("Некорректный оператор.", "Wrong operator"),
+    WRONG_EXCEPTION_PHONE("Некорректные исключающие префиксы.", "Wrong exception prefix."),
+    WRONG_SERVICE("Некорректные сервисы.", "Wrong services.")
     ;
 
     private final String russianMessage;
