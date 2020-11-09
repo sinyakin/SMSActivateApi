@@ -13,85 +13,95 @@ import java.net.URLConnection;
 import java.util.List;
 
 public class WebClient {
-    /**
-     * Method get to load data by name url.
-     * @param url target url.
-     * @return load data from url.
-     * @throws IOException if an I/O exception occurs.
-     */
-    public static String get(@NotNull String url) throws IOException {
-        return get(new URL(url));
-    }
+  /**
+   * Method get to load data by name url.
+   *
+   * @param url target url.
+   * @return load data from url.
+   * @throws IOException if an I/O exception occurs.
+   */
+  @NotNull
+  public static String get(@NotNull String url) throws IOException {
+    return get(new URL(url));
+  }
 
-    /**
-     * Method get to load data by URL object.
-     * @param url target url.
-     * @return load data from url.
-     * @throws IOException if an I/O exception occurs.
-     */
-    public static String get(@NotNull URL url) throws IOException {
-        HttpURLConnection urlConnection = (HttpURLConnection) url.openConnection();
-        urlConnection.setRequestMethod("GET");
-        return load(urlConnection);
-    }
+  /**
+   * Method get to load data by URL object.
+   *
+   * @param url target url.
+   * @return load data from url.
+   * @throws IOException if an I/O exception occurs.
+   */
+  @NotNull
+  public static String get(@NotNull URL url) throws IOException {
+    HttpURLConnection urlConnection = (HttpURLConnection) url.openConnection();
+    urlConnection.setRequestMethod("GET");
+    return load(urlConnection);
+  }
 
 
-    /**
-     * Method post for send on server.
-     * @param url target url.
-     * @param dataList data for server.
-     * @return data form url.
-     * @throws IOException if an I/O exception occurs.
-     */
-    public static String post(@NotNull String url, @NotNull List<Object> dataList) throws IOException {
-        return post(new URL(url), dataList);
-    }
+  /**
+   * Method post for send on server.
+   *
+   * @param url      target url.
+   * @param dataList data for server.
+   * @return data form url.
+   * @throws IOException if an I/O exception occurs.
+   */
+  @NotNull
+  public static String post(@NotNull String url, @NotNull List<Object> dataList) throws IOException {
+    return post(new URL(url), dataList);
+  }
 
-    /**
-     * Method post for send on server.
-     * @param url target url.
-     * @param dataList data for server.
-     * @return data form url.
-     * @throws IOException if an I/O exception occurs.
-     */
-    public static String post(@NotNull URL url, @NotNull List<Object> dataList) throws IOException {
-        HttpURLConnection urlConnection = (HttpURLConnection) url.openConnection();
+  /**
+   * Method post for send on server.
+   *
+   * @param url      target url.
+   * @param dataList data for server.
+   * @return data form url.
+   * @throws IOException if an I/O exception occurs.
+   */
+  @NotNull
+  public static String post(@NotNull URL url, @NotNull List<Object> dataList) throws IOException {
+    HttpURLConnection urlConnection = (HttpURLConnection) url.openConnection();
 
-        urlConnection.setRequestMethod("POST");
-        urlConnection.setDoOutput(true);
+    urlConnection.setRequestMethod("POST");
+    urlConnection.setDoOutput(true);
 
-        try (BufferedWriter writer = new BufferedWriter(
-                new OutputStreamWriter(urlConnection.getOutputStream()))) {
-            dataList.forEach(x -> {
-                try {
-                    writer.write(x.toString());
-                } catch (IOException e) {
-                    e.printStackTrace();
-                }
-            });
+    try (BufferedWriter writer = new BufferedWriter(
+        new OutputStreamWriter(urlConnection.getOutputStream()))) {
+      dataList.forEach(x -> {
+        try {
+          writer.write(x.toString());
+        } catch (IOException e) {
+          e.printStackTrace();
         }
-
-        return load(urlConnection);
+      });
     }
 
-    /**
-     * Returns the data from connection.
-     * @param urlConnection connection on server.
-     * @return data from server.
-     * @throws IOException if an I/O exception occurs.
-     */
-    private static String load(URLConnection urlConnection) throws IOException {
-        try (BufferedReader reader = new BufferedReader(
-                new InputStreamReader(urlConnection.getInputStream()))) {
-            String data;
-            StringBuilder builder = new StringBuilder();
+    return load(urlConnection);
+  }
 
-            while ((data = reader.readLine()) != null) {
-                builder.append(data);
-            }
+  /**
+   * Returns the data from connection.
+   *
+   * @param urlConnection connection on server.
+   * @return data from server.
+   * @throws IOException if an I/O exception occurs.
+   */
+  @NotNull
+  private static String load(URLConnection urlConnection) throws IOException {
+    try (BufferedReader reader = new BufferedReader(
+        new InputStreamReader(urlConnection.getInputStream()))) {
+      String data;
+      StringBuilder builder = new StringBuilder();
 
-            reader.close();
-            return builder.toString();
-        }
+      while ((data = reader.readLine()) != null) {
+        builder.append(data);
+      }
+
+      reader.close();
+      return builder.toString();
     }
+  }
 }

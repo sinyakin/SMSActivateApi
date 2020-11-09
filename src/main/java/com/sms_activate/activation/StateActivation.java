@@ -1,13 +1,15 @@
 package com.sms_activate.activation;
 
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
 public enum StateActivation {
-    STATUS_WAIT_CODE("Ожидание смс.", "Wait sms."),
-    STATUS_WAIT_RETRY("Ожидание уточнения кода.", ""),
-    STATUS_WAIT_RESEND("Ожидание повторной отправки смс.", ""),
-    STATUS_CANCEL("Активация отменена.", ""),
-    STATUS_OK("Код получен.", ""),
+    STATUS_WAIT_CODE("Ожидание смс.", "Waiting sms."),
+    STATUS_WAIT_RETRY("Ожидание уточнения кода.", "Waiting for code clarification."),
+    STATUS_WAIT_RESEND("Ожидание повторной отправки смс.", "Waiting for re-sending SMS."),
+    STATUS_CANCEL("Активация отменена.", "Activation canceled."),
+    STATUS_OK("Код получен.", "Code received."),
+    UNKNOWN("Неизвестно.", "Unknown.")
     ;
 
     /**
@@ -39,6 +41,7 @@ public enum StateActivation {
      * Returns the message on russian.
      * @return message on russian.
      */
+    @NotNull
     public String getRussianMessage() {
         return russianMessage;
     }
@@ -47,6 +50,7 @@ public enum StateActivation {
      * Returns the message on england.
      * @return message on england.
      */
+    @NotNull
     public String getEnglandMessage() {
         return englandMessage;
     }
@@ -55,6 +59,7 @@ public enum StateActivation {
      * Returns the single concat messages.
      * @return single concat messages.
      */
+    @NotNull
     public String getMessage() {
         return String.join("/", englandMessage, russianMessage);
     }
@@ -63,6 +68,7 @@ public enum StateActivation {
      * Returns the code from sms.
      * @return code from sms.
      */
+    @Nullable
     public String getCode() {
         return code;
     }
@@ -71,7 +77,21 @@ public enum StateActivation {
      * Sets the code from sms.
      * @param code code from sms.
      */
-    public void setCode(String code) {
+    public void setCode(@Nullable String code) {
         this.code = code;
+    }
+
+    /**
+     * Returns the state activation by name.
+     * @param name state activation name.
+     * @return state activation.
+     */
+    @NotNull
+    public static StateActivation getStateByName(@NotNull String name) {
+        try {
+            return StateActivation.valueOf(StateActivation.class, name);
+        } catch (IllegalArgumentException e) {
+            return StateActivation.UNKNOWN;
+        }
     }
 }

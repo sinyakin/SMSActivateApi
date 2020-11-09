@@ -7,8 +7,7 @@ public enum AccessStatusActivation {
     ACCESS_RETRY_GET("Ожидание нового смс.", "Wait new sms."),
     ACCESS_ACTIVATION("Сервис успешно активирован.", "The service has been successfully activated."),
     ACCESS_CANCEL("Активация отменена.", "Activation has been canceled."),
-    UNKNOWN("Неизвестно.", "Unknown.")
-    ;
+    UNKNOWN("Неизвестно.", "Unknown.");
 
     /**
      * Message on russian language.
@@ -22,6 +21,7 @@ public enum AccessStatusActivation {
 
     /**
      * Constructor AccessStatusActivation with multilang.
+     *
      * @param russianMessage message on russian.
      * @param englandMessage message on england.
      */
@@ -32,6 +32,7 @@ public enum AccessStatusActivation {
 
     /**
      * Returns the message on russian.
+     *
      * @return on russian.
      */
     @NotNull
@@ -41,6 +42,7 @@ public enum AccessStatusActivation {
 
     /**
      * Returns the message on england.
+     *
      * @return message on england.
      */
     @NotNull
@@ -50,6 +52,7 @@ public enum AccessStatusActivation {
 
     /**
      * Returns the single concat messages.
+     *
      * @return single concat messages.
      */
     @NotNull
@@ -57,8 +60,13 @@ public enum AccessStatusActivation {
         return String.join("/", englandMessage, russianMessage);
     }
 
+    /**
+     * Returns the state by name.
+     * @param name state name.
+     * @return state.
+     */
     @NotNull
-    public static AccessStatusActivation getStatusByString(@NotNull String name) {
+    public static AccessStatusActivation getStatusByName(@NotNull String name) {
         try {
             return AccessStatusActivation.valueOf(AccessStatusActivation.class, name);
         } catch (IllegalArgumentException e) {
