@@ -1,10 +1,12 @@
 package com.sms_activate.activation;
 
+import org.jetbrains.annotations.NotNull;
+
 public enum StatusActivation {
-    SEND_READY_NUMBER(1, "Сообщить о готовности номера (смс на номер отправлено)."),
-    REQUEST_ONE_MORE_CODE(3, "Запросить еще один код (бесплатно)."),
-    FINISH(6, "Завершить активацию."),
-    CANCEL(8, "Сообщить о том, что номер использован и отменить активацию"),
+    SEND_READY_NUMBER(1, "Сообщить о готовности номера (смс на номер отправлено).", "Inform about the readiness of the number (SMS sent to the number)."),
+    REQUEST_ONE_MORE_CODE(3, "Запросить еще один код (бесплатно).", "Request another code (free)."),
+    FINISH(6, "Завершить активацию.", "Finish the activation."),
+    CANCEL(8, "Сообщить о том, что номер использован и отменить активацию", "Report that the number has been used and cancel activation."),
     ;
 
     /**
@@ -13,26 +15,49 @@ public enum StatusActivation {
     private final int id;
 
     /**
-     * Description status
+     * Message on russian language.
      */
-    private final String message;
+    private final String russianMessage;
 
     /**
-     * Constructor status activation
-     * @param id special id status
-     * @param message description status
+     * Message on england language.
      */
-    StatusActivation(int id, String message) {
+    private final String englandMessage;
+
+    /**
+     * Constructor status activation.
+     * @param id special id status.
+     * @param russianMessage description status on russian language.
+     * @param englandMessage description status on england language.
+     */
+    StatusActivation(int id, @NotNull String russianMessage, @NotNull String englandMessage) {
        this.id = id;
-       this.message = message;
+       this.russianMessage = russianMessage;
+       this.englandMessage = englandMessage;
     }
 
     /**
-     * Return the description status
-     * @return description status
+     * Returns the message on russian.
+     * @return message on russian.
+     */
+    public String getRussianMessage() {
+        return russianMessage;
+    }
+
+    /**
+     * Returns the message on england.
+     * @return message on england.
+     */
+    public String getEnglandMessage() {
+        return englandMessage;
+    }
+
+    /**
+     * Returns the single concat messages.
+     * @return single concat messages.
      */
     public String getMessage() {
-        return message;
+        return String.join("/", englandMessage, russianMessage);
     }
 
     /**
@@ -41,13 +66,5 @@ public enum StatusActivation {
      */
     public int getId() {
         return id;
-    }
-
-    @Override
-    public String toString() {
-        return "StatusActivation { " +
-                "id=" + id +
-                ", message='" + message + '\'' +
-                " }";
     }
 }

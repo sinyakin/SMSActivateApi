@@ -2,7 +2,13 @@ package com.sms_activate;
 
 import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
-import com.sms_activate.error.*;
+import com.sms_activate.error.BannedException;
+import com.sms_activate.error.BaseSMSActivateException;
+import com.sms_activate.error.NoBalanceException;
+import com.sms_activate.error.NoNumberException;
+import com.sms_activate.error.SQLServerException;
+import com.sms_activate.error.WrongParameter;
+import com.sms_activate.error.WrongParameterException;
 import com.sms_activate.phone.Phone;
 import com.sms_activate.phone.PhoneRent;
 import com.sms_activate.activation.AccessStatusActivation;
@@ -40,10 +46,8 @@ import java.util.regex.Pattern;
 /**
  * TODO:
  *  condition on gzip
- *  add multilang
- *  add comments
  */
-public final class SMSActivateApi {
+public class SMSActivateApi {
     /**
      * API url.
      */
@@ -485,6 +489,7 @@ public final class SMSActivateApi {
      * @throws NoBalanceException if no numbers.
      * @throws NoNumberException if in account balance is zero..
      */
+    @NotNull
     public List<Country> getPrices() throws SQLServerException, NoBalanceException, IOException, BannedException, NoNumberException, WrongParameterException {
         return getPrices(null, null);
     }
@@ -571,9 +576,11 @@ public final class SMSActivateApi {
 
         for (Map<String, Object> countryMap : countryInformationMap.values()) {
             int id = (int)Math.round(Double.parseDouble(countryMap.get("id") + ""));
+
             String rus = countryMap.get("rus") + "";
             String eng = countryMap.get("eng") + "";
             String chn = countryMap.get("chn") + "";
+
             boolean isVisible = Boolean.parseBoolean(countryMap.get("visible") + "");
             boolean isSupportRetry = Boolean.parseBoolean(countryMap.get("retry") + "");
             boolean isSupportRent = Boolean.parseBoolean(countryMap.get("rent") + "");
@@ -656,6 +663,7 @@ public final class SMSActivateApi {
      * @throws NoBalanceException if no numbers.
      * @throws NoNumberException if in account balance is zero.
      */
+    @NotNull
     public List<Phone> getCurrentActivationsDataTables()
             throws BaseSMSActivateException, NoNumberException, NoBalanceException, WrongParameterException, BannedException, SQLServerException, IOException {
         return getCurrentActivationsDataTables(0, 10);
@@ -673,6 +681,7 @@ public final class SMSActivateApi {
      * @throws NoBalanceException if no numbers.
      * @throws NoNumberException if in account balance is zero.
      */
+    @NotNull
     public List<Phone> getCurrentActivationsDataTables(int start, int length)
             throws IOException, BaseSMSActivateException, NoBalanceException, BannedException, NoNumberException, WrongParameterException, SQLServerException {
         QueryStringBuilder queryStringBuilder = new QueryStringBuilder("api_key", apiKey);
@@ -708,8 +717,7 @@ public final class SMSActivateApi {
 
         return phoneList;
     }
-
-
+    
     /**
      * Returns the rent object with countries supported rent and accessed services by country.
      * @return rent object with countries supported rent and accessed services by country.

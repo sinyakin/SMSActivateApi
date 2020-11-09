@@ -4,17 +4,17 @@ import org.jetbrains.annotations.NotNull;
 
 public class QiwiResponse {
     /**
-     * status qiwi wallet.
+     * Status qiwi wallet.
      */
     private QiwiStatus qiwiStatus;
 
     /**
-     * number qiwi wallet.
+     * Number qiwi wallet.
      */
     private String walletNumber;
 
     /**
-     * comment specified in payment.
+     * Comment specified in payment.
      */
     private String comment;
 

@@ -12,22 +12,46 @@ public enum WrongParameter {
     WRONG_SERVICE("Некорректные сервисы.", "Wrong services.")
     ;
 
+    /**
+     * Message error on russian language.
+     */
     private final String russianMessage;
+
+    /**
+     * Message error on england language.
+     */
     private final String englandMessage;
 
+    /**
+     * Constructor WrongParameter with multilang.
+     * @param russianMessage error message on russian.
+     * @param englandMessage error message on england.
+     */
     WrongParameter(@NotNull String russianMessage, @NotNull String englandMessage) {
         this.russianMessage = russianMessage;
         this.englandMessage = englandMessage;
     }
 
+    /**
+     * Returns the error message on russian.
+     * @return error message on russian.
+     */
     public String getRussianMessage() {
         return russianMessage;
     }
 
+    /**
+     * Returns the error message on england.
+     * @return error message on england.
+     */
     public String getEnglandMessage() {
         return englandMessage;
     }
 
+    /**
+     * Returns the single concat messages.
+     * @return single concat messages.
+     */
     public String getMessage() {
         return String.join("/", englandMessage, russianMessage);
     }
