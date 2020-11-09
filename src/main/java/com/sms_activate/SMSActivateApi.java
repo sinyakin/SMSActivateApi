@@ -7,7 +7,6 @@ import com.sms_activate.error.BaseSMSActivateException;
 import com.sms_activate.error.NoBalanceException;
 import com.sms_activate.error.NoNumberException;
 import com.sms_activate.error.SQLServerException;
-import com.sms_activate.error.WrongParameter;
 import com.sms_activate.error.WrongParameterException;
 import com.sms_activate.phone.Phone;
 import com.sms_activate.phone.PhoneRent;
@@ -17,7 +16,6 @@ import com.sms_activate.activation.StatusActivation;
 import com.sms_activate.country.Country;
 import com.sms_activate.country.CountryInformation;
 import com.sms_activate.error.rent.RentException;
-import com.sms_activate.error.rent.TimeOutRentException;
 import com.sms_activate.qiwi.QiwiResponse;
 import com.sms_activate.qiwi.QiwiStatus;
 import com.sms_activate.error.rent.StateErrorRent;
@@ -26,7 +24,7 @@ import com.sms_activate.rent.StatusRent;
 import com.sms_activate.rent.StateRent;
 import com.sms_activate.rent.StatusRentNumber;
 import com.sms_activate.service.Service;
-import com.sms_activate.service.ServiceCost;
+import com.sms_activate.service.ServiceWithCost;
 import com.sms_activate.service.ServiceForward;
 import com.sms_activate.util.QueryStringBuilder;
 import com.sms_activate.util.Validator;
@@ -528,10 +526,10 @@ public class SMSActivateApi {
         List<Country> countryList = new ArrayList<>();
 
         countryMap.forEach((countryCode, serviceMap) -> {
-            List<ServiceCost> serviceCostList = new ArrayList<>();
+            List<ServiceWithCost> serviceWithCostList = new ArrayList<>();
 
             serviceMap.forEach((shortName, value) -> {
-                serviceCostList.add(new ServiceCost(
+                serviceWithCostList.add(new ServiceWithCost(
                     shortName,
                     (int)Math.round(value.get("count")),
                     BigDecimal.valueOf(value.get("cost"))
@@ -540,7 +538,7 @@ public class SMSActivateApi {
 
             countryList.add(new Country(
                 new CountryInformation(Integer.parseInt(countryCode)),
-                serviceCostList
+                    serviceWithCostList
             ));
         });
 
@@ -561,7 +559,7 @@ public class SMSActivateApi {
     @NotNull
     public List<CountryInformation> getCountries()
             throws IOException, WrongParameterException, SQLServerException, NoBalanceException, BannedException, RentException, NoNumberException {
-        QueryStringBuilder queryStringBuilder = new QueryStringBuilder(new HashMap<>(){{
+        QueryStringBuilder queryStringBuilder = new QueryStringBuilder(new HashMap<String, Object>(){{
             put("api_key", apiKey);
             put("action", "getCountries");
         }});
@@ -608,7 +606,7 @@ public class SMSActivateApi {
     @NotNull
     public QiwiResponse getQiwiRequisites()
             throws IOException, SQLServerException, WrongParameterException, NoBalanceException, BannedException, NoNumberException {
-        QueryStringBuilder queryStringBuilder = new QueryStringBuilder(new HashMap<>(){{
+        QueryStringBuilder queryStringBuilder = new QueryStringBuilder(new HashMap<String, Object>(){{
             put("api_key", apiKey);
             put("action", "getQiwiRequisites");
         }});
@@ -775,7 +773,7 @@ public class SMSActivateApi {
 
         List<String> operatorNameList = new ArrayList<>();
         List<Integer> countryIdList = new ArrayList<>();
-        List<ServiceCost> serviceCostList = new ArrayList<>();
+        List<ServiceWithCost> serviceWithCostList = new ArrayList<>();
 
         for (Object countryCode : countryMap.values())
             countryIdList.add((int)Math.round(Double.parseDouble(countryCode.toString())));
@@ -787,7 +785,7 @@ public class SMSActivateApi {
             Map<String, Object> serviceMap = (Map<String, Object>) service;
             int countNumber = (int)Double.parseDouble(serviceMap.get("quant").toString());
 
-            serviceCostList.add(new ServiceCost(
+            serviceWithCostList.add(new ServiceWithCost(
                     shortName,
                     countNumber,
                     new BigDecimal(serviceMap.get("cost").toString()))
@@ -796,7 +794,7 @@ public class SMSActivateApi {
 
         CountryInformation countryInformation = new CountryInformation(countryId);
 
-        return new Rent(operatorNameList, new Country(countryInformation, serviceCostList), countryIdList);
+        return new Rent(operatorNameList, new Country(countryInformation, serviceWithCostList), countryIdList);
     }
 
     /**
@@ -972,7 +970,7 @@ public class SMSActivateApi {
     @NotNull
     public List<Phone> getRentList()
             throws IOException, SQLServerException, WrongParameterException, RentException, NoBalanceException, NoNumberException, BannedException {
-        QueryStringBuilder queryStringBuilder = new QueryStringBuilder(new HashMap<>(){{
+        QueryStringBuilder queryStringBuilder = new QueryStringBuilder(new HashMap<String, Object>(){{
             put("api_key", apiKey);
             put("action", "getRentList");
         }});

@@ -18,17 +18,19 @@ public class QueryStringBuilder {
 
     /**
      * Constructor QueryStringBuilder with initialize values.
-     * @param key name parameter url (unique and not be null).
+     *
+     * @param key   name parameter url (unique and not be null).
      * @param value value parameter url (can be duplicate and not be null).
      */
     public QueryStringBuilder(@NotNull String key, @NotNull Object value) {
-        this(new HashMap<>(){{
+        this(new HashMap<String, Object>() {{
             put(key, value);
         }});
     }
 
     /**
      * Constructor QueryStringBuilder with initialize values.
+     *
      * @param parameterMap key value the to url parameter.
      */
     public QueryStringBuilder(@NotNull Map<String, Object> parameterMap) {
@@ -37,7 +39,8 @@ public class QueryStringBuilder {
 
     /**
      * Appends the specified strings (key, value) to parameter URL.
-     * @param key key with which the specified value is to be associated (not be null).
+     *
+     * @param key   key with which the specified value is to be associated (not be null).
      * @param value value to be associated with the specified key.
      */
     public QueryStringBuilder append(@NotNull String key, Object value) {
@@ -47,6 +50,7 @@ public class QueryStringBuilder {
 
     /**
      * Builds the http query string.
+     *
      * @return http query string.
      */
     public String build() {
@@ -55,7 +59,7 @@ public class QueryStringBuilder {
             String key = x.getKey();
 
             if (value != null) {
-                return String.join("=" , key, value.toString());
+                return String.join("=", key, value.toString());
             }
 
             return "";
@@ -63,9 +67,9 @@ public class QueryStringBuilder {
     }
 
 
-
     /**
      * Returns a url parameter string.
+     *
      * @return url parameter string.
      */
     @Override
