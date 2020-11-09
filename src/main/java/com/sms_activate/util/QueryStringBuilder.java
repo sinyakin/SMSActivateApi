@@ -40,13 +40,14 @@ public class QueryStringBuilder {
      * @param key key with which the specified value is to be associated (not be null).
      * @param value value to be associated with the specified key.
      */
-    public void append(@NotNull String key, Object value) {
+    public QueryStringBuilder append(@NotNull String key, Object value) {
         this.parameterMap.put(key, value);
+        return this;
     }
 
     /**
-     * Builds the specified url string with key=value.
-     * @return url parameter string.
+     * Builds the http query string.
+     * @return http query string.
      */
     public String build() {
         return this.parameterMap.entrySet().stream().map(x -> {
@@ -60,6 +61,8 @@ public class QueryStringBuilder {
             return "";
         }).collect(Collectors.joining("&"));
     }
+
+
 
     /**
      * Returns a url parameter string.

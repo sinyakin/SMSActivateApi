@@ -1,7 +1,6 @@
 package com.sms_activate;
 
 import com.google.gson.Gson;
-import com.google.gson.JsonSyntaxException;
 import com.google.gson.reflect.TypeToken;
 import com.sms_activate.error.BannedException;
 import com.sms_activate.error.NoBalanceException;
@@ -28,6 +27,7 @@ import com.sms_activate.rent.StatusRentNumber;
 import com.sms_activate.service.Service;
 import com.sms_activate.service.ServiceCost;
 import com.sms_activate.service.ServiceForward;
+import com.sms_activate.util.QueryStringBuilder;
 import org.jetbrains.annotations.NotNull;
 
 import java.io.BufferedReader;
@@ -49,7 +49,6 @@ import java.util.regex.Pattern;
  * TODO:
  *  keySet -> Entry
  *  condition on gzip
- *  countryNumber -> countryId
  *  change method POST -> GET
  *  add multilang
  *  add comments
@@ -73,21 +72,13 @@ public final class SMSActivateApi {
     /**
      * Api key from personal
      */
-    private String apiKey;
+    private final String apiKey;
 
     /**
      * Constructor API sms-activate with API key.
      * @param apiKey API key (not be null).
      */
     public SMSActivateApi(@NotNull String apiKey) {
-        this.apiKey = apiKey;
-    }
-
-    /**
-     * Sets the value apiKey.
-     * @param apiKey API key (not be null).
-     */
-    public void setApiKey(@NotNull String apiKey) {
         this.apiKey = apiKey;
     }
 
@@ -104,22 +95,24 @@ public final class SMSActivateApi {
      * Returns the current account balance.
      * @return current account balance.
      * @throws IOException if an I/O exception occurs.
-     * @throws WrongParameterException if parameter is incorrect.
+     * @throws WrongParameterException if one of parameters is incorrect.
+     * @throws BannedException if account has been banned.
+     * @throws SQLServerException if error happened on SQL-server.
+     * @throws NoBalanceException if no numbers.
+     * @throws NoNumberException if in account balance is zero.
      */
     @NotNull
     public BigDecimal getBalance()
-            throws IOException, WrongParameterException, NoBalanceException, BannedException, RentException, NoNumberException, SQLServerException {
-        String action = new Object(){}.getClass().getEnclosingMethod().getName();
-        String url = BASE_URL + buildHttpUrl(new HashMap<>(){{
-            put("api_key", apiKey);
-            put("action", action);
-        }});
+            throws IOException, WrongParameterException, NoBalanceException, BannedException, NoNumberException, SQLServerException {
+        QueryStringBuilder queryStringBuilder = new QueryStringBuilder("api_key", apiKey);
+        queryStringBuilder.append("action", "getBalance");
 
+        String url = BASE_URL + queryStringBuilder.build();
         String data = getDataByUrl(new URL(url), "GET");
 
-        Matcher matcher = digitPattern.matcher(data);
-
         validateData(data);
+
+        Matcher matcher = digitPattern.matcher(data);
 
         return new BigDecimal(matcher.group());
     }
@@ -128,17 +121,19 @@ public final class SMSActivateApi {
      * Returns the current account balance plus cashBack.
      * @return current account balance plus cashBack.
      * @throws IOException if an I/O exception occurs.
-     * @throws WrongParameterException if parameter is incorrect.
+     * @throws WrongParameterException if one of parameters is incorrect.
+     * @throws BannedException if account has been banned.
+     * @throws SQLServerException if error happened on SQL-server.
+     * @throws NoBalanceException if no numbers.
+     * @throws NoNumberException if in account balance is zero.
      */
     @NotNull
     public BigDecimal getBalanceAndCashBack()
-            throws IOException, WrongParameterException, NoBalanceException, BannedException, RentException, NoNumberException, SQLServerException {
-        String action = new Object(){}.getClass().getEnclosingMethod().getName();
+            throws IOException, WrongParameterException, NoBalanceException, BannedException, NoNumberException, SQLServerException {
+        QueryStringBuilder queryStringBuilder = new QueryStringBuilder("api_key", apiKey);
+        queryStringBuilder.append("action", "getBalanceAndCashBack");
 
-        String url = BASE_URL + buildHttpUrl(new HashMap<>(){{
-            put("api_key", apiKey);
-            put("action", action);
-        }});
+        String url = BASE_URL + queryStringBuilder.build();
 
         String data = getDataByUrl(new URL(url), "GET");
         validateData(data);
@@ -151,118 +146,121 @@ public final class SMSActivateApi {
      * Returns a list counts of available services.
      * @return list counts of available services.
      * @throws IOException if an I/O exception occurs.
-     * @throws WrongParameterException if parameter is incorrect.
+     * @throws WrongParameterException if one of parameters is incorrect.
+     * @throws BannedException if account has been banned.
+     * @throws SQLServerException if error happened on SQL-server.
+     * @throws NoBalanceException if no numbers.
+     * @throws NoNumberException if in account balance is zero.
      */
     @NotNull
     public List<ServiceForward> getNumbersStatus()
-            throws IOException, WrongParameterException, NoBalanceException, BannedException, RentException, SQLServerException, NoNumberException {
-        return getNumbersStatus(-1, "");
+            throws IOException, WrongParameterException, NoBalanceException, BannedException, SQLServerException, NoNumberException {
+        return getNumbersStatus(null, null);
     }
 
     /**
      * Return a list counts of available services by country and operator.
-     * @param countryNumber id country.
+     * @param countryId id country.
      * @param operator name operator mobile network (not be null).
      * @return list counts of available services by county and operator (not be null).
      * @throws IOException if an I/O exception occurs.
-     * @throws WrongParameterException if parameter is incorrect.
+     * @throws WrongParameterException if one of parameters is incorrect.
+     * @throws BannedException if account has been banned.
+     * @throws SQLServerException if error happened on SQL-server.
+     * @throws NoBalanceException if no numbers.
+     * @throws NoNumberException if in account balance is zero.
      */
     @NotNull
-    public List<ServiceForward> getNumbersStatus(int countryNumber, @NotNull String operator)
-            throws IOException, WrongParameterException, NoBalanceException, BannedException, RentException, NoNumberException, SQLServerException {
+    public List<ServiceForward> getNumbersStatus(Integer countryId, String operator)
+            throws IOException, WrongParameterException, NoBalanceException, BannedException, NoNumberException, SQLServerException {
         String action = new Object() {}.getClass().getEnclosingMethod().getName();
-        String url = BASE_URL + buildHttpUrl(new HashMap<>() {{
-            put("api_key", apiKey);
-            put("action", action);
-            put("country", countryNumber == -1 ? "" : countryNumber + "");
-            put("operator", operator);
-        }});
+        QueryStringBuilder queryStringBuilder = new QueryStringBuilder("api_key", apiKey);
+        queryStringBuilder.append("action", "getNumbersStatus")
+                .append("country", countryId)
+                .append("operator", operator);
+
+        String url = BASE_URL + queryStringBuilder.build();
 
         String data = getDataByUrl(new URL(url), "GET");
         validateData(data);
 
-        try {
-            Type type = new TypeToken<Map<String, String>>(){}.getType();
-            Map<String, String> serviceMap = gson.fromJson(data, type);
-            List<ServiceForward> serviceList = new ArrayList<>();
+        Type type = new TypeToken<Map<String, String>>(){}.getType();
+        Map<String, String> serviceMap = gson.fromJson(data, type);
+        List<ServiceForward> serviceList = new ArrayList<>();
 
-            serviceMap.forEach((key, value) -> {
-                String[] partsKey = key.split("_");
+        serviceMap.forEach((key, value) -> {
+            String[] partsKey = key.split("_");
 
-                serviceList.add(new ServiceForward(
-                        "",
-                        partsKey[0],
-                        Integer.parseInt(value),
-                        Boolean.parseBoolean(partsKey[1])
-                ));
-            });
+            serviceList.add(new ServiceForward(
+                partsKey[0],
+                Integer.parseInt(value),
+                Boolean.parseBoolean(partsKey[1])
+            ));
+        });
 
-            return serviceList;
-        } catch (JsonSyntaxException e) {
-            WrongParameter parameter = WrongParameter.valueOf(WrongParameter.class, data);
-            throw new WrongParameterException(parameter.getEnglandMessage(), parameter.getRussianMessage());
-        }
+        return serviceList;
     }
 
     /**
-     * Returns the phone by service, ref, countryNumber.
+     * Returns the phone by service, ref, countryId.
      * @param service service short name.
      * @param ref referral link.
-     * @param countryNumber number country.
+     * @param countryId number country.
      * @return phone for activation.
      * @throws IOException if an I/O exception occurs.
      * @throws WrongParameterException if one of parameters is incorrect.
      * @throws BannedException if account has been banned.
      * @throws SQLServerException if error happened on SQL-server.
-     * @throws RentException
-     * @throws NoBalanceException
-     * @throws NoNumberException
+     * @throws NoBalanceException if no numbers.
+     * @throws NoNumberException if in account balance is zero.
      */
     @NotNull
     public Phone getNumber(
             @NotNull Service service,
             @NotNull String ref,
-            int countryNumber
-    ) throws IOException, WrongParameterException, BannedException, SQLServerException, RentException, NoBalanceException, NoNumberException {
-        return getNumber(service, ref, countryNumber, "", "", false);
+            int countryId
+    ) throws IOException, WrongParameterException, BannedException, SQLServerException, NoBalanceException, NoNumberException {
+        return getNumber(service, ref, countryId, null, null, false);
     }
 
     /**
-     * Returns the phone number by service, ref, countryNumber, phoneException, operator, forward
+     * Returns the phone number by service, ref, countryId, phoneException, operator, forward
      * @param service service for activation.
      * @param ref referral link.
-     * @param countryNumber number country.
+     * @param countryId number country.
      * @param phoneException excepted phone number prefix. Specify separated by commas.
      * <pre>{@code   7918,7900111}</pre>
      * @param operator mobile operator. May be specify separated by commas.
      * @param forward is it necessary to request a number with forwarding.
      * @return object phone
-     * @throws IOException if an I/O occurs.
+     * @throws IOException if an I/O exception occurs.
      * @throws WrongParameterException if one of parameters is incorrect.
      * @throws BannedException if account has been banned.
      * @throws SQLServerException if error happened on SQL-server.
+     * @throws NoBalanceException if no numbers.
+     * @throws NoNumberException if in account balance is zero.
      */
     @NotNull
     public Phone getNumber(
             @NotNull Service service,
             @NotNull String ref,
-            int countryNumber,
-            @NotNull String phoneException,
-            @NotNull String operator,
+            int countryId,
+            String phoneException,
+            String operator,
             boolean forward
-    ) throws IOException, WrongParameterException, BannedException, SQLServerException, RentException, NoBalanceException, NoNumberException {
+    ) throws IOException, WrongParameterException, BannedException, SQLServerException, NoBalanceException, NoNumberException {
 
-        String action = new Object(){}.getClass().getEnclosingMethod().getName();
-        String url = BASE_URL + buildHttpUrl(new HashMap<>() {{
-            put("api_key", apiKey);
-            put("action", action);
-            put("ref", ref);
-            put("service", service.getShortName());
-            put("country", countryNumber + "");
-            put("phoneException", phoneException);
-            put("operator", operator);
-            put("forward", (forward ? 1 : 0) + "");
-        }});
+
+        QueryStringBuilder queryStringBuilder = new QueryStringBuilder("api_key", apiKey);
+        queryStringBuilder.append("action", "getNumber")
+                .append("ref", ref)
+                .append("service", service.getShortName())
+                .append("country", countryId)
+                .append("phoneException", phoneException)
+                .append("operator", operator)
+                .append("forward", Integer.valueOf(forward + ""));
+
+        String url = BASE_URL + queryStringBuilder.build();
 
         String data = getDataByUrl(new URL(url), "POST");
         validateData(data);
@@ -276,63 +274,69 @@ public final class SMSActivateApi {
     }
 
     /**
-     * Returns the list phone by countryCode, multiService, ref.<br/>
+     * Returns the list phone by countryId, multiService, ref.<br/>
      * Separator for multiService is commas. <br/>
      * <pre> multiService -> vk,av,go,tg. </pre>
      * @param multiService services for ordering (not be null).
      * @param ref referral link (not be null).
-     * @param countryCode code country.
+     * @param countryId code country.
      * @return list phone.
      * @throws IOException if an I/O exception occurs.
-     * @throws WrongParameterException if parameter is incorrect.
-     * @throws BannedException if account is banned.
+     * @throws WrongParameterException if one of parameters is incorrect.
+     * @throws BannedException if account has been banned.
      * @throws SQLServerException if error happened on SQL-server.
+     * @throws NoBalanceException if no numbers.
+     * @throws NoNumberException if in account balance is zero.
      */
     @NotNull
     public List<Phone> getMultiServiceNumber(
             @NotNull String multiService,
             @NotNull String ref,
-            int countryCode
-    ) throws IOException, WrongParameterException, BannedException, SQLServerException, RentException, NoBalanceException, NoNumberException {
-        return getMultiServiceNumber(multiService, ref, countryCode, "", "");
+            int countryId
+    ) throws IOException, WrongParameterException, BannedException, SQLServerException, NoBalanceException, NoNumberException {
+        return getMultiServiceNumber(multiService, ref, countryId, null, null);
     }
 
     /**
-     * Returns the list phone by countryCode, multiService, ref.<br/>
+     * Returns the list phone by countryId, multiService, ref.<br/>
      * Separator for multiService, multiForward and operator is commas. <br/>
      * <pre>multiService -> vk,av,go,tg<br/>multiForward -> 0,0,1,0; 0,0,0,0 - correct; 0,1,1,0 - incorrect.</pre>
      * @param multiService services for ordering (not be null).
      * @param ref referral link (not be null).
-     * @param countryCode code country.
-     * @param multiForward is it necessary to request a number with forwarding (not be null).
-     * @param operator mobile operator (not be null).
+     * @param countryId code country.
+     * @param multiForward is it necessary to request a number with forwarding.
+     * @param operator mobile operator.
      * @return list phone.
      * @throws IOException if an I/O exception occurs.
-     * @throws WrongParameterException if parameter is incorrect.
-     * @throws BannedException if account is banned.
+     * @throws WrongParameterException if one of parameters is incorrect.
+     * @throws BannedException if account has been banned.
      * @throws SQLServerException if error happened on SQL-server.
+     * @throws NoBalanceException if no numbers.
+     * @throws NoNumberException if in account balance is zero.
      */
     @NotNull
     public List<Phone> getMultiServiceNumber(
             @NotNull String multiService,
             @NotNull String ref,
-            int countryCode,
-            @NotNull String multiForward,
-            @NotNull String operator
-    ) throws IOException, WrongParameterException, BannedException, SQLServerException, NoBalanceException, NoNumberException, RentException {
-        String action = new Object(){}.getClass().getEnclosingMethod().getName();
-        String trimMultiForward = multiForward.replace(" ", "");
+            int countryId,
+            String multiForward,
+            String operator
+    ) throws IOException, WrongParameterException, BannedException, SQLServerException, NoBalanceException, NoNumberException {
         String trimMultiService = multiService.replace(" ", "");
 
-        String url = BASE_URL + buildHttpUrl(new HashMap<>(){{
-            put("api_key", apiKey);
-            put("action", action);
-            put("ref", ref);
-            put("multiService", trimMultiService);
-            put("countryCode", countryCode + "");
-            put("multiForward", trimMultiForward);
-            put("operator", operator.replace(" ", ""));
-        }});
+        if (multiForward != null) {
+            multiForward = multiForward.replace(" ",  "");
+        }
+        
+        QueryStringBuilder queryStringBuilder = new QueryStringBuilder("api_key", apiKey);
+        queryStringBuilder.append("action", "getMultiServiceNumber")
+                .append("ref", ref)
+                .append("multiService", trimMultiService)
+                .append("countryId", countryId + "")
+                .append("multiForward", multiForward)
+                .append("operator", operator);
+        
+        String url = BASE_URL + queryStringBuilder.build();
 
         String data = getDataByUrl(new URL(url), "POST");
         validateData(data);
@@ -352,7 +356,7 @@ public final class SMSActivateApi {
                 phone,
                 id,
                 i == indexForwardPhoneNumber,
-                new Service("" , serviceName)
+                new Service(serviceName)
             ));
         }
 
@@ -363,14 +367,17 @@ public final class SMSActivateApi {
      * Sets the status activation.
      * @param phone phone to set activation status (not be null).
      * @param status value to establish (not be null).
-     * @return access activation
+     * @return access activation.
      * @throws IOException if an I/O exception occurs.
      * @throws WrongParameterException if one of parameters is incorrect.
+     * @throws BannedException if account has been banned.
      * @throws SQLServerException if error happened on SQL-server.
+     * @throws NoBalanceException if no numbers.
+     * @throws NoNumberException if in account balance is zero.
      */
     @NotNull
     public AccessStatusActivation setStatus(@NotNull Phone phone, @NotNull StatusActivation status)
-            throws IOException, SQLServerException, WrongParameterException, NoBalanceException, BannedException, RentException, NoNumberException {
+            throws IOException, SQLServerException, WrongParameterException, NoBalanceException, BannedException, NoNumberException {
         return setStatus(phone, status, false);
     }
 
@@ -382,23 +389,24 @@ public final class SMSActivateApi {
      * @return access activation.
      * @throws IOException if an I/O exception occurs.
      * @throws WrongParameterException if one of parameters is incorrect.
+     * @throws BannedException if account has been banned.
      * @throws SQLServerException if error happened on SQL-server.
+     * @throws NoBalanceException if no numbers.
+     * @throws NoNumberException if in account balance is zero.
      */
     @NotNull
-    public AccessStatusActivation setStatus(@NotNull Phone phone, @NotNull StatusActivation status,
-                                            boolean forward)
-            throws IOException, SQLServerException, WrongParameterException, NoBalanceException, BannedException, RentException, NoNumberException {
-        String action = new Object(){}.getClass().getEnclosingMethod().getName();
-        String url = BASE_URL + buildHttpUrl(new HashMap<>(){{
-            put("api_key", apiKey);
-            put("action", action);
-            put("status", status.getId() + "");
-            put("id", phone.getId() + "");
-
-            if (forward) {
-                put("forward", "1");
-            }
-        }});
+    public AccessStatusActivation setStatus(
+            @NotNull Phone phone, 
+            @NotNull StatusActivation status,
+            boolean forward
+    ) throws IOException, SQLServerException, WrongParameterException, NoBalanceException, BannedException, NoNumberException {
+        QueryStringBuilder queryStringBuilder = new QueryStringBuilder("api_key", apiKey);
+        queryStringBuilder.append("action", "setStatus")
+                .append("status", status.getId())
+                .append("id", phone.getId())
+                .append("forward", Integer.valueOf(forward + ""));
+        
+        String url = BASE_URL + queryStringBuilder.build();
 
         String data = getDataByUrl(new URL(url), "POST");
 
@@ -413,17 +421,19 @@ public final class SMSActivateApi {
      * @return state activation.
      * @throws IOException if an I/O exception occurs.
      * @throws WrongParameterException if one of parameters is incorrect.
+     * @throws BannedException if account has been banned.
      * @throws SQLServerException if error happened on SQL-server.
+     * @throws NoBalanceException if no numbers.
+     * @throws NoNumberException if in account balance is zero.
      */
     @NotNull
-    public StateActivation getStatus(@NotNull Phone phone) throws IOException, WrongParameterException, SQLServerException, NoBalanceException, BannedException, RentException, NoNumberException {
-        String action = new Object(){}.getClass().getEnclosingMethod().getName();
-        String url = BASE_URL + buildHttpUrl(new HashMap<>(){{
-            put("api_key", apiKey);
-            put("action", action);
-            put("id", phone.getId() + "");
-        }});
-
+    public StateActivation getStatus(@NotNull Phone phone) 
+            throws IOException, WrongParameterException, SQLServerException, NoBalanceException, BannedException, NoNumberException {
+        QueryStringBuilder queryStringBuilder = new QueryStringBuilder("api_key", apiKey);
+        queryStringBuilder.append("action", "getStatus")
+                .append("id", phone.getId());
+        
+        String url = BASE_URL + queryStringBuilder.build();
         String data = getDataByUrl(new URL(url), "GET");
 
         String name = data;
@@ -438,7 +448,7 @@ public final class SMSActivateApi {
             code = parts[1];
         }
 
-        StateActivation state = StateActivation.valueOf(StateActivation.class, data);
+        StateActivation state = StateActivation.valueOf(StateActivation.class, name);
         state.setCode(code);
 
         return state;
@@ -446,22 +456,23 @@ public final class SMSActivateApi {
 
     /**
      * Returns the full text sms.
-     * @param id id activation.
+     * @param phone id activation.
      * @return full text sms.
      * @throws IOException if an I/O exception occurs.
      * @throws WrongParameterException if one of parameters is incorrect.
+     * @throws BannedException if account has been banned.
      * @throws SQLServerException if error happened on SQL-server.
+     * @throws NoBalanceException if no numbers.
+     * @throws NoNumberException if in account balance is zero.
      */
     @NotNull
-    public String getFullSms(@NotNull String id)
-            throws IOException, SQLServerException, WrongParameterException, NoBalanceException, BannedException, RentException, NoNumberException {
-        String action = new Object(){}.getClass().getEnclosingMethod().getName();
-        String url = BASE_URL + buildHttpUrl(new HashMap<>(){{
-            put("api_key", apiKey);
-            put("action", action);
-            put("id", id);
-        }});
-
+    public String getFullSms(@NotNull Phone phone)
+            throws IOException, SQLServerException, WrongParameterException, NoBalanceException, BannedException, NoNumberException {
+        QueryStringBuilder queryStringBuilder = new QueryStringBuilder("api_key", apiKey);
+        queryStringBuilder.append("action", "getFullSms")
+                .append("id", phone.getId());
+        
+        String url = BASE_URL + queryStringBuilder.build();
         String data = getDataByUrl(new URL(url), "GET");
 
         validateData(data);
@@ -475,31 +486,29 @@ public final class SMSActivateApi {
 
     /**
      * Returns the actual prices by country.
-     * @param service service for needed price list.
+     * @param service service for needed price list (not be null).
      * <pre>{@code new Service("full") -> all service,
      * new Service(""), -1 -> all service and all country.}</pre>
-     * @param countryNumber country number.
+     * @param countryId country number.
      * @return price list country.
      * @throws IOException if an I/O exception occurs.
      * @throws WrongParameterException if one of parameters is incorrect.
+     * @throws BannedException if account has been banned.
      * @throws SQLServerException if error happened on SQL-server.
+     * @throws NoBalanceException if no numbers.
+     * @throws NoNumberException if in account balance is zero..
      */
     @NotNull
-    public List<Country> getPrices(@NotNull Service service, int countryNumber)
-            throws IOException, SQLServerException, WrongParameterException, NoBalanceException, BannedException, RentException, NoNumberException {
-        String action = new Object(){}.getClass().getEnclosingMethod().getName();
+    public List<Country> getPrices(@NotNull Service service, int countryId)
+            throws IOException, SQLServerException, WrongParameterException, NoBalanceException, BannedException, NoNumberException {
         String shortNameService = service.getShortName();
-        String url = BASE_URL + buildHttpUrl(new HashMap<>(){{
-            put("api_key", apiKey);
-            put("action", action);
+        
+        QueryStringBuilder queryStringBuilder = new QueryStringBuilder("api_key", apiKey);
+        queryStringBuilder.append("action", "getPrices")
+                .append("service", shortNameService)
+                .append("country", countryId + "");
 
-            if (!shortNameService.isEmpty()) {
-                put("service", shortNameService);
-            } if (countryNumber != -1) {
-                put("country", countryNumber + "");
-            }
-        }});
-
+        String url = BASE_URL + queryStringBuilder.build();
         String data = getDataByUrl(new URL(url), "GET");
 
         validateData(data);
@@ -513,7 +522,6 @@ public final class SMSActivateApi {
 
             serviceMap.forEach((shortName, value) -> {
                 serviceCostList.add(new ServiceCost(
-                    "",
                     shortName,
                     (int)Math.round(value.get("count")),
                     BigDecimal.valueOf(value.get("cost"))
@@ -533,18 +541,22 @@ public final class SMSActivateApi {
      * Returns the country information.
      * @return country information.
      * @throws IOException if an I/O exception occurs.
+     * @throws RentException if rent is cancel or finish.
      * @throws WrongParameterException if one of parameters is incorrect.
+     * @throws BannedException if account has been banned.
      * @throws SQLServerException if error happened on SQL-server.
+     * @throws NoBalanceException if no numbers.
+     * @throws NoNumberException if in account balance is zero.
      */
     @NotNull
     public List<CountryInformation> getCountries()
             throws IOException, WrongParameterException, SQLServerException, NoBalanceException, BannedException, RentException, NoNumberException {
-        String action = new Object(){}.getClass().getEnclosingMethod().getName();
-        String url = BASE_URL + buildHttpUrl(new HashMap<>(){{
+        QueryStringBuilder queryStringBuilder = new QueryStringBuilder(new HashMap<>(){{
             put("api_key", apiKey);
-            put("action", action);
+            put("action", "getCountries");
         }});
 
+        String url = BASE_URL + queryStringBuilder.build();
         String data = getDataByUrl(new URL(url), "GET");
 
         validateData(data);
@@ -575,17 +587,21 @@ public final class SMSActivateApi {
      * Returns the qiwi response with data on wallet.
      * @return qiwi response with data on wallet
      * @throws IOException if an I/O exception occurs.
-     * @throws SQLServerException if error happened on sql server.
-     * @throws WrongParameterException if parameter is incorrect.
+     * @throws WrongParameterException if one of parameters is incorrect.
+     * @throws BannedException if account has been banned.
+     * @throws SQLServerException if error happened on SQL-server.
+     * @throws NoBalanceException if no numbers.
+     * @throws NoNumberException if in account balance is zero.
      */
     @NotNull
     public QiwiResponse getQiwiRequisites()
-            throws IOException, SQLServerException, WrongParameterException, NoBalanceException, BannedException, RentException, NoNumberException {
-        String action = new Object(){}.getClass().getEnclosingMethod().getName();
-        String url = BASE_URL + buildHttpUrl(new HashMap<>(){{
+            throws IOException, SQLServerException, WrongParameterException, NoBalanceException, BannedException, NoNumberException {
+        QueryStringBuilder queryStringBuilder = new QueryStringBuilder(new HashMap<>(){{
             put("api_key", apiKey);
-            put("action", action);
+            put("action", "getQiwiRequisites");
         }});
+
+        String url = BASE_URL + queryStringBuilder.build();
         String data = getDataByUrl(new URL(url), "GET");
 
         validateData(data);
@@ -602,16 +618,20 @@ public final class SMSActivateApi {
      * @param phone phone activation.
      * @return phone for additional service by forwarding
      * @throws IOException if an I/O exception occurs.
+     * @throws WrongParameterException if one of parameters is incorrect.
+     * @throws BannedException if account has been banned.
+     * @throws SQLServerException if error happened on SQL-server.
+     * @throws NoBalanceException if no numbers.
+     * @throws NoNumberException if in account balance is zero.
      */
     @NotNull
     public Phone getAdditionalService(@NotNull Phone phone)
-            throws IOException, SQLServerException, BannedException, RentException, NoNumberException, NoBalanceException, WrongParameterException {
-        String action = new Object(){}.getClass().getEnclosingMethod().getName();
-        String url = BASE_URL + buildHttpUrl(new HashMap<>(){{
-            put("api_key", apiKey);
-            put("action", action);
-            put("parentId", phone.getId() + "");
-        }});
+            throws IOException, SQLServerException, BannedException, NoNumberException, NoBalanceException, WrongParameterException {
+        QueryStringBuilder queryStringBuilder = new QueryStringBuilder("api_key", apiKey);
+        queryStringBuilder.append("action", "getAdditionalService")
+                .append("parentId", phone.getId());
+
+        String url = BASE_URL + queryStringBuilder.build();
 
         String data = getDataByUrl(new URL(url), "POST");
         validateData(data);
@@ -624,42 +644,48 @@ public final class SMSActivateApi {
     }
 
     /**
-     *
-     * @return
-     * @throws IOException
+     * Returns the rent object with countries supported rent and accessed services by country.
+     * @return rent object with countries supported rent and accessed services by country.
+     * @throws IOException if an I/O exception occurs.
+     * @throws RentException if rent is cancel or finish.
+     * @throws WrongParameterException if one of parameters is incorrect.
+     * @throws BannedException if account has been banned.
+     * @throws SQLServerException if error happened on SQL-server.
+     * @throws NoBalanceException if no numbers.
+     * @throws NoNumberException if in account balance is zero.
      */
     @NotNull
     public Rent getRentServicesAndCountries()
             throws IOException, SQLServerException, BannedException, RentException, WrongParameterException, NoNumberException, NoBalanceException {
-        return getRentServicesAndCountries(1, "", 0);
+        return getRentServicesAndCountries(1, null, 0);
     }
 
     /**
-     *
-     * @param time
-     * @param operator
-     * @param countryId
-     * @return
-     * @throws IOException
+     * Returns the rent object with countries supported rent and accessed services by country.
+     * @param time time rent in hours (default 1).
+     * @param operator mobile operator.
+     * @param countryId country id (default 0).
+     * @return the rent object with countries supported rent and accessed services by country.
+     * @throws IOException if an I/O exception occurs.
+     * @throws RentException if rent is cancel or finish.
+     * @throws WrongParameterException if one of parameters is incorrect.
+     * @throws BannedException if account has been banned.
+     * @throws SQLServerException if error happened on SQL-server.
+     * @throws NoBalanceException if no numbers.
+     * @throws NoNumberException if in account balance is zero.
      */
     @NotNull
     public Rent getRentServicesAndCountries(
             int time,
-            @NotNull String operator,
+            String operator,
             int countryId
     ) throws IOException, SQLServerException, BannedException, RentException, NoNumberException, NoBalanceException, WrongParameterException {
-        String action = new Object(){}.getClass().getEnclosingMethod().getName();
-        String url = BASE_URL + buildHttpUrl(new HashMap<>(){{
-            put("api_key", apiKey);
-            put("action", action);
-            put("time", time + "");
-            put("county", countryId + "");
+        QueryStringBuilder queryStringBuilder = new QueryStringBuilder("api_key", apiKey);
+        queryStringBuilder.append("action", "getRentServicesAndCountries")
+                .append("county", countryId)
+                .append("operator", operator);
 
-            if (!operator.isEmpty()) {
-                put("operator", operator);
-            }
-        }});
-
+        String url = BASE_URL + queryStringBuilder.build();
         String data = getDataByUrl(new URL(url), "POST");
 
         validateData(data);
@@ -667,9 +693,23 @@ public final class SMSActivateApi {
         Type type = new TypeToken<Map<String, Map<String, Object>>>(){}.getType();
         Map<String, Map<String, Object>> rentCountriesServices = gson.fromJson(data, type);
 
+        Map<String, Object> countryMap = rentCountriesServices.get("countries");
+        Map<String, Object> operatorMap = rentCountriesServices.get("operators");
+        Map<String, Object> serviceMap = rentCountriesServices.get("services");
+
         List<String> operatorNameList = new ArrayList<>();
         List<Integer> countryIdList = new ArrayList<>();
         List<ServiceCost> serviceCostList = new ArrayList<>();
+
+        for (Object countryCode : countryMap.values())
+            countryIdList.add(Integer.parseInt(countryCode.toString()));
+
+        for (Object name : operatorMap.values())
+            operatorNameList.add(name.toString());
+
+        for (Object service : serviceMap.values()) {
+
+        }
 
         CountryInformation countryInformation = new CountryInformation(countryId);
 
@@ -683,7 +723,9 @@ public final class SMSActivateApi {
      * @param service service to which you need to get a number.
      * @return rent phone.
      * @throws IOException if an I/O exception occurs.
+     * @throws RentException if rent is cancel or finish.
      * @throws WrongParameterException if one of parameters is incorrect.
+     * @throws BannedException if account has been banned.
      * @throws SQLServerException if error happened on SQL-server.
      * @throws NoBalanceException if no numbers.
      * @throws NoNumberException if in account balance is zero.
@@ -691,7 +733,7 @@ public final class SMSActivateApi {
     @NotNull
     public PhoneRent getRentNumber(@NotNull Service service)
             throws IOException, SQLServerException, RentException, WrongParameterException, NoBalanceException, NoNumberException, BannedException {
-       return getRentNumber(service, 1, "", 0, "");
+       return getRentNumber(service, 1, null, 0, null);
     }
 
     /**
@@ -703,7 +745,9 @@ public final class SMSActivateApi {
      * @param urlWebhook url for webhook.
      * @return rent phone.
      * @throws IOException if an I/O exception occurs.
+     * @throws RentException if rent is cancel or finish.
      * @throws WrongParameterException if one of parameters is incorrect.
+     * @throws BannedException if account has been banned.
      * @throws SQLServerException if error happened on SQL-server.
      * @throws NoBalanceException if no numbers.
      * @throws NoNumberException if in account balance is zero.
@@ -712,27 +756,19 @@ public final class SMSActivateApi {
     public PhoneRent getRentNumber(
             @NotNull Service service,
             int time,
-            @NotNull String operator,
+            String operator,
             int countryId,
-            @NotNull String urlWebhook
+            String urlWebhook
     ) throws IOException, SQLServerException, WrongParameterException, RentException, NoBalanceException, NoNumberException, BannedException {
-        String action = new Object(){}.getClass().getEnclosingMethod().getName();
-        String url = BASE_URL + buildHttpUrl(new HashMap<>(){{
-            String serviceShortName = service.getShortName();
+        QueryStringBuilder queryStringBuilder = new QueryStringBuilder("api_key", apiKey);
+        queryStringBuilder.append("action", "getRentNumber")
+                .append("time", time)
+                .append("country", countryId)
+                .append("operator", operator)
+                .append("url", urlWebhook)
+                .append("service", service.getShortName());
 
-            put("api_key", apiKey);
-            put("action", action);
-            put("time", time + "");
-            put("country", countryId + "");
-
-            if (!serviceShortName.isEmpty()) {
-                put("service", serviceShortName);
-            } if (!operator.isEmpty()){
-                put("operator", operator);
-            } if (!urlWebhook.isEmpty()) {
-                put("url", urlWebhook);
-            }
-        }});
+        String url = BASE_URL + queryStringBuilder.build();
 
         String data = getDataByUrl(new URL(url), "POST");
         validateData(data);
@@ -762,20 +798,20 @@ public final class SMSActivateApi {
      * @param phone phone received in response when ordering a number.
      * @return list sms.
      * @throws IOException if an I/O exception occurs.
-     * @throws WrongParameterException if one of parameters is incorrect.
-     * @throws SQLServerException if error happened on SQL-server.
      * @throws RentException if rent is cancel or finish.
+     * @throws WrongParameterException if one of parameters is incorrect.
+     * @throws BannedException if account has been banned.
+     * @throws SQLServerException if error happened on SQL-server.
      * @throws NoBalanceException if no numbers.
      * @throws NoNumberException if in account balance is zero.
      */
     @NotNull
     public List<Sms> getRentStatus(@NotNull Phone phone) throws IOException, SQLServerException, WrongParameterException, RentException, NoBalanceException, NoNumberException, BannedException {
-        String action = new Object(){}.getClass().getEnclosingMethod().getName();
-        String url = BASE_URL + buildHttpUrl(new HashMap<>(){{
-            put("api_key", apiKey);
-            put("action", action);
-            put("id", phone.getId() + "");
-        }});
+        QueryStringBuilder queryStringBuilder = new QueryStringBuilder("api_key", apiKey);
+        queryStringBuilder.append("action", "getRentStatus").
+                append("id", phone.getId());
+
+        String url = BASE_URL + queryStringBuilder.build();
 
         String data = getDataByUrl(new URL(url), "POST");
         validateData(data);
@@ -810,24 +846,24 @@ public final class SMSActivateApi {
      * @param status status rent.
      * @return state rent.
      * @throws IOException if an I/O exception occurs.
-     * @throws WrongParameterException if one of parameters is incorrect.
-     * @throws SQLServerException if error happened on SQL-server.
      * @throws RentException if rent is cancel or finish.
+     * @throws WrongParameterException if one of parameters is incorrect.
+     * @throws BannedException if account has been banned.
+     * @throws SQLServerException if error happened on SQL-server.
      * @throws NoBalanceException if no numbers.
      * @throws NoNumberException if in account balance is zero.
      */
     @NotNull
-    public StateRent setRentStatus(Phone phone, @NotNull StatusRent status)
-            throws IOException, SQLServerException, WrongParameterException, RentException, NoBalanceException, NoNumberException {
-        String action = new Object(){}.getClass().getEnclosingMethod().getName();
-        String url = BASE_URL + buildHttpUrl(new HashMap<>(){{
-            put("api_key", apiKey);
-            put("action", action);
-            put("id", phone.getId() + "");
-            put("status", status.getId() + "");
-        }});
+    public StateRent setRentStatus(@NotNull Phone phone, @NotNull StatusRent status)
+            throws IOException, SQLServerException, WrongParameterException, RentException, NoBalanceException, NoNumberException, BannedException {
+        QueryStringBuilder queryStringBuilder = new QueryStringBuilder("api_key", apiKey);
+        queryStringBuilder.append("action", "setRentStatus")
+                .append("id", phone.getId())
+                .append("status", status.getId());
 
+        String url = BASE_URL + queryStringBuilder.build();
         String data = getDataByUrl(new URL(url), "POST");
+        validateData(data);
 
         Type type = new TypeToken<Map<String, String>>(){}.getType();
         Map<String, String> stateMap = gson.fromJson(data, type);
@@ -845,7 +881,9 @@ public final class SMSActivateApi {
      * Returns the list rent phones.
      * @return list rent phones
      * @throws IOException if an I/O exception occurs.
+     * @throws RentException if rent is cancel or finish.
      * @throws WrongParameterException if one of parameters is incorrect.
+     * @throws BannedException if account has been banned.
      * @throws SQLServerException if error happened on SQL-server.
      * @throws NoBalanceException if no numbers.
      * @throws NoNumberException if in account balance is zero.
@@ -853,11 +891,12 @@ public final class SMSActivateApi {
     @NotNull
     public List<Phone> getRentList()
             throws IOException, SQLServerException, WrongParameterException, RentException, NoBalanceException, NoNumberException, BannedException {
-        String action = new Object(){}.getClass().getEnclosingMethod().getName();
-        String url = BASE_URL + buildHttpUrl(new HashMap<>(){{
+        QueryStringBuilder queryStringBuilder = new QueryStringBuilder(new HashMap<>(){{
             put("api_key", apiKey);
-            put("action", action);
+            put("action", "getRentList");
         }});
+
+        String url = BASE_URL + queryStringBuilder.build();
 
         String data = getDataByUrl(new URL(url), "GET");
         validateData(data);
@@ -964,8 +1003,17 @@ public final class SMSActivateApi {
         return data;
     }
 
+    /**
+     * Validate the data on error response.
+     * @param data data for validate.
+     * @throws WrongParameterException if one of parameters is incorrect.
+     * @throws BannedException if account has been banned.
+     * @throws SQLServerException if error happened on SQL-server.
+     * @throws NoBalanceException if no numbers.
+     * @throws NoNumberException if in account balance is zero.
+     */
     private void validateData(@NotNull String data)
-            throws BannedException, SQLServerException, WrongParameterException, NoBalanceException, RentException, NoNumberException {
+            throws BannedException, SQLServerException, WrongParameterException, NoBalanceException, NoNumberException {
         if (!data.contains("ACCESS")) {
             if (data.contains("BAD")) {
                 WrongParameter parameter = WrongParameter.valueOf(WrongParameter.class, data);
@@ -983,23 +1031,5 @@ public final class SMSActivateApi {
                 }
             }
         }
-    }
-
-    /**
-     * Builds the http query string.
-     * @param params url params.
-     * @return http query string.
-     */
-    private String buildHttpUrl(@NotNull Map<String, String> params) {
-        StringBuilder urlParams = new StringBuilder();
-
-        for (String param : params.keySet()) {
-            urlParams.append(param)
-                    .append("=")
-                    .append(params.get(param))
-                    .append("&");
-        }
-
-        return urlParams.replace(urlParams.lastIndexOf("&"), urlParams.length(), "").toString();
     }
 }

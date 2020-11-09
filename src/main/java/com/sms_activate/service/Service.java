@@ -3,45 +3,47 @@ package com.sms_activate.service;
 import org.jetbrains.annotations.NotNull;
 
 public class Service {
-    private String fullName;
-    private String shortName;
-    private double countNumber;
+    /**
+     * Short name of service
+     */
+    private final String shortName;
 
+    /**
+     * Count number in service.
+     */
+    private final int countNumber;
+
+    /**
+     * Constructor service with short name of service.
+     * @param shortName short name of service.
+     */
     public Service(@NotNull String shortName) {
-        this("", shortName);
+        this(shortName, 0);
     }
 
-    public Service(@NotNull String fullName, @NotNull String shortName) {
-        this(fullName, shortName, -1);
-    }
-
-    public Service(@NotNull String fullName, @NotNull String shortName, double countNumber) {
-        this.fullName = fullName;
+    /**
+     * Constructor service with short name of service and count number in service.
+     * @param shortName short name of service.
+     * @param countNumber count number in service.
+     */
+    public Service(@NotNull String shortName, int countNumber) {
         this.shortName = shortName;
         this.countNumber = countNumber;
     }
 
-    public String getFullName() {
-        return fullName;
-    }
-
-    public void setFullName(String fullName) {
-        this.fullName = fullName;
-    }
-
+    /**
+     * Returns the short name of service.
+     * @return short name of service.
+     */
     public String getShortName() {
         return shortName;
     }
 
-    public void setShortName(String shortName) {
-        this.shortName = shortName;
-    }
-
-    public double getCountNumber() {
+    /**
+     * Returns the count number in service.
+     * @return count number in service.
+     */
+    public int getCountNumber() {
         return countNumber;
-    }
-
-    public void setCountNumber(int countNumber) {
-        this.countNumber = countNumber;
     }
 }
