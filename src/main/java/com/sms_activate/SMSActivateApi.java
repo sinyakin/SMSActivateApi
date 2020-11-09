@@ -29,6 +29,7 @@ import com.sms_activate.service.Service;
 import com.sms_activate.service.ServiceCost;
 import com.sms_activate.service.ServiceForward;
 import com.sms_activate.util.QueryStringBuilder;
+import com.sms_activate.util.Validator;
 import com.sms_activate.util.WebClient;
 import org.jetbrains.annotations.NotNull;
 
@@ -104,7 +105,7 @@ public class SMSActivateApi {
         String url = BASE_URL + queryStringBuilder.build();
         String data = WebClient.get(url);
 
-        validateData(data);
+        Validator.validateData(data);
 
         Matcher matcher = digitPattern.matcher(data);
         matcher.find();
@@ -131,7 +132,7 @@ public class SMSActivateApi {
         String url = BASE_URL + queryStringBuilder.build();
 
         String data = WebClient.get(url);
-        validateData(data);
+        Validator.validateData(data);
         Matcher matcher = digitPattern.matcher(data);
         matcher.find();
 
@@ -178,7 +179,7 @@ public class SMSActivateApi {
         String url = BASE_URL + queryStringBuilder.build();
 
         String data = WebClient.get(url);
-        validateData(data);
+        Validator.validateData(data);
 
         Type type = new TypeToken<Map<String, String>>(){}.getType();
         Map<String, String> serviceMap = gson.fromJson(data, type);
@@ -258,7 +259,7 @@ public class SMSActivateApi {
         String url = BASE_URL + queryStringBuilder.build();
 
         String data = WebClient.get(url);
-        validateData(data);
+        Validator.validateData(data);
         
         String[] parts = data.split(":");
 
@@ -334,7 +335,7 @@ public class SMSActivateApi {
         String url = BASE_URL + queryStringBuilder.build();
 
         String data = WebClient.get(url);
-        validateData(data);
+        Validator.validateData(data);
 
         Type type = new TypeToken<List<Map<String, Object>>>(){}.getType();
         List<Map<String, Object>> phoneMapList = gson.fromJson(data, type);
@@ -405,7 +406,7 @@ public class SMSActivateApi {
 
         String data = WebClient.get(url);
 
-        validateData(data);
+        Validator.validateData(data);
 
         return AccessStatusActivation.valueOf(AccessStatusActivation.class, data);
     }
@@ -434,7 +435,7 @@ public class SMSActivateApi {
         String name = data;
         String code = null;
 
-        validateData(data);
+        Validator.validateData(data);
 
         if (data.contains(":")) {
             String[] parts = data.split(":");
@@ -470,7 +471,7 @@ public class SMSActivateApi {
         String url = BASE_URL + queryStringBuilder.build();
         String data = WebClient.get(url);
 
-        validateData(data);
+        Validator.validateData(data);
 
         if (data.contains("FULL")) {
             return data;
@@ -520,7 +521,7 @@ public class SMSActivateApi {
         String url = BASE_URL + queryStringBuilder.build();
         String data = WebClient.get(url);
 
-        validateData(data);
+        Validator.validateData(data);
 
         Type type = new TypeToken<Map<String, Map<String, Map<String, Double>>>>(){}.getType();
         Map<String, Map<String, Map<String, Double>>> countryMap = gson.fromJson(data, type);
@@ -568,7 +569,7 @@ public class SMSActivateApi {
         String url = BASE_URL + queryStringBuilder.build();
         String data = WebClient.get(url);
 
-        validateData(data);
+        Validator.validateData(data);
 
         Type type = new TypeToken<Map<String, Map<String, Object>>>(){}.getType();
         Map<String, Map<String, Object>> countryInformationMap = gson.fromJson(data, type);
@@ -615,7 +616,7 @@ public class SMSActivateApi {
         String url = BASE_URL + queryStringBuilder.build();
         String data = WebClient.get(url);
 
-        validateData(data);
+        Validator.validateData(data);
 
         Type type = new TypeToken<Map<String, String>>(){}.getType();
         Map<String, String> qiwiMap = gson.fromJson(data, type);
@@ -644,7 +645,7 @@ public class SMSActivateApi {
 
         String url = BASE_URL + queryStringBuilder.build();
         String data = WebClient.get(url);
-        validateData(data);
+        Validator.validateData(data);
 
         String[] parts = data.split(":");
         String number = parts[2];
@@ -693,7 +694,7 @@ public class SMSActivateApi {
 
         String url = BASE_URL + queryStringBuilder.build();
         String data = WebClient.get(url);
-        validateData(data);
+        Validator.validateData(data);
 
         Type type = new TypeToken<Map<String, Object>>(){}.getType();
 
@@ -763,7 +764,7 @@ public class SMSActivateApi {
         String url = BASE_URL + queryStringBuilder.build();
         String data = WebClient.get(url);
 
-        validateData(data);
+        Validator.validateData(data);
 
         Type type = new TypeToken<Map<String, Map<String, Object>>>(){}.getType();
         Map<String, Map<String, Object>> rentCountriesServices = gson.fromJson(data, type);
@@ -851,7 +852,7 @@ public class SMSActivateApi {
         String url = BASE_URL + queryStringBuilder.build();
 
         String data = WebClient.get(url);
-        validateData(data);
+        Validator.validateData(data);
 
         Type type = new TypeToken<Map<String, Object>>(){}.getType();
         Map<String, Object> phoneMap = gson.fromJson(data, type);
@@ -861,7 +862,7 @@ public class SMSActivateApi {
             String errorMessage = phoneMap.get("message").toString();
             StateErrorRent stateErrorRent = StateErrorRent.valueOf(StateErrorRent.class, errorMessage);
 
-            throwStateErrorRent(stateErrorRent);
+            Validator.throwStateErrorRent(stateErrorRent);
         }
 
         phoneMap = (Map<String, Object>) phoneMap.get("phone");
@@ -894,7 +895,7 @@ public class SMSActivateApi {
         String url = BASE_URL + queryStringBuilder.build();
 
         String data = WebClient.get(url);
-        validateData(data);
+        Validator.validateData(data);
 
         Type type = new TypeToken<Map<String, Object>>(){}.getType();
         Map<String, Object> responseMap = gson.fromJson(data, type);
@@ -902,7 +903,7 @@ public class SMSActivateApi {
 
         if (stateRent == StateRent.ERROR) {
             StateErrorRent stateErrorRent = StateErrorRent.valueOf(StateErrorRent.class, responseMap.get("message").toString());
-            throwStateErrorRent(stateErrorRent);
+            Validator.throwStateErrorRent(stateErrorRent);
         }
 
         Map<String, Map<String, Object>> valuesMap = (Map<String, Map<String, Object>>) responseMap.get("values");
@@ -943,7 +944,7 @@ public class SMSActivateApi {
 
         String url = BASE_URL + queryStringBuilder.build();
         String data = WebClient.get(url);
-        validateData(data);
+        Validator.validateData(data);
 
         Type type = new TypeToken<Map<String, String>>(){}.getType();
         Map<String, String> stateMap = gson.fromJson(data, type);
@@ -951,7 +952,7 @@ public class SMSActivateApi {
 
         if (stateRent == StateRent.ERROR) {
             StateErrorRent stateErrorRent = StateErrorRent.valueOf(StateErrorRent.class, stateMap.get("message"));
-            throwStateErrorRent(stateErrorRent);
+            Validator.throwStateErrorRent(stateErrorRent);
         }
 
         return StateRent.SUCCESS;
@@ -979,7 +980,7 @@ public class SMSActivateApi {
         String url = BASE_URL + queryStringBuilder.build();
 
         String data = WebClient.get(url);
-        validateData(data);
+        Validator.validateData(data);
 
         Type type = new TypeToken<Map<String, Object>>(){}.getType();
         Map<String, Object> responseMap = gson.fromJson(data, type);
@@ -988,7 +989,7 @@ public class SMSActivateApi {
         if (stateRent != StateRent.SUCCESS) {
             StateErrorRent stateErrorRent = StateErrorRent.valueOf(StateErrorRent.class,
                     responseMap.get("message").toString().toUpperCase());
-            throwStateErrorRent(stateErrorRent);
+            Validator.throwStateErrorRent(stateErrorRent);
         }
 
         Map<String, Map<String, Object>> valuesMap = (Map<String, Map<String, Object>>)responseMap.get("values");
@@ -1002,96 +1003,5 @@ public class SMSActivateApi {
         }
 
         return phoneList;
-    }
-
-    /**
-     * Throws the error by type.
-     * @param stateErrorRent error type.
-     * @throws SQLServerException if error happened on SQL-server.
-     * @throws RentException if rent is cancel or finish.
-     * @throws NoBalanceException if no numbers.
-     * @throws NoNumberException if in account balance is zero.
-     */
-    private void throwStateErrorRent(@NotNull StateErrorRent stateErrorRent)
-            throws RentException, SQLServerException, NoBalanceException, NoNumberException {
-        switch (stateErrorRent) {
-            case ALREADY_FINISH:
-                throw new RentException(
-                    StateErrorRent.ALREADY_FINISH.getEnglandMessage(),
-                    StateErrorRent.ALREADY_FINISH.getRussianMessage()
-                );
-            case ALREADY_CANCEL:
-                throw new RentException(
-                    StateErrorRent.ALREADY_CANCEL.getEnglandMessage(),
-                    StateErrorRent.ALREADY_CANCEL.getRussianMessage()
-                );
-            case NO_ID_RENT:
-                throw new RentException(
-                    StateErrorRent.NO_ID_RENT.getEnglandMessage(),
-                    StateErrorRent.NO_ID_RENT.getRussianMessage()
-                );
-            case INCORECT_STATUS:
-                throw new RentException(
-                    StateErrorRent.INCORECT_STATUS.getEnglandMessage(),
-                    StateErrorRent.INCORECT_STATUS.getRussianMessage()
-                );
-            case CANT_CANCEL:
-                throw new TimeOutRentException(
-                    StateErrorRent.CANT_CANCEL.getEnglandMessage(),
-                    StateErrorRent.CANT_CANCEL.getRussianMessage()
-                );
-            case INVALID_PHONE:
-                throw new RentException(
-                    StateErrorRent.INVALID_PHONE.getEnglandMessage(),
-                    StateErrorRent.INVALID_PHONE.getRussianMessage()
-                );
-            case NO_NUMBERS:
-                throw new NoNumberException(
-                    StateErrorRent.NO_NUMBERS.getEnglandMessage(),
-                    StateErrorRent.NO_NUMBERS.getRussianMessage()
-                );
-            case SQL_ERROR:
-                throw new SQLServerException(
-                    StateErrorRent.SQL_ERROR.getEnglandMessage(),
-                    StateErrorRent.SQL_ERROR.getRussianMessage()
-                );
-            case ACCOUNT_INACTIVE:
-                throw new RentException(
-                    StateErrorRent.ACCOUNT_INACTIVE.getEnglandMessage(),
-                    StateErrorRent.ACCOUNT_INACTIVE.getRussianMessage()
-                );
-            default:
-                throw new NoBalanceException("There is no money in the account.", "Нет денег на счету.");
-        }
-    }
-
-    /**
-     * Validate the data on error response.
-     * @param data data for validate.
-     * @throws WrongParameterException if one of parameters is incorrect.
-     * @throws BannedException if account has been banned.
-     * @throws SQLServerException if error happened on SQL-server.
-     * @throws NoBalanceException if no numbers.
-     * @throws NoNumberException if in account balance is zero.
-     */
-    private void validateData(@NotNull String data)
-            throws BannedException, SQLServerException, WrongParameterException, NoBalanceException, NoNumberException {
-        if (!data.contains("ACCESS")) {
-            if (data.contains("BAD")) {
-                WrongParameter parameter = WrongParameter.valueOf(WrongParameter.class, data);
-                throw new WrongParameterException(parameter.getEnglandMessage(), parameter.getRussianMessage());
-            } else if (data.contains("SQL")) {
-                throw new SQLServerException("Error SQL server.", "Ошибка SQL-сервера.");
-            } else if (data.equalsIgnoreCase("banned")) {
-                String date = ":".split(data)[1];
-                throw new BannedException("Account has been banned to " + date, "Акаунт забанен на " + date);
-            } else if (data.contains("NO")) {
-                if (data.equalsIgnoreCase("no_balance")) {
-                    throw new NoBalanceException("There is no money in the account.", "Нет денег на счету");
-                } else if (data.equalsIgnoreCase("no_numbers")) {
-                    throw new NoNumberException("No numbers.", "Нет номеров.");
-                }
-            }
-        }
     }
 }
