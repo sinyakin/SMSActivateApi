@@ -20,7 +20,6 @@ public class WebClient {
    * @return load data from url.
    * @throws IOException if an I/O exception occurs.
    */
-  //todo
   @NotNull
   public static String get(@NotNull String url) throws IOException {
     return get(new URL(url));
@@ -91,7 +90,6 @@ public class WebClient {
    * @throws IOException if an I/O exception occurs.
    */
   @NotNull
-  //todo v obshem
   private static String load(@NotNull URLConnection urlConnection) throws IOException {
     try (BufferedReader reader = new BufferedReader(
         new InputStreamReader(urlConnection.getInputStream()))) {

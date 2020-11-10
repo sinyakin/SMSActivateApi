@@ -1,5 +1,5 @@
 package com.sms_activate.country;
-//todo
+
 import org.jetbrains.annotations.NotNull;
 
 public class Country {
