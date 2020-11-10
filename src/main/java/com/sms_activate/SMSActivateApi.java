@@ -2,6 +2,7 @@ package com.sms_activate;
 
 import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
+import com.sms_activate.country.ServiceWithCountry;
 import com.sms_activate.error.BannedException;
 import com.sms_activate.error.BaseSMSActivateException;
 import com.sms_activate.error.NoBalanceException;
@@ -14,7 +15,6 @@ import com.sms_activate.activation.AccessStatusActivation;
 import com.sms_activate.activation.StateActivation;
 import com.sms_activate.activation.StatusActivation;
 import com.sms_activate.country.Country;
-import com.sms_activate.country.CountryInformation;
 import com.sms_activate.error.rent.RentException;
 import com.sms_activate.qiwi.QiwiResponse;
 import com.sms_activate.qiwi.QiwiStatus;
@@ -26,7 +26,7 @@ import com.sms_activate.rent.StatusRentNumber;
 import com.sms_activate.service.Service;
 import com.sms_activate.service.ServiceWithCost;
 import com.sms_activate.service.ServiceWithForward;
-import com.sms_activate.util.QueryStringBuilder;
+import com.sms_activate.util.URLBuilder;
 import com.sms_activate.util.Validator;
 import com.sms_activate.util.WebClient;
 import org.jetbrains.annotations.NotNull;
@@ -39,24 +39,8 @@ import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
 
-/**
- * TODO:
- * condition on gzip
- */
 public class SMSActivateApi {
-  /**
-   * API url.
-   */
-  private static final String BASE_URL = "https://sms-activate.ru/stubs/handler_api.php?";
-
-  /**
-   * Regular expression for digit. Use for select balance and checking on matchers.
-   */
-  private static final Pattern digitPattern = Pattern.compile("\\d.*");
-
   /**
    * Json deserializer and serializer.
    */
@@ -100,18 +84,14 @@ public class SMSActivateApi {
   @NotNull
   public BigDecimal getBalance()
       throws IOException, WrongParameterException, NoBalanceException, BannedException, NoNumberException, SQLServerException {
-    QueryStringBuilder queryStringBuilder = new QueryStringBuilder("api_key", apiKey);
-    queryStringBuilder.append("action", "getBalance");
+    URLBuilder URLBuilder = new URLBuilder("api_key", apiKey);
+    URLBuilder.append("action", "getBalance");
 
-    String url = BASE_URL + queryStringBuilder.build();
-    String data = WebClient.get(url);
-
+    String data = WebClient.get(URLBuilder.build());
     Validator.validateData(data);
 
-    Matcher matcher = digitPattern.matcher(data);
-    matcher.find();
-
-    return new BigDecimal(matcher.group());
+    String balance = data.split(":")[1];
+    return new BigDecimal(balance);
   }
 
   /**
@@ -126,19 +106,20 @@ public class SMSActivateApi {
    * @throws NoNumberException       if in account balance is zero.
    */
   @NotNull
-  public BigDecimal getBalanceAndCashBack()
+  public Balance getBalanceAndCashBack()
       throws IOException, WrongParameterException, NoBalanceException, BannedException, NoNumberException, SQLServerException {
-    QueryStringBuilder queryStringBuilder = new QueryStringBuilder("api_key", apiKey);
-    queryStringBuilder.append("action", "getBalanceAndCashBack");
+    URLBuilder URLBuilder = new URLBuilder("api_key", apiKey);
+    URLBuilder.append("action", "getBalanceAndCashBack");
 
-    String url = BASE_URL + queryStringBuilder.build();
-
-    String data = WebClient.get(url);
+    String data = WebClient.get(URLBuilder.build());
     Validator.validateData(data);
-    Matcher matcher = digitPattern.matcher(data);
-    matcher.find();
-
-    return new BigDecimal(matcher.group());
+     
+    String[] parts = data.split(":"); 
+    
+    return new Balance(
+        new BigDecimal(parts[1]),
+        new BigDecimal(parts[2])
+    );
   }
 
   /**
@@ -174,16 +155,12 @@ public class SMSActivateApi {
   @NotNull
   public List<ServiceWithForward> getNumbersStatus(Integer countryId, String operator)
       throws IOException, WrongParameterException, NoBalanceException, BannedException, NoNumberException, SQLServerException {
-    String action = new Object() {
-    }.getClass().getEnclosingMethod().getName();
-    QueryStringBuilder queryStringBuilder = new QueryStringBuilder("api_key", apiKey);
-    queryStringBuilder.append("action", "getNumbersStatus")
+    URLBuilder URLBuilder = new URLBuilder("api_key", apiKey);
+    URLBuilder.append("action", "getNumbersStatus")
         .append("country", countryId)
         .append("operator", operator);
 
-    String url = BASE_URL + queryStringBuilder.build();
-
-    String data = WebClient.get(url);
+    String data = WebClient.get(URLBuilder.build());
     Validator.validateData(data);
 
     Type type = new TypeToken<Map<String, String>>() {}.getType();
@@ -245,17 +222,12 @@ public class SMSActivateApi {
    * @throws NoNumberException       if in account balance is zero.
    */
   @NotNull
-  public Phone getNumber(
-      @NotNull Service service,
-      @NotNull String ref,
-      int countryId,
-      String phoneException,
-      String operator,
-      boolean forward
-  ) throws IOException, WrongParameterException, BannedException, SQLServerException, NoBalanceException, NoNumberException {
+  public Phone getNumber(@NotNull Service service, @NotNull String ref, int countryId, String phoneException,
+      String operator, boolean forward)
+      throws IOException, WrongParameterException, BannedException, SQLServerException, NoBalanceException, NoNumberException {
 
-    QueryStringBuilder queryStringBuilder = new QueryStringBuilder("api_key", apiKey);
-    queryStringBuilder.append("action", "getNumber")
+    URLBuilder URLBuilder = new URLBuilder("api_key", apiKey);
+    URLBuilder.append("action", "getNumber")
         .append("ref", ref)
         .append("service", service.getShortName())
         .append("country", countryId)
@@ -263,15 +235,13 @@ public class SMSActivateApi {
         .append("operator", operator)
         .append("forward", forward ? "1" : "0");
 
-    String url = BASE_URL + queryStringBuilder.build();
-
-    String data = WebClient.get(url);
+    String data = WebClient.get(URLBuilder.build());
     Validator.validateData(data);
 
     String[] parts = data.split(":");
 
     String number = parts[2];
-    int id = (int) Math.round(Double.parseDouble(parts[1]));
+    int id = new BigDecimal(parts[1]).intValue();
 
     return new Phone(number, id, forward, service);
   }
@@ -327,33 +297,32 @@ public class SMSActivateApi {
       String multiForward,
       String operator
   ) throws IOException, WrongParameterException, BannedException, SQLServerException, NoBalanceException, NoNumberException {
-    String trimMultiService = multiService.replace(" ", "");
+    String trimMultiService = multiService.replace("\\s", "");
 
     if (multiForward != null) {
-      multiForward = multiForward.replace(" ", "");
+      multiForward = multiForward.replace("\\s", "");
     }
 
-    QueryStringBuilder queryStringBuilder = new QueryStringBuilder("api_key", apiKey);
-    queryStringBuilder.append("action", "getMultiServiceNumber")
+    URLBuilder URLBuilder = new URLBuilder("api_key", apiKey);
+    URLBuilder.append("action", "getMultiServiceNumber")
         .append("ref", ref)
         .append("multiService", trimMultiService)
         .append("countryId", countryId)
         .append("multiForward", multiForward)
         .append("operator", operator);
 
-    String url = BASE_URL + queryStringBuilder.build();
-
-    String data = WebClient.get(url);
+    String data = WebClient.get(URLBuilder.build());
     Validator.validateData(data);
 
     Type type = new TypeToken<List<Map<String, Object>>>() {}.getType();
     List<Map<String, Object>> phoneMapList = gson.fromJson(data, type);
     List<Phone> phoneList = new ArrayList<>();
-    int indexForwardPhoneNumber = Arrays.asList(multiForward.split(",")).indexOf("1"); //index phone where need forwarding
+
+    int indexForwardPhoneNumber = (multiForward == null) ? -1 : Arrays.asList(multiForward.split(",")).indexOf("1"); //index phone where need forwarding
 
     for (int i = 0; i < phoneMapList.size(); i++) {
       Map<String, Object> phoneMap = phoneMapList.get(i);
-      int id = (int) Math.round((Double) phoneMap.get("activation"));
+      int id = new BigDecimal(phoneMap.get("activation").toString()).intValue();
       String phone = phoneMap.get("phone").toString();
       String serviceName = phoneMap.get("service").toString();
 
@@ -407,17 +376,13 @@ public class SMSActivateApi {
       @NotNull StatusActivation status,
       boolean forward
   ) throws IOException, SQLServerException, WrongParameterException, NoBalanceException, BannedException, NoNumberException {
-    QueryStringBuilder queryStringBuilder = new QueryStringBuilder("api_key", apiKey);
-    queryStringBuilder.append("action", "setStatus")
+    URLBuilder URLBuilder = new URLBuilder("api_key", apiKey);
+    URLBuilder.append("action", "setStatus")
         .append("status", status.getId())
         .append("id", phone.getId())
         .append("forward", forward ? "1" : "0");
 
-    String url = BASE_URL + queryStringBuilder.build();
-
-    String data = WebClient.get(url);
-
-    Validator.validateData(data);
+    String data = WebClient.get(URLBuilder.build());Validator.validateData(data);
 
     return AccessStatusActivation.getStatusByName(data);
   }
@@ -437,14 +402,11 @@ public class SMSActivateApi {
   @NotNull
   public StateActivation getStatus(@NotNull Phone phone)
       throws IOException, WrongParameterException, SQLServerException, NoBalanceException, BannedException, NoNumberException {
-    QueryStringBuilder queryStringBuilder = new QueryStringBuilder("api_key", apiKey);
-    queryStringBuilder.append("action", "getStatus")
+    URLBuilder URLBuilder = new URLBuilder("api_key", apiKey);
+    URLBuilder.append("action", "getStatus")
         .append("id", phone.getId());
 
-    String url = BASE_URL + queryStringBuilder.build();
-    String data = WebClient.get(url);
-
-    String name = data;
+    String data = WebClient.get(URLBuilder.build());String name = data;
     String code = null;
 
     Validator.validateData(data);
@@ -477,18 +439,16 @@ public class SMSActivateApi {
   @NotNull
   public String getFullSms(@NotNull Phone phone)
       throws IOException, SQLServerException, WrongParameterException, NoBalanceException, BannedException, NoNumberException {
-    QueryStringBuilder queryStringBuilder = new QueryStringBuilder("api_key", apiKey);
-    queryStringBuilder.append("action", "getFullSms")
+    URLBuilder URLBuilder = new URLBuilder("api_key", apiKey);
+    URLBuilder.append("action", "getFullSms")
         .append("id", phone.getId());
 
-    String url = BASE_URL + queryStringBuilder.build();
-    String data = WebClient.get(url);
-
-    Validator.validateData(data);
+    String data = WebClient.get(URLBuilder.build());Validator.validateData(data);
 
     if (data.contains("FULL")) {
       return data;
     } else {
+      //todo na error
       return StateActivation.getStateByName(data).getMessage();
     }
   }
@@ -505,7 +465,7 @@ public class SMSActivateApi {
    * @throws NoNumberException       if in account balance is zero..
    */
   @NotNull
-  public List<Country> getPrices() throws SQLServerException, NoBalanceException, IOException, BannedException, NoNumberException, WrongParameterException {
+  public List<ServiceWithCountry> getPrices() throws SQLServerException, NoBalanceException, IOException, BannedException, NoNumberException, WrongParameterException {
     return getPrices(null, null);
   }
 
@@ -524,23 +484,21 @@ public class SMSActivateApi {
    * @throws NoNumberException       if in account balance is zero..
    */
   @NotNull
-  public List<Country> getPrices(Service service, Integer countryId)
+  public List<ServiceWithCountry> getPrices(Service service, Integer countryId)
       throws IOException, SQLServerException, WrongParameterException, NoBalanceException, BannedException, NoNumberException {
-    String shortNameService = service.getShortName();
+    
+    String shortNameService = (service == null) ? null : service.getShortName();
 
-    QueryStringBuilder queryStringBuilder = new QueryStringBuilder("api_key", apiKey);
-    queryStringBuilder.append("action", "getPrices")
+    URLBuilder URLBuilder = new URLBuilder("api_key", apiKey);
+    URLBuilder.append("action", "getPrices")
         .append("service", shortNameService)
         .append("country", countryId);
 
-    String url = BASE_URL + queryStringBuilder.build();
-    String data = WebClient.get(url);
-
-    Validator.validateData(data);
+    String data = WebClient.get(URLBuilder.build());Validator.validateData(data);
 
     Type type = new TypeToken<Map<String, Map<String, Map<String, Double>>>>() {}.getType();
     Map<String, Map<String, Map<String, Double>>> countryMap = gson.fromJson(data, type);
-    List<Country> countryList = new ArrayList<>();
+    List<ServiceWithCountry> serviceWithCountryList = new ArrayList<>();
 
     countryMap.forEach((countryCode, serviceMap) -> {
       List<ServiceWithCost> serviceWithCostList = new ArrayList<>();
@@ -553,13 +511,13 @@ public class SMSActivateApi {
         ));
       });
 
-      countryList.add(new Country(
-          new CountryInformation(Integer.parseInt(countryCode)),
+      serviceWithCountryList.add(new ServiceWithCountry(
+          new Country(Integer.parseInt(countryCode)),
           serviceWithCostList
       ));
     });
 
-    return countryList;
+    return serviceWithCountryList;
   }
 
   /**
@@ -575,40 +533,36 @@ public class SMSActivateApi {
    * @throws NoNumberException       if in account balance is zero.
    */
   @NotNull
-  public List<CountryInformation> getCountries()
+  public List<Country> getCountries()
       throws IOException, WrongParameterException, SQLServerException, NoBalanceException, BannedException, RentException, NoNumberException {
-    QueryStringBuilder queryStringBuilder = new QueryStringBuilder(new HashMap<String, Object>() {{
+    URLBuilder URLBuilder = new URLBuilder(new HashMap<String, Object>() {{
       put("api_key", apiKey);
       put("action", "getCountries");
     }});
 
-    String url = BASE_URL + queryStringBuilder.build();
-    String data = WebClient.get(url);
-
-    Validator.validateData(data);
+    String data = WebClient.get(URLBuilder.build());Validator.validateData(data);
 
     Type type = new TypeToken<Map<String, Map<String, Object>>>() {}.getType();
     Map<String, Map<String, Object>> countryInformationMap = gson.fromJson(data, type);
-    List<CountryInformation> countryInformationList = new ArrayList<>();
+    List<Country> countryList = new ArrayList<>();
 
     for (Map<String, Object> countryMap : countryInformationMap.values()) {
-      int id = (int) Math.round(Double.parseDouble(countryMap.get("id") + ""));
+      int id = new BigDecimal(countryMap.get("id").toString()).intValue();
 
-      String rus = countryMap.get("rus") + "";
-      String eng = countryMap.get("eng") + "";
-      String chn = countryMap.get("chn") + "";
+      String rus = countryMap.get("rus").toString();
+      String eng = countryMap.get("eng").toString();
+      String chn = countryMap.get("chn").toString();
 
-      boolean isVisible = Boolean.parseBoolean(countryMap.get("visible") + "");
-      boolean isSupportRetry = Boolean.parseBoolean(countryMap.get("retry") + "");
-      boolean isSupportRent = Boolean.parseBoolean(countryMap.get("rent") + "");
-      boolean isSupportMultiService = Boolean.parseBoolean(countryMap.get("multiService") + "");
+      boolean isVisible = Boolean.parseBoolean(countryMap.get("visible").toString());
+      boolean isSupportRetry = Boolean.parseBoolean(countryMap.get("retry").toString());
+      boolean isSupportRent = Boolean.parseBoolean(countryMap.get("rent").toString());
+      boolean isSupportMultiService = Boolean.parseBoolean(countryMap.get("multiService").toString());
 
-      countryInformationList.add(new CountryInformation(id, rus, eng, chn,
+      countryList.add(new Country(id, rus, eng, chn,
           isVisible, isSupportRetry, isSupportRent, isSupportMultiService));
     }
 
-    return countryInformationList;
-
+    return countryList;
   }
 
   /**
@@ -625,18 +579,17 @@ public class SMSActivateApi {
   @NotNull
   public QiwiResponse getQiwiRequisites()
       throws IOException, SQLServerException, WrongParameterException, NoBalanceException, BannedException, NoNumberException {
-    QueryStringBuilder queryStringBuilder = new QueryStringBuilder(new HashMap<String, Object>() {{
+    URLBuilder URLBuilder = new URLBuilder(new HashMap<String, Object>() {{
       put("api_key", apiKey);
       put("action", "getQiwiRequisites");
     }});
 
-    String url = BASE_URL + queryStringBuilder.build();
-    String data = WebClient.get(url);
-
-    Validator.validateData(data);
+    String data = WebClient.get(URLBuilder.build());Validator.validateData(data);
 
     Type type = new TypeToken<Map<String, String>>() {}.getType();
     Map<String, String> qiwiMap = gson.fromJson(data, type);
+
+    //todo execp
     QiwiStatus qiwiStatus = QiwiStatus.getStatusByName(qiwiMap.get("status").toUpperCase());
 
     return new QiwiResponse(qiwiStatus, qiwiMap.get("wallet"), qiwiMap.get("comment"));
@@ -657,17 +610,16 @@ public class SMSActivateApi {
   @NotNull
   public Phone getAdditionalService(@NotNull Phone phone)
       throws IOException, SQLServerException, BannedException, NoNumberException, NoBalanceException, WrongParameterException {
-    QueryStringBuilder queryStringBuilder = new QueryStringBuilder("api_key", apiKey);
-    queryStringBuilder.append("action", "getAdditionalService")
+    URLBuilder URLBuilder = new URLBuilder("api_key", apiKey);
+    URLBuilder.append("action", "getAdditionalService")
         .append("parentId", phone.getId());
 
-    String url = BASE_URL + queryStringBuilder.build();
-    String data = WebClient.get(url);
+    String data = WebClient.get(URLBuilder.build());
     Validator.validateData(data);
 
     String[] parts = data.split(":");
     String number = parts[2];
-    int id = (int) Math.round(Double.parseDouble(parts[1]));
+    int id = new BigDecimal(parts[1]).intValue();
 
     return new Phone(number, id, false, phone.getService());
   }
@@ -705,15 +657,14 @@ public class SMSActivateApi {
   @NotNull
   public List<Phone> getCurrentActivationsDataTables(int start, int length)
       throws IOException, BaseSMSActivateException, NoBalanceException, BannedException, NoNumberException, WrongParameterException, SQLServerException {
-    QueryStringBuilder queryStringBuilder = new QueryStringBuilder("api_key", apiKey);
-    queryStringBuilder.append("action", "getCurrentActivationsDataTables")
+    URLBuilder URLBuilder = new URLBuilder("api_key", apiKey);
+    URLBuilder.append("action", "getCurrentActivationsDataTables")
         .append("start", start)
         .append("length", length)
         .append("order", "id")
         .append("orderBy", "asc");
 
-    String url = BASE_URL + queryStringBuilder.build();
-    String data = WebClient.get(url);
+    String data = WebClient.get(URLBuilder.build());
     Validator.validateData(data);
 
     Type type = new TypeToken<Map<String, Object>>() {}.getType();
@@ -727,10 +678,10 @@ public class SMSActivateApi {
     List<Phone> phoneList = new ArrayList<>();
 
     for (Map<String, Object> currentPhoneActivationMap : currentPhoneActivationList) {
-      int id = (int) Double.parseDouble(currentPhoneActivationMap.get("id").toString());
+      int id = new BigDecimal(currentPhoneActivationMap.get("id").toString()).intValue();
       boolean forward = Boolean.parseBoolean(currentPhoneActivationMap.get("forward").toString());
 
-      String number = currentPhoneActivationMap.get("phone").toString();
+      String number = String.valueOf(currentPhoneActivationMap.get("phone"));
       Service service = new Service(currentPhoneActivationMap.get("service").toString());
 
       phoneList.add(new Phone(number, id, forward, service));
@@ -761,6 +712,7 @@ public class SMSActivateApi {
    * Returns the rent object with countries supported rent and accessed services by country.
    *
    * @param time      time rent in hours (default 1).
+   *                  time >= 1
    * @param operator  mobile operator.
    * @param countryId country id (default 0).
    * @return the rent object with countries supported rent and accessed services by country.
@@ -768,25 +720,23 @@ public class SMSActivateApi {
    * @throws WrongParameterException if one of parameters is incorrect.
    * @throws BannedException         if account has been banned.
    * @throws SQLServerException      if error happened on SQL-server.
-   * @throws NoBalanceException      if no numbers.
-   * @throws NoNumberException       if in account balance is zero.
+   * @throws NoBalanceException      if in account balance is zero.
+   * @throws NoNumberException       if no numbers.
    */
   @NotNull
-  public Rent getRentServicesAndCountries(
-      int time,
-      String operator,
-      int countryId
-  ) throws IOException, SQLServerException, BannedException, NoNumberException, NoBalanceException, WrongParameterException {
-    QueryStringBuilder queryStringBuilder = new QueryStringBuilder("api_key", apiKey);
-    queryStringBuilder.append("action", "getRentServicesAndCountries")
+  public Rent getRentServicesAndCountries(int time, String operator, int countryId)
+      throws IOException, SQLServerException, BannedException, NoNumberException, NoBalanceException, WrongParameterException {
+    if (time <= 0) {
+      throw new WrongParameterException("Time can't be negative or equals 0.", "Время не может быть меньше или равно 0");
+    }
+
+    URLBuilder URLBuilder = new URLBuilder("api_key", apiKey);
+    URLBuilder.append("action", "getRentServicesAndCountries")
         .append("county", countryId)
         .append("operator", operator)
         .append("time", time);
 
-    String url = BASE_URL + queryStringBuilder.build();
-    String data = WebClient.get(url);
-
-    Validator.validateData(data);
+    String data = WebClient.get(URLBuilder.build());Validator.validateData(data);
 
     Type type = new TypeToken<Map<String, Map<String, Object>>>() {}.getType();
     Map<String, Map<String, Object>> rentCountriesServices = gson.fromJson(data, type);
@@ -802,8 +752,9 @@ public class SMSActivateApi {
     for (Object countryCode : countryMap.values())
       countryIdList.add((int) Math.round(Double.parseDouble(countryCode.toString())));
 
-    for (Object name : operatorMap.values())
+    for (Object name : operatorMap.values()) {
       operatorNameList.add(name.toString());
+    }
 
     servicesMap.forEach((shortName, service) -> {
       Map<String, Object> serviceMap = (Map<String, Object>) service;
@@ -816,9 +767,9 @@ public class SMSActivateApi {
       );
     });
 
-    CountryInformation countryInformation = new CountryInformation(countryId);
+    Country country = new Country(countryId);
 
-    return new Rent(operatorNameList, new Country(countryInformation, serviceWithCostList), countryIdList);
+    return new Rent(operatorNameList, new ServiceWithCountry(country, serviceWithCostList), countryIdList);
   }
 
   /**
@@ -846,7 +797,7 @@ public class SMSActivateApi {
    * @param service    service to which you need to get a number.
    * @param time       time rent (default 1 hour).
    * @param operator   mobile operator.
-   * @param countryId  id country (default 0).
+   * @param countryId  id country (default 0 - Russia).
    * @param urlWebhook url for webhook.
    * @return rent phone.
    * @throws IOException             if an I/O exception occurs.
@@ -865,17 +816,15 @@ public class SMSActivateApi {
       int countryId,
       String urlWebhook
   ) throws IOException, SQLServerException, WrongParameterException, RentException, NoBalanceException, NoNumberException, BannedException {
-    QueryStringBuilder queryStringBuilder = new QueryStringBuilder("api_key", apiKey);
-    queryStringBuilder.append("action", "getRentNumber")
+    URLBuilder URLBuilder = new URLBuilder("api_key", apiKey);
+    URLBuilder.append("action", "getRentNumber")
         .append("time", time)
         .append("country", countryId)
         .append("operator", operator)
         .append("url", urlWebhook)
         .append("service", service.getShortName());
 
-    String url = BASE_URL + queryStringBuilder.build();
-
-    String data = WebClient.get(url);
+    String data = WebClient.get(URLBuilder.build());
     Validator.validateData(data);
 
     Type type = new TypeToken<Map<String, Object>>() {}.getType();
@@ -913,13 +862,11 @@ public class SMSActivateApi {
    */
   @NotNull
   public List<Sms> getRentStatus(@NotNull Phone phone) throws IOException, SQLServerException, WrongParameterException, RentException, NoBalanceException, NoNumberException, BannedException {
-    QueryStringBuilder queryStringBuilder = new QueryStringBuilder("api_key", apiKey);
-    queryStringBuilder.append("action", "getRentStatus").
+    URLBuilder URLBuilder = new URLBuilder("api_key", apiKey);
+    URLBuilder.append("action", "getRentStatus").
         append("id", phone.getId());
 
-    String url = BASE_URL + queryStringBuilder.build();
-
-    String data = WebClient.get(url);
+    String data = WebClient.get(URLBuilder.build());
     Validator.validateData(data);
 
     Type type = new TypeToken<Map<String, Object>>() {}.getType();
@@ -963,13 +910,12 @@ public class SMSActivateApi {
   @NotNull
   public StateRent setRentStatus(@NotNull Phone phone, @NotNull StatusRent status)
       throws IOException, SQLServerException, WrongParameterException, RentException, NoBalanceException, NoNumberException, BannedException {
-    QueryStringBuilder queryStringBuilder = new QueryStringBuilder("api_key", apiKey);
-    queryStringBuilder.append("action", "setRentStatus")
+    URLBuilder URLBuilder = new URLBuilder("api_key", apiKey);
+    URLBuilder.append("action", "setRentStatus")
         .append("id", phone.getId())
         .append("status", status.getId());
 
-    String url = BASE_URL + queryStringBuilder.build();
-    String data = WebClient.get(url);
+    String data = WebClient.get(URLBuilder.build());
     Validator.validateData(data);
 
     Type type = new TypeToken<Map<String, String>>() {}.getType();
@@ -999,14 +945,12 @@ public class SMSActivateApi {
   @NotNull
   public List<Phone> getRentList()
       throws IOException, SQLServerException, WrongParameterException, RentException, NoBalanceException, NoNumberException, BannedException {
-    QueryStringBuilder queryStringBuilder = new QueryStringBuilder(new HashMap<String, Object>() {{
+    URLBuilder URLBuilder = new URLBuilder(new HashMap<String, Object>() {{
       put("api_key", apiKey);
       put("action", "getRentList");
     }});
 
-    String url = BASE_URL + queryStringBuilder.build();
-
-    String data = WebClient.get(url);
+    String data = WebClient.get(URLBuilder.build());
     Validator.validateData(data);
 
     Type type = new TypeToken<Map<String, Object>>() {}.getType();

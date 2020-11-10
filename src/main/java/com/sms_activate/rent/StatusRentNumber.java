@@ -55,7 +55,7 @@ public enum StatusRentNumber {
    */
   @NotNull
   public String getMessage() {
-    return String.join("/", englandMessage, russianMessage);
+    return String.join(" / ", englandMessage, russianMessage);
   }
 
   /**

@@ -11,7 +11,7 @@ public class Service {
   /**
    * Count number in service.
    */
-  private final int countNumber;
+  private int countNumber = 0;
 
   /**
    * Constructor service with short name of service.
@@ -19,7 +19,7 @@ public class Service {
    * @param shortName short name of service.
    */
   public Service(@NotNull String shortName) {
-    this(shortName, 0);
+    this.shortName = shortName;
   }
 
   /**

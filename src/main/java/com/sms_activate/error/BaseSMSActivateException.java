@@ -31,6 +31,7 @@ public class BaseSMSActivateException extends Exception {
    *
    * @return message on england language.
    */
+  //todo
   public String getEnglandMessage() {
     return englandMessage;
   }
@@ -51,6 +52,6 @@ public class BaseSMSActivateException extends Exception {
    */
   @Override
   public String getMessage() {
-    return String.join("/", englandMessage, russianMessage);
+    return String.join(" / ", englandMessage, russianMessage);
   }
 }

@@ -10,7 +10,12 @@ import java.util.stream.Collectors;
  * An object keys and values in URL.
  * This class is designed for use as a drop-in replacement create url parameter string yourself.
  */
-public class QueryStringBuilder {
+public class URLBuilder {
+  /**
+   * API url.
+   */
+  private static final String BASE_URL = "https://sms-activate.ru/stubs/handler_api.php?";
+
   /**
    * Map parameter URL.
    */
@@ -22,7 +27,7 @@ public class QueryStringBuilder {
    * @param key   name parameter url (unique and not be null).
    * @param value value parameter url (can be duplicate and not be null).
    */
-  public QueryStringBuilder(@NotNull String key, @NotNull Object value) {
+  public URLBuilder(@NotNull String key, @NotNull Object value) {
     this(new HashMap<String, Object>() {{
       put(key, value);
     }});
@@ -33,7 +38,7 @@ public class QueryStringBuilder {
    *
    * @param parameterMap key value the to url parameter.
    */
-  public QueryStringBuilder(@NotNull Map<String, Object> parameterMap) {
+  public URLBuilder(@NotNull Map<String, Object> parameterMap) {
     this.parameterMap = parameterMap;
   }
 
@@ -43,7 +48,7 @@ public class QueryStringBuilder {
    * @param key   key with which the specified value is to be associated (not be null).
    * @param value value to be associated with the specified key.
    */
-  public QueryStringBuilder append(@NotNull String key, Object value) {
+  public URLBuilder append(@NotNull String key, Object value) {
     this.parameterMap.put(key, value);
     return this;
   }
@@ -55,7 +60,7 @@ public class QueryStringBuilder {
    */
   @NotNull
   public String build() {
-    return this.parameterMap.entrySet().stream().map(x -> {
+    return BASE_URL + this.parameterMap.entrySet().stream().map(x -> {
       Object value = x.getValue();
       String key = x.getKey();
 

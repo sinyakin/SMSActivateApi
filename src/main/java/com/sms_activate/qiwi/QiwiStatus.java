@@ -3,6 +3,7 @@ package com.sms_activate.qiwi;
 import org.jetbrains.annotations.NotNull;
 
 public enum QiwiStatus {
+  //todo
   SUCCESS(1, "Оплату можно проводить.", "Payment can be made."),
   FALSE(0, "Прием платежей киви невозможен.", "Acceptance of qiwi payments is not possible."),
   UNKNOWN(-1, "Неизвестно", "Unknown.");

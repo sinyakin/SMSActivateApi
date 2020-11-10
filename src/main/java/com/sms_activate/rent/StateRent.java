@@ -3,6 +3,7 @@ package com.sms_activate.rent;
 import org.jetbrains.annotations.NotNull;
 
 public enum StateRent {
+  //todo
   SUCCESS("Статус изменен успешно.", "Status has been changed."),
   ERROR("Ошибка.", "Error."),
   UNKNOWN("Неизвестно.", "Unknown.");

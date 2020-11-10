@@ -7,6 +7,7 @@ public class QiwiResponse {
   /**
    * Status qiwi wallet.
    */
+  //todo
   private QiwiStatus qiwiStatus;
 
   /**

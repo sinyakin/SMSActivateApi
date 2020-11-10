@@ -14,7 +14,7 @@
                      │    ├── AccessStatusActivation.java
                      │    ├── StateActivation.java
                      │    └── StatusActivation.java
-                     ├── country
+                     ├── serviceWithCountry
                      │    ├── Country.java
                      │    └── CountryInformation.java
                      ├── error
@@ -55,7 +55,7 @@
 
 ### Packages
 * activation
-* country
+* serviceWithCountry
 * error
   * rent
 * phone

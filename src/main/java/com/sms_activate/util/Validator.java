@@ -79,6 +79,7 @@ public class Validator {
    * @throws NoBalanceException      if no numbers.
    * @throws NoNumberException       if in account balance is zero.
    */
+  //todo
   public static void validateData(@NotNull String data)
       throws BannedException, SQLServerException, WrongParameterException, NoBalanceException, NoNumberException {
     if (!data.contains("ACCESS")) {
@@ -99,5 +100,4 @@ public class Validator {
       }
     }
   }
-
 }

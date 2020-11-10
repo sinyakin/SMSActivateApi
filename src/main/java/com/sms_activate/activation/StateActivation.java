@@ -69,6 +69,7 @@ public enum StateActivation {
      * @return code from sms.
      */
     @Nullable
+    //todo
     public String getCode() {
         return code;
     }
@@ -77,6 +78,7 @@ public enum StateActivation {
      * Sets the code from sms.
      * @param code code from sms.
      */
+    //todo
     public void setCode(@Nullable String code) {
         this.code = code;
     }
@@ -87,6 +89,7 @@ public enum StateActivation {
      * @return state activation.
      */
     @NotNull
+    //todo
     public static StateActivation getStateByName(@NotNull String name) {
         try {
             return StateActivation.valueOf(StateActivation.class, name);

@@ -1,49 +1,153 @@
 package com.sms_activate.country;
-
-import com.sms_activate.service.ServiceWithCost;
+//todo
 import org.jetbrains.annotations.NotNull;
-
-import java.util.List;
 
 public class Country {
   /**
-   * Information about country.
+   * Name country in russian language.
    */
-  private final CountryInformation countryInformation;
+  private String russianName = "";
 
   /**
-   * List services in country.
+   * Name country in england language.
    */
-  private final List<ServiceWithCost> serviceWithCostList;
+  private String englandName = "";
 
   /**
-   * Constructor country with information and list service.
+   * Name country in chine language.
+   */
+  private String chineName = "";
+
+  /**
+   * Id country
+   */
+  private final int id;
+
+  /**
+   * Country is visible in site.
+   */
+  private boolean visible = false;
+
+  /**
+   * Country is support retry sms.
+   */
+  private boolean supportRetry = false;
+
+  /**
+   * Country is support rent.
+   */
+  private boolean supportRent = false;
+
+  /**
+   * Country is support multiservice.
+   */
+  private boolean supportMultiService = false;
+
+  /**
+   * Constructor country with id.
    *
-   * @param countryInformation  information about country.
-   * @param serviceWithCostList list services in country.
+   * @param id country id.
    */
-  public Country(@NotNull CountryInformation countryInformation, @NotNull List<ServiceWithCost> serviceWithCostList) {
-    this.countryInformation = countryInformation;
-    this.serviceWithCostList = serviceWithCostList;
+  public Country(int id) {
+    this.id = id;
   }
 
   /**
-   * Returns the list services.
+   * Constructor country with id, multiLand, supports options.
    *
-   * @return list services.
+   * @param id                  country id.
+   * @param russianName         – name in russian language.
+   * @param englandName         – name in england language.
+   * @param chineName           – name in chine language.
+   * @param visible             visible in site.
+   * @param supportRetry        support retry sms.
+   * @param supportRent         support rent.
+   * @param supportMultiService support multiservice.
    */
-  @NotNull
-  public List<ServiceWithCost> getServiceCostList() {
-    return serviceWithCostList;
+  public Country(int id, @NotNull String russianName, @NotNull String englandName, @NotNull String chineName,
+                 boolean visible, boolean supportRetry, boolean supportRent, boolean supportMultiService) {
+    this.id = id;
+    this.russianName = russianName;
+    this.englandName = englandName;
+    this.chineName = chineName;
+    this.visible = visible;
+    this.supportRetry = supportRetry;
+    this.supportRent = supportRent;
+    this.supportMultiService = supportMultiService;
   }
 
   /**
-   * Returns the information about country.
+   * Returns the name in russian language.
    *
-   * @return information about country.
+   * @return name in russian language.
    */
   @NotNull
-  public CountryInformation getCountryInformation() {
-    return countryInformation;
+  public String getRussianName() {
+    return russianName;
+  }
+
+  /**
+   * Returns the name in england language.
+   *
+   * @return name in england language.
+   */
+  @NotNull
+  public String getEnglandName() {
+    return englandName;
+  }
+
+  /**
+   * Returns the name in chine language.
+   *
+   * @return name in chine language.
+   */
+  @NotNull
+  public String getChineName() {
+    return chineName;
+  }
+
+  /**
+   * Returns the country id.
+   *
+   * @return country id.
+   */
+  public int getId() {
+    return id;
+  }
+
+  /**
+   * Return true if country visible in site, else false.
+   *
+   * @return visible country in site.
+   */
+  public boolean isVisible() {
+    return visible;
+  }
+
+  /**
+   * Returns true if country support retry sms, else false.
+   *
+   * @return support retry sms.
+   */
+  public boolean isSupportRetry() {
+    return supportRetry;
+  }
+
+  /**
+   * Returns true if country support multiservice, else false.
+   *
+   * @return support multiservice.
+   */
+  public boolean isSupportMultiService() {
+    return supportMultiService;
+  }
+
+  /**
+   * Returns true if country support multiservice, else false.
+   *
+   * @return support multiservice.
+   */
+  public boolean isSupportRent() {
+    return supportRent;
   }
 }

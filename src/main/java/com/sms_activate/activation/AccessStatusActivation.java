@@ -3,6 +3,7 @@ package com.sms_activate.activation;
 import org.jetbrains.annotations.NotNull;
 
 public enum AccessStatusActivation {
+    //todo
     ACCESS_READY("Готовность номера подтверждена.", "Number readiness confirmed."),
     ACCESS_RETRY_GET("Ожидание нового смс.", "Wait new sms."),
     ACCESS_ACTIVATION("Сервис успешно активирован.", "The service has been successfully activated."),
@@ -66,6 +67,7 @@ public enum AccessStatusActivation {
      * @return state.
      */
     @NotNull
+    //todo
     public static AccessStatusActivation getStatusByName(@NotNull String name) {
         try {
             return AccessStatusActivation.valueOf(AccessStatusActivation.class, name);
