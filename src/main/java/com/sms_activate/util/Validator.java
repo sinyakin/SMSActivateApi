@@ -64,8 +64,10 @@ public class Validator {
             ErrorRent.ACCOUNT_INACTIVE.getEnglishMessage(),
             ErrorRent.ACCOUNT_INACTIVE.getRussianMessage()
         );
+      case NO_BALANCE:
+        throw new NoBalanceException();
       default:
-        throw new NoBalanceException("There is no money in the account.", "Нет денег на счету.");
+        throw new RentException("Unknown rent error exception.", "Неизвестная ошибка аренды.");
     }
   }
 

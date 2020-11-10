@@ -7,7 +7,12 @@ import com.sms_activate.activation.StateActivationResponse;
 import com.sms_activate.activation.StatusActivationRequest;
 import com.sms_activate.country.Country;
 import com.sms_activate.country.ServiceWithCountry;
-import com.sms_activate.error.*;
+import com.sms_activate.error.BannedException;
+import com.sms_activate.error.BaseSMSActivateException;
+import com.sms_activate.error.NoBalanceException;
+import com.sms_activate.error.NoNumberException;
+import com.sms_activate.error.SQLServerException;
+import com.sms_activate.error.WrongParameterException;
 import com.sms_activate.error.rent.ErrorRent;
 import com.sms_activate.error.rent.RentException;
 import com.sms_activate.phone.Phone;
@@ -47,9 +52,13 @@ public class SMSActivateApi {
    * Constructor API sms-activate with API key.
    *
    * @param apiKey API key (not be null).
+   * @throws WrongParameterException if api-key is incorrect.
    */
   public SMSActivateApi(@NotNull String apiKey) throws WrongParameterException {
-    if (apiKey.length() != 32) throw new WrongParameterException("", "");
+    if (apiKey.length() != 32) {
+      throw new WrongParameterException("API-key of wrong length.", "API неправильной длины");
+    }
+
     this.apiKey = apiKey;
   }
 
@@ -76,7 +85,7 @@ public class SMSActivateApi {
       throws IOException, WrongParameterException, SQLServerException {
     URLBuilder URLBuilder = new URLBuilder(new HashMap<String, Object>(){{
       put("api_key", apiKey);
-      put("action", "getBalanceAndCashBack");
+      put("action", "getBalance");
     }});
 
     String data = WebClient.get(URLBuilder.build());
@@ -116,7 +125,7 @@ public class SMSActivateApi {
 
     String[] parts = data.split(":");
 
-    return new BigDecimal(parts[2]);
+    return new BigDecimal(parts[1]);
   }
 
   /**

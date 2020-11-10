@@ -12,6 +12,7 @@ public enum ErrorRent {
   SQL_ERROR("SQL_ERROR", "Ошибка sql сервера.", "Error sql server."),
   NO_NUMBERS("NO_NUMBERS", "Арендованных номеров нет.", "There are no rented numbers."),
   ACCOUNT_INACTIVE("ACCOUNT_INACTIVE", "Свободных номеров нет.", "There are no vacant numbers."),
+  NO_BALANCE("NO_BALANCE", "Нет денег на счету.", "Balance in your account is zero."),
   UNKNOWN("UNKNOWN", "Неизвестная ошибка аренды.", "Unknown rent error.");
 
   /**
