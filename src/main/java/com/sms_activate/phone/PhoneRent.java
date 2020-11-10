@@ -2,6 +2,7 @@ package com.sms_activate.phone;
 
 import com.sms_activate.service.Service;
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
 public class PhoneRent extends Phone {
   /**
@@ -22,7 +23,7 @@ public class PhoneRent extends Phone {
       @NotNull String number,
       int id,
       boolean forward,
-      @NotNull Service service,
+      @Nullable Service service,
       @NotNull String endDate
   ) {
     super(number, id, forward, service);
@@ -44,8 +45,7 @@ public class PhoneRent extends Phone {
    *
    * @param endDate end date of rent
    */
-  //todo
-  public void setEndDate(String endDate) {
+  public void setEndDate(@NotNull String endDate) {
     this.endDate = endDate;
   }
 }

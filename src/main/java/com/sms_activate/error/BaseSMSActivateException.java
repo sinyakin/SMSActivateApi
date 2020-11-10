@@ -6,7 +6,7 @@ public class BaseSMSActivateException extends Exception {
   /**
    * Message on england language.
    */
-  private final String englandMessage;
+  private final String englishMessage;
 
   /**
    * Message on russian language.
@@ -16,13 +16,13 @@ public class BaseSMSActivateException extends Exception {
   /**
    * Constructor base sms activate exception with sublang.
    *
-   * @param englandMessage message on england language.
+   * @param englishMessage message on england language.
    * @param russianMessage message on russian language.
    */
-  public BaseSMSActivateException(@NotNull String englandMessage, @NotNull String russianMessage) {
-    super(englandMessage);
+  public BaseSMSActivateException(@NotNull String englishMessage, @NotNull String russianMessage) {
+    super(englishMessage);
 
-    this.englandMessage = englandMessage;
+    this.englishMessage = englishMessage;
     this.russianMessage = russianMessage;
   }
 
@@ -31,9 +31,9 @@ public class BaseSMSActivateException extends Exception {
    *
    * @return message on england language.
    */
-  //todo
-  public String getEnglandMessage() {
-    return englandMessage;
+  @NotNull
+  public String getEnglishMessage() {
+    return englishMessage;
   }
 
   /**
@@ -41,6 +41,7 @@ public class BaseSMSActivateException extends Exception {
    *
    * @return message on russian language.
    */
+  @NotNull
   public String getRussianMessage() {
     return russianMessage;
   }
@@ -51,7 +52,8 @@ public class BaseSMSActivateException extends Exception {
    * @return concat messages.
    */
   @Override
+  @NotNull
   public String getMessage() {
-    return String.join(" / ", englandMessage, russianMessage);
+    return String.join(" / ", englishMessage, russianMessage);
   }
 }

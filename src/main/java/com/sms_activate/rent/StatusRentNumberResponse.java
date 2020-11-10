@@ -2,10 +2,10 @@ package com.sms_activate.rent;
 
 import org.jetbrains.annotations.NotNull;
 
-public enum StatusRentNumber {
-  SUCCESS("Успешно", "Success"),
-  ERROR("Ошибка.", "Error"),
-  UNKNOWN("Неизвестно", "Unknown");
+public enum StatusRentNumberResponse {
+  SUCCESS("Успешно", "Success."),
+  ERROR("Ошибка.", "Error."),
+  UNKNOWN("Неизвестный статуст аренды.", "Unknown status rent.");
 
   /**
    * Message on russian language.
@@ -15,17 +15,17 @@ public enum StatusRentNumber {
   /**
    * Message on england language.
    */
-  private final String englandMessage;
+  private final String englishMessage;
 
   /**
    * Constructor AccessStatusActivation with multilang.
    *
    * @param russianMessage message on russian.
-   * @param englandMessage message on england.
+   * @param englishMessage message on england.
    */
-  StatusRentNumber(@NotNull String russianMessage, @NotNull String englandMessage) {
+  StatusRentNumberResponse(@NotNull String russianMessage, @NotNull String englishMessage) {
     this.russianMessage = russianMessage;
-    this.englandMessage = englandMessage;
+    this.englishMessage = englishMessage;
   }
 
   /**
@@ -44,8 +44,8 @@ public enum StatusRentNumber {
    * @return message on england.
    */
   @NotNull
-  public String getEnglandMessage() {
-    return englandMessage;
+  public String getEnglishMessage() {
+    return englishMessage;
   }
 
   /**
@@ -55,7 +55,7 @@ public enum StatusRentNumber {
    */
   @NotNull
   public String getMessage() {
-    return String.join(" / ", englandMessage, russianMessage);
+    return String.join(" / ", englishMessage, russianMessage);
   }
 
   /**
@@ -65,11 +65,11 @@ public enum StatusRentNumber {
    * @return state.
    */
   @NotNull
-  public static StatusRentNumber getStatusByName(@NotNull String name) {
+  public static StatusRentNumberResponse getStatusByName(@NotNull String name) {
     try {
-      return StatusRentNumber.valueOf(StatusRentNumber.class, name);
+      return StatusRentNumberResponse.valueOf(StatusRentNumberResponse.class, name);
     } catch (IllegalArgumentException e) {
-      return StatusRentNumber.UNKNOWN;
+      return StatusRentNumberResponse.UNKNOWN;
     }
   }
 }

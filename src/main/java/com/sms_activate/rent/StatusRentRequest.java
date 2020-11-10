@@ -2,9 +2,9 @@ package com.sms_activate.rent;
 
 import org.jetbrains.annotations.NotNull;
 
-public enum StatusRent {
-  FINISH(1, "Финиш.", "Finish."),
-  CANCEL(2, "Отмена.", "Cancel."),
+public enum StatusRentRequest {
+  FINISH(1, "Завершить аренду.", "Finish rent."),
+  CANCEL(2, "Отменить аренду.", "Cancel rent."),
   ;
 
   /**
@@ -20,19 +20,19 @@ public enum StatusRent {
   /**
    * Message status on england language.
    */
-  private final String englandMessage;
+  private final String englishMessage;
 
   /**
    * Constructor with id and multilang.
    *
    * @param id             is status.
    * @param russianMessage message on russian lang.
-   * @param englandMessage message on england lang.
+   * @param englishMessage message on england lang.
    */
-  StatusRent(int id, @NotNull String russianMessage, @NotNull String englandMessage) {
+  StatusRentRequest(int id, @NotNull String russianMessage, @NotNull String englishMessage) {
     this.id = id;
     this.russianMessage = russianMessage;
-    this.englandMessage = englandMessage;
+    this.englishMessage = englishMessage;
   }
 
   /**
@@ -60,8 +60,8 @@ public enum StatusRent {
    * @return message on england.
    */
   @NotNull
-  public String getEnglandMessage() {
-    return englandMessage;
+  public String getEnglishMessage() {
+    return englishMessage;
   }
 
   /**
@@ -71,6 +71,6 @@ public enum StatusRent {
    */
   @NotNull
   public String getMessage() {
-    return String.join(" / ", englandMessage, russianMessage);
+    return String.join(" / ", englishMessage, russianMessage);
   }
 }

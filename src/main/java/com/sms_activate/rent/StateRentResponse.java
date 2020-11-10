@@ -2,11 +2,9 @@ package com.sms_activate.rent;
 
 import org.jetbrains.annotations.NotNull;
 
-public enum StateRent {
-  //todo
+public enum StateRentResponse {
   SUCCESS("Статус изменен успешно.", "Status has been changed."),
-  ERROR("Ошибка.", "Error."),
-  UNKNOWN("Неизвестно.", "Unknown.");
+  ERROR("Ошибка.", "Error.");
 
   /**
    * Message on russian language.
@@ -16,17 +14,17 @@ public enum StateRent {
   /**
    * Message on england language.
    */
-  private final String englandMessage;
+  private final String englishMessage;
 
   /**
    * Constructor state with messages.
    *
    * @param russianMessage message on russian language.
-   * @param englandMessage message on england language
+   * @param englishMessage message on england language
    */
-  StateRent(@NotNull String russianMessage, @NotNull String englandMessage) {
+  StateRentResponse(@NotNull String russianMessage, @NotNull String englishMessage) {
     this.russianMessage = russianMessage;
-    this.englandMessage = englandMessage;
+    this.englishMessage = englishMessage;
   }
 
   /**
@@ -45,8 +43,8 @@ public enum StateRent {
    * @return message on england.
    */
   @NotNull
-  public String getEnglandMessage() {
-    return englandMessage;
+  public String getEnglishMessage() {
+    return englishMessage;
   }
 
   /**
@@ -56,7 +54,7 @@ public enum StateRent {
    */
   @NotNull
   public String getMessage() {
-    return String.join("/", englandMessage, russianMessage);
+    return String.join("/", englishMessage, russianMessage);
   }
 
   /**
@@ -66,11 +64,7 @@ public enum StateRent {
    * @return state.
    */
   @NotNull
-  public static StateRent getStateRentByName(@NotNull String name) {
-    try {
-      return StateRent.valueOf(StateRent.class, name);
-    } catch (IllegalArgumentException e) {
-      return StateRent.UNKNOWN;
-    }
+  public static StateRentResponse getStateRentByName(@NotNull String name) {
+    return StateRentResponse.valueOf(StateRentResponse.class, name);
   }
 }

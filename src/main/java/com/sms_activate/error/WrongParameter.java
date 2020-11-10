@@ -3,13 +3,20 @@ package com.sms_activate.error;
 import org.jetbrains.annotations.NotNull;
 
 public enum WrongParameter {
-  BAD_ACTION("Некорректное действие.", "Wrong action."),
-  BAD_SERVICE("Некорректное наименование сервиса.", "Wrong name service."),
-  BAD_KEY("Неверный API-ключ.", "Wrong api-key."),
-  BAD_STATUS("Попытка установить несуществующий статус.", "An attempt to establish a non-existent status."),
-  WRONG_OPERATOR("Некорректный оператор.", "Wrong operator"),
-  WRONG_EXCEPTION_PHONE("Некорректные исключающие префиксы.", "Wrong exception prefix."),
-  WRONG_SERVICE("Некорректные сервисы.", "Wrong services.");
+  BAD_ACTION("BAD_ACTION", "Некорректное действие.", "Wrong action."),
+  BAD_SERVICE("BAD_SERVICE", "Некорректное наименование сервиса.", "Wrong name service."),
+  BAD_KEY("BAD_KEY", "Неверный API-ключ.", "Wrong api-key."),
+  BAD_STATUS("BAD_STATUS", "Попытка установить несуществующий статус.", "An attempt to establish a non-existent status."),
+  WRONG_OPERATOR("WRONG_OPERATOR", "Некорректный оператор.", "Wrong operator"),
+  WRONG_EXCEPTION_PHONE("WRONG_EXCEPTION_PHONE", "Некорректные исключающие префиксы.", "Wrong exception prefix."),
+  WRONG_SERVICE("WRONG_SERVICE", "Некорректные сервисы.", "Wrong services."),
+  NOT_AVAILABLE("NOT_AVAILABLE ", "Для страны, которую вы используете, недоступна покупка мультисервисов.", "Country does not supported multiservice."),
+  UNKNOWN("UNKNOWN", "Неизвестная ошибка.", "Unknown error.");
+
+  /**
+   * Response from server.
+   */
+  private final String response;
 
   /**
    * Message error on russian language.
@@ -19,17 +26,19 @@ public enum WrongParameter {
   /**
    * Message error on england language.
    */
-  private final String englandMessage;
+  private final String englishMessage;
 
   /**
    * Constructor WrongParameter with multilang.
    *
    * @param russianMessage error message on russian.
-   * @param englandMessage error message on england.
+   * @param englishMessage error message on england.
+   * @param response response from server.
    */
-  WrongParameter(@NotNull String russianMessage, @NotNull String englandMessage) {
+  WrongParameter(@NotNull String response, @NotNull String russianMessage, @NotNull String englishMessage) {
     this.russianMessage = russianMessage;
-    this.englandMessage = englandMessage;
+    this.englishMessage = englishMessage;
+    this.response = response;
   }
 
   /**
@@ -48,8 +57,17 @@ public enum WrongParameter {
    * @return error message on england.
    */
   @NotNull
-  public String getEnglandMessage() {
-    return englandMessage;
+  public String getEnglishMessage() {
+    return englishMessage;
+  }
+
+  /**
+   * Returns the response.
+   * @return response.
+   */
+  @NotNull
+  protected String getResponse() {
+    return response;
   }
 
   /**
@@ -59,6 +77,22 @@ public enum WrongParameter {
    */
   @NotNull
   public String getMessage() {
-    return String.join("/", englandMessage, russianMessage);
+    return String.join("/", englishMessage, russianMessage);
+  }
+
+  /**
+   * Returns the wrongParameter by name.
+   * @param name name wrong parameter.
+   * @return wrongParameter if contains, else unknown.
+   */
+  @NotNull
+  public static WrongParameter getWrongParameterByName(@NotNull String name) {
+    for (WrongParameter wrongParameter : values()) {
+      if (wrongParameter.response.equalsIgnoreCase(name)) {
+       return wrongParameter;
+      }
+    }
+
+    return UNKNOWN;
   }
 }

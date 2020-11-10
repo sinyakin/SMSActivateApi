@@ -1,6 +1,7 @@
 package com.sms_activate.util;
 
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
 import java.util.Map;
 import java.util.HashMap;
@@ -48,7 +49,7 @@ public class URLBuilder {
    * @param key   key with which the specified value is to be associated (not be null).
    * @param value value to be associated with the specified key.
    */
-  public URLBuilder append(@NotNull String key, Object value) {
+  public URLBuilder append(@NotNull String key, @Nullable Object value) {
     this.parameterMap.put(key, value);
     return this;
   }

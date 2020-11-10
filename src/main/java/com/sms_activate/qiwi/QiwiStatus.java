@@ -3,10 +3,8 @@ package com.sms_activate.qiwi;
 import org.jetbrains.annotations.NotNull;
 
 public enum QiwiStatus {
-  //todo
   SUCCESS(1, "Оплату можно проводить.", "Payment can be made."),
-  FALSE(0, "Прием платежей киви невозможен.", "Acceptance of qiwi payments is not possible."),
-  UNKNOWN(-1, "Неизвестно", "Unknown.");
+  FALSE(0, "Прием платежей киви невозможен.", "Acceptance of qiwi payments is not possible."),;
 
   /**
    * Id status
@@ -21,19 +19,19 @@ public enum QiwiStatus {
   /**
    * Message on england language.
    */
-  private final String englandMessage;
+  private final String englishMessage;
 
   /**
    * Constructor QiwiStatus.
    *
    * @param id             id status.
    * @param russianMessage message on russian language.
-   * @param englandMessage message on england language.
+   * @param englishMessage message on england language.
    */
-  QiwiStatus(int id, @NotNull String russianMessage, @NotNull String englandMessage) {
+  QiwiStatus(int id, @NotNull String russianMessage, @NotNull String englishMessage) {
     this.id = id;
     this.russianMessage = russianMessage;
-    this.englandMessage = englandMessage;
+    this.englishMessage = englishMessage;
   }
 
   /**
@@ -61,8 +59,8 @@ public enum QiwiStatus {
    * @return message on england.
    */
   @NotNull
-  public String getEnglandMessage() {
-    return englandMessage;
+  public String getEnglishMessage() {
+    return englishMessage;
   }
 
   /**
@@ -72,15 +70,11 @@ public enum QiwiStatus {
    */
   @NotNull
   public String getMessage() {
-    return String.join("/", englandMessage, russianMessage);
+    return String.join("/", englishMessage, russianMessage);
   }
 
   @NotNull
   public static QiwiStatus getStatusByName(@NotNull String name) {
-    try {
-      return QiwiStatus.valueOf(QiwiStatus.class, name);
-    } catch (IllegalArgumentException e) {
-      return QiwiStatus.UNKNOWN;
-    }
+    return QiwiStatus.valueOf(QiwiStatus.class, name);
   }
 }

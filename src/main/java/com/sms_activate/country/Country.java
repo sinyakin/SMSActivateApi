@@ -16,7 +16,7 @@ public class Country {
   /**
    * Name country in chine language.
    */
-  private String chineName = "";
+  private String chineseName = "";
 
   /**
    * Id country
@@ -58,18 +58,18 @@ public class Country {
    * @param id                  country id.
    * @param russianName         – name in russian language.
    * @param englandName         – name in england language.
-   * @param chineName           – name in chine language.
+   * @param chineseName           – name in chine language.
    * @param visible             visible in site.
    * @param supportRetry        support retry sms.
    * @param supportRent         support rent.
    * @param supportMultiService support multiservice.
    */
-  public Country(int id, @NotNull String russianName, @NotNull String englandName, @NotNull String chineName,
+  public Country(int id, @NotNull String russianName, @NotNull String englandName, @NotNull String chineseName,
                  boolean visible, boolean supportRetry, boolean supportRent, boolean supportMultiService) {
     this.id = id;
     this.russianName = russianName;
     this.englandName = englandName;
-    this.chineName = chineName;
+    this.chineseName = chineseName;
     this.visible = visible;
     this.supportRetry = supportRetry;
     this.supportRent = supportRent;
@@ -102,8 +102,8 @@ public class Country {
    * @return name in chine language.
    */
   @NotNull
-  public String getChineName() {
-    return chineName;
+  public String getChineseName() {
+    return chineseName;
   }
 
   /**

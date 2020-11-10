@@ -2,7 +2,7 @@ package com.sms_activate.activation;
 
 import org.jetbrains.annotations.NotNull;
 
-public enum StatusActivation {
+public enum StatusActivationRequest {
   SEND_READY_NUMBER(1, "Сообщить о готовности номера (смс на номер отправлено).", "Inform about the readiness of the number (SMS sent to the number)."),
   REQUEST_ONE_MORE_CODE(3, "Запросить еще один код (бесплатно).", "Request another code (free)."),
   FINISH(6, "Завершить активацию.", "Finish the activation."),
@@ -22,19 +22,19 @@ public enum StatusActivation {
   /**
    * Message on england language.
    */
-  private final String englandMessage;
+  private final String englishMessage;
 
   /**
    * Constructor status activation.
    *
    * @param id             special id status.
    * @param russianMessage description status on russian language.
-   * @param englandMessage description status on england language.
+   * @param englishMessage description status on england language.
    */
-  StatusActivation(int id, @NotNull String russianMessage, @NotNull String englandMessage) {
+  StatusActivationRequest(int id, @NotNull String russianMessage, @NotNull String englishMessage) {
     this.id = id;
     this.russianMessage = russianMessage;
-    this.englandMessage = englandMessage;
+    this.englishMessage = englishMessage;
   }
 
   /**
@@ -53,8 +53,8 @@ public enum StatusActivation {
    * @return message on england.
    */
   @NotNull
-  public String getEnglandMessage() {
-    return englandMessage;
+  public String getEnglishMessage() {
+    return englishMessage;
   }
 
   /**
@@ -64,7 +64,7 @@ public enum StatusActivation {
    */
   @NotNull
   public String getMessage() {
-    return String.join("/", englandMessage, russianMessage);
+    return String.join("/", englishMessage, russianMessage);
   }
 
   /**

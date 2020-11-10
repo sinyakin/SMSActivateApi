@@ -29,9 +29,9 @@ public class Phone {
    * Constructor Phone with number, service.
    *
    * @param number  number phone (not be null).
-   * @param service service for phone number (not be null).
+   * @param service service for phone number (can be null).
    */
-  public Phone(@NotNull String number, @NotNull Service service) {
+  public Phone(@NotNull String number, @Nullable Service service) {
     this.number = number;
     this.service = service;
   }
@@ -48,7 +48,6 @@ public class Phone {
     this.number = number;
     this.id = id;
     this.forward = forward;
-    //todo
     this.service = service;
   }
 

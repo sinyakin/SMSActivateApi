@@ -4,7 +4,7 @@ import com.sms_activate.error.BaseSMSActivateException;
 import org.jetbrains.annotations.NotNull;
 
 public class RentException extends BaseSMSActivateException {
-  public RentException(@NotNull String englandMessage, @NotNull String russianMessage) {
-    super(englandMessage, russianMessage);
+  public RentException(@NotNull String englishMessage, @NotNull String russianMessage) {
+    super(englishMessage, russianMessage);
   }
 }
