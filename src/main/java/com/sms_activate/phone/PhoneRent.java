@@ -21,12 +21,12 @@ public class PhoneRent extends Phone {
    */
   public PhoneRent(
       @NotNull String number,
+      @Nullable Service service,
       int id,
       boolean forward,
-      @Nullable Service service,
       @NotNull String endDate
   ) {
-    super(number, id, forward, service);
+    super(number, service, id, forward);
     this.endDate = endDate;
   }
 
@@ -38,14 +38,5 @@ public class PhoneRent extends Phone {
   @NotNull
   public String getEndDate() {
     return endDate;
-  }
-
-  /**
-   * Sets the end date of rent.
-   *
-   * @param endDate end date of rent
-   */
-  public void setEndDate(@NotNull String endDate) {
-    this.endDate = endDate;
   }
 }

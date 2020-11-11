@@ -40,11 +40,11 @@ public class Phone {
    * Constructor Phone with number, id, forward, service.
    *
    * @param number  number phone (not be null).
+   * @param service service for phone number (can be null).
    * @param id      id operation.
-   * @param forward forward phone number (not be null).
-   * @param service service for phone number (not be null).
+   * @param forward forward phone number.
    */
-  public Phone(@NotNull String number, int id, boolean forward, @Nullable Service service) {
+  public Phone(@NotNull String number, @Nullable Service service, int id, boolean forward) {
     this.number = number;
     this.id = id;
     this.forward = forward;

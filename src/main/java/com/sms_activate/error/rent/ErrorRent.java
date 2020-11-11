@@ -8,7 +8,7 @@ public enum ErrorRent {
   NO_ID_RENT("NO_ID_RENT", "Не указан id Аренды.", "Not specified id rent."),
   INCORECT_STATUS("INCORECT_STATUS", "Отсутствует или неправильно указан статус.", "Missing or incorrect status."),
   CANT_CANCEL("CANT_CANCEL", "Невозможно отменить аренду (более 20 мин.).", "It is impossible to cancel the lease (more than 20 minutes)."),
-  INVALID_PHONE("INVALID_PHONE", "Номер арендован не вами (неправильный id аренды).", ""),
+  INVALID_PHONE("INVALID_PHONE", "Номер арендован не вами (неправильный id аренды).", "The room was not rented by you (wrong rental id)."),
   SQL_ERROR("SQL_ERROR", "Ошибка sql сервера.", "Error sql server."),
   NO_NUMBERS("NO_NUMBERS", "Арендованных номеров нет.", "There are no rented numbers."),
   ACCOUNT_INACTIVE("ACCOUNT_INACTIVE", "Свободных номеров нет.", "There are no vacant numbers."),

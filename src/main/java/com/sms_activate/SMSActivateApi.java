@@ -42,17 +42,23 @@ public class SMSActivateApi {
   private final String apiKey;
 
   /**
+   * Personal referral link.
+   */
+  private final String ref;
+
+  /**
    * Constructor API sms-activate with API key.
    *
    * @param apiKey API key (not be null).
    * @throws WrongParameterException if api-key is incorrect.
    */
-  public SMSActivateApi(@NotNull String apiKey) throws WrongParameterException {
+  public SMSActivateApi(@NotNull String apiKey, @NotNull String ref) throws WrongParameterException {
     if (apiKey.length() != 32) {
       throw new WrongParameterException("API-key of wrong length.", "API неправильной длины");
     }
 
     this.apiKey = apiKey;
+    this.ref = ref;
   }
 
   /**
@@ -63,6 +69,15 @@ public class SMSActivateApi {
   @NotNull
   public String getApiKey() {
     return apiKey;
+  }
+
+  /**
+   * Returns the referral link.
+   * @return referral link
+   */
+  @NotNull
+  public String getRef() {
+    return ref;
   }
 
   /**
@@ -182,7 +197,6 @@ public class SMSActivateApi {
    * Returns the phone by service, ref, countryId.
    *
    * @param service   service short name.
-   * @param ref       referral link.
    * @param countryId number country.
    * @return phone for activation.
    * @throws IOException             if an I/O exception occurs.
@@ -195,17 +209,15 @@ public class SMSActivateApi {
   @NotNull
   public Phone getNumber(
       @NotNull Service service,
-      @NotNull String ref,
       int countryId
   ) throws IOException, WrongParameterException, BannedException, SQLServerException, NoBalanceException, NoNumberException {
-    return getNumber(service, ref, countryId, null, null, false);
+    return getNumber(service, countryId, null, null, false);
   }
 
   /**
    * Returns the phone number by service, ref, countryId, phoneException, operator, forward
    *
    * @param service        service for activation.
-   * @param ref            referral link.
    * @param countryId      number country.
    * @param phoneException excepted phone number prefix. Specify separated by commas.
    *                       <pre>{@code   7918,7900111}</pre>
@@ -220,7 +232,7 @@ public class SMSActivateApi {
    * @throws BannedException         if account has been banned.
    */
   @NotNull
-  public Phone getNumber(@NotNull Service service, @NotNull String ref, int countryId, String phoneException,
+  public Phone getNumber(@NotNull Service service, int countryId, String phoneException,
                          String operator, boolean forward)
       throws IOException, SQLServerException, WrongParameterException, NoBalanceException, NoNumberException, BannedException {
 
@@ -250,7 +262,7 @@ public class SMSActivateApi {
     String number = parts[2];
     int id = new BigDecimal(parts[1]).intValue();
 
-    return new Phone(number, id, forward, service);
+    return new Phone(number, service, id, forward);
   }
 
   /**
@@ -259,7 +271,6 @@ public class SMSActivateApi {
    * <pre> multiService -> vk,av,go,tg. </pre>
    *
    * @param multiService services for ordering (not be null).
-   * @param ref          referral link (not be null).
    * @param countryId    code country.
    * @return list phone.
    * @throws IOException             if an I/O exception occurs.
@@ -270,12 +281,9 @@ public class SMSActivateApi {
    * @throws NoNumberException       if in account balance is zero.
    */
   @NotNull
-  public List<Phone> getMultiServiceNumber(
-      @NotNull String multiService,
-      @NotNull String ref,
-      int countryId
-  ) throws IOException, WrongParameterException, BannedException, SQLServerException, NoBalanceException, NoNumberException {
-    return getMultiServiceNumber(multiService, ref, countryId, null, null);
+  public List<Phone> getMultiServiceNumber(@NotNull String multiService, int countryId)
+      throws IOException, WrongParameterException, BannedException, SQLServerException, NoBalanceException, NoNumberException {
+    return getMultiServiceNumber(multiService, countryId, null, null);
   }
 
   /**
@@ -284,7 +292,6 @@ public class SMSActivateApi {
    * <pre>multiService -> vk,av,go,tg<br/>multiForward -> 0,0,1,0; 0,0,0,0 - correct; 0,1,1,0 - incorrect.</pre>
    *
    * @param multiService services for ordering (not be null).
-   * @param ref          referral link (not be null).
    * @param countryId    code country.
    * @param multiForward is it necessary to request a number with forwarding.
    * @param operator     mobile operator.
@@ -297,12 +304,8 @@ public class SMSActivateApi {
    * @throws NoNumberException       if in account balance is zero.
    */
   @NotNull
-  public List<Phone> getMultiServiceNumber(
-      @NotNull String multiService,
-      @NotNull String ref,
-      int countryId,
-      @Nullable String multiForward,
-      @Nullable String operator
+  public List<Phone> getMultiServiceNumber(@NotNull String multiService, int countryId,
+      @Nullable String multiForward, @Nullable String operator
   ) throws IOException, WrongParameterException, BannedException, SQLServerException, NoBalanceException, NoNumberException {
     String trimMultiService = multiService.replace("\\s", "");
 
@@ -345,9 +348,9 @@ public class SMSActivateApi {
 
       phoneList.add(new Phone(
           phone,
+          new Service(serviceName),
           id,
-          i == indexForwardPhoneNumber,
-          new Service(serviceName)
+          i == indexForwardPhoneNumber
       ));
     }
 
@@ -380,11 +383,8 @@ public class SMSActivateApi {
    * @throws WrongParameterException if one of parameters is incorrect.
    */
   @NotNull
-  public AccessStatusActivation setStatus(
-      @NotNull Phone phone,
-      @NotNull StatusActivationRequest status,
-      boolean forward
-  ) throws IOException, WrongParameterException {
+  public AccessStatusActivation setStatus(@NotNull Phone phone, @NotNull StatusActivationRequest status, boolean forward)
+      throws IOException, WrongParameterException {
     URLBuilder URLBuilder = new URLBuilder("api_key", apiKey);
     URLBuilder.append("action", "setStatus")
         .append("status", status.getId())
@@ -649,7 +649,7 @@ public class SMSActivateApi {
     String number = parts[2];
     int id = new BigDecimal(parts[1]).intValue();
 
-    return new Phone(number, id, false, phone.getService());
+    return new Phone(number, service, id, false);
   }
 
   /**
@@ -711,7 +711,7 @@ public class SMSActivateApi {
       String number = String.valueOf(currentPhoneActivationMap.get("phone"));
       Service service = new Service(currentPhoneActivationMap.get("service").toString());
 
-      phoneList.add(new Phone(number, id, forward, service));
+      phoneList.add(new Phone(number, service, id, forward));
     }
 
     return phoneList;
@@ -874,7 +874,7 @@ public class SMSActivateApi {
     int id = new BigDecimal(phoneMap.get("id").toString()).intValue();
     String endDate = phoneMap.get("endDate").toString();
 
-    return new PhoneRent(number, id, false, service, endDate);
+    return new PhoneRent(number, service, id, false, endDate);
   }
 
   /**
@@ -1012,7 +1012,7 @@ public class SMSActivateApi {
       String number = phoneMap.get("phone").toString();
       int id = new BigDecimal(phoneMap.get("id").toString()).intValue();
 
-      phoneList.add(new Phone(number, id, false, null));
+      phoneList.add(new Phone(number, null, id, false));
     }
 
     return phoneList;
