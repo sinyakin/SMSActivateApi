@@ -10,7 +10,11 @@ public enum WrongParameter {
   WRONG_OPERATOR("WRONG_OPERATOR", "Некорректный оператор.", "Wrong operator"),
   WRONG_EXCEPTION_PHONE("WRONG_EXCEPTION_PHONE", "Некорректные исключающие префиксы.", "Wrong exception prefix."),
   WRONG_SERVICE("WRONG_SERVICE", "Некорректные сервисы.", "Wrong services."),
+  WRONG_ACTIVATION_ID("WRONG_ACTIVATION_ID", "Неверный ID родительской активации.", "Wrong ID parent activation."),
+  WRONG_SECURITY("WRONG_SECURITY", "Ошибка при попытке передать ID активации без переадресации, или же завершенной/не активной активации.", "An error occurred when trying to transfer an activation ID without forwarding, or a completed / inactive activation."),
   NOT_AVAILABLE("NOT_AVAILABLE ", "Для страны, которую вы используете, недоступна покупка мультисервисов.", "Country does not supported multiservice."),
+  WRONG_ADDITIONAL_SERVICE("WRONG_ADDITIONAL_SERVICE", " Неверный дополнительный сервис (допустимы только сервисы для переадресации).", "Invalid additional service (only services for forwarding are allowed)."),
+  REPEAT_ADDITIONAL_SERVICE("REPEAT_ADDITIONAL_SERVICE", "Ошибка возникает при попытке заказать купленный сервис еще раз.", "The error occurs when you try to order the purchased service again."),
   UNKNOWN("UNKNOWN", "Неизвестная ошибка.", "Unknown error.");
 
   /**

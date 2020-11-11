@@ -1,4 +1,4 @@
-package com.sms_activate.util;
+package com.sms_activate;
 
 import org.jetbrains.annotations.NotNull;
 
@@ -12,19 +12,7 @@ import java.net.URL;
 import java.net.URLConnection;
 import java.util.List;
 
-public class WebClient {
-  /**
-   * Method get to load data by name url.
-   *
-   * @param url target url.
-   * @return load data from url.
-   * @throws IOException if an I/O exception occurs.
-   */
-  @NotNull
-  public static String get(@NotNull String url) throws IOException {
-    return get(new URL(url));
-  }
-
+class WebClient {
   /**
    * Method get to load data by URL object.
    *
@@ -37,20 +25,6 @@ public class WebClient {
     HttpURLConnection urlConnection = (HttpURLConnection) url.openConnection();
     urlConnection.setRequestMethod("GET");
     return load(urlConnection);
-  }
-
-
-  /**
-   * Method post for send on server.
-   *
-   * @param url      target url.
-   * @param dataList data for server.
-   * @return data form url.
-   * @throws IOException if an I/O exception occurs.
-   */
-  @NotNull
-  public static String post(@NotNull String url, @NotNull List<Object> dataList) throws IOException {
-    return post(new URL(url), dataList);
   }
 
   /**

@@ -1,6 +1,6 @@
 package com.sms_activate.rent;
 
-import com.sms_activate.country.ServiceWithCountry;
+import com.sms_activate.country.ServiceByCountry;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.List;
@@ -9,7 +9,7 @@ public class Rent {
   /**
    * Country current phone activation.
    */
-  private final ServiceWithCountry serviceWithCountry;
+  private final ServiceByCountry serviceByCountry;
 
   /**
    * List countriesId supports activation.
@@ -25,12 +25,12 @@ public class Rent {
    * Constructor rent with operatorNameList, countryList.
    *
    * @param operatorNameList list name operator in country.
-   * @param serviceWithCountry          country rent phone.
+   * @param serviceByCountry          country rent phone.
    * @param countryIdList    list countries supports activation.
    */
-  public Rent(@NotNull List<String> operatorNameList, @NotNull ServiceWithCountry serviceWithCountry, @NotNull List<Integer> countryIdList) {
+  public Rent(@NotNull List<String> operatorNameList, @NotNull ServiceByCountry serviceByCountry, @NotNull List<Integer> countryIdList) {
     this.operatorNameList = operatorNameList;
-    this.serviceWithCountry = serviceWithCountry;
+    this.serviceByCountry = serviceByCountry;
     this.countryIdList = countryIdList;
   }
 
@@ -40,8 +40,8 @@ public class Rent {
    * @return country rent phone.
    */
   @NotNull
-  public ServiceWithCountry getCountry() {
-    return serviceWithCountry;
+  public ServiceByCountry getCountry() {
+    return serviceByCountry;
   }
 
   /**

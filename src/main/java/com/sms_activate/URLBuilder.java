@@ -1,4 +1,4 @@
-package com.sms_activate.util;
+package com.sms_activate;
 
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
@@ -11,7 +11,7 @@ import java.util.stream.Collectors;
  * An object keys and values in URL.
  * This class is designed for use as a drop-in replacement create url parameter string yourself.
  */
-public class URLBuilder {
+class URLBuilder {
   /**
    * API url.
    */

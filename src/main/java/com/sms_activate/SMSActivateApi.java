@@ -6,13 +6,8 @@ import com.sms_activate.activation.AccessStatusActivation;
 import com.sms_activate.activation.StateActivationResponse;
 import com.sms_activate.activation.StatusActivationRequest;
 import com.sms_activate.country.Country;
-import com.sms_activate.country.ServiceWithCountry;
-import com.sms_activate.error.BannedException;
-import com.sms_activate.error.BaseSMSActivateException;
-import com.sms_activate.error.NoBalanceException;
-import com.sms_activate.error.NoNumberException;
-import com.sms_activate.error.SQLServerException;
-import com.sms_activate.error.WrongParameterException;
+import com.sms_activate.country.ServiceByCountry;
+import com.sms_activate.error.*;
 import com.sms_activate.error.rent.ErrorRent;
 import com.sms_activate.error.rent.RentException;
 import com.sms_activate.phone.Phone;
@@ -26,15 +21,13 @@ import com.sms_activate.rent.StatusRentRequest;
 import com.sms_activate.service.Service;
 import com.sms_activate.service.ServiceWithCost;
 import com.sms_activate.service.ServiceWithForward;
-import com.sms_activate.util.URLBuilder;
-import com.sms_activate.util.Validator;
-import com.sms_activate.util.WebClient;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 import java.io.IOException;
 import java.lang.reflect.Type;
 import java.math.BigDecimal;
+import java.net.URL;
 import java.util.*;
 
 public class SMSActivateApi {
@@ -83,12 +76,12 @@ public class SMSActivateApi {
   @NotNull
   public BigDecimal getBalance()
       throws IOException, WrongParameterException, SQLServerException {
-    URLBuilder URLBuilder = new URLBuilder(new HashMap<String, Object>(){{
+    URLBuilder URLBuilder = new URLBuilder(new HashMap<String, Object>() {{
       put("api_key", apiKey);
       put("action", "getBalance");
     }});
 
-    String data = WebClient.get(URLBuilder.build());
+    String data = WebClient.get(new URL(URLBuilder.build()));
     Validator.throwWrongParameterException(data);
 
     if (data.contains("SQL")) {
@@ -111,12 +104,12 @@ public class SMSActivateApi {
   @NotNull
   public BigDecimal getBalanceAndCashBack()
       throws IOException, WrongParameterException, SQLServerException {
-    URLBuilder URLBuilder = new URLBuilder(new HashMap<String, Object>(){{
+    URLBuilder URLBuilder = new URLBuilder(new HashMap<String, Object>() {{
       put("api_key", apiKey);
       put("action", "getBalanceAndCashBack");
     }});
 
-    String data = WebClient.get(URLBuilder.build());
+    String data = WebClient.get(new URL(URLBuilder.build()));
     Validator.throwWrongParameterException(data);
 
     if (data.contains("SQL")) {
@@ -160,14 +153,15 @@ public class SMSActivateApi {
         .append("country", countryId)
         .append("operator", operator);
 
-    String data = WebClient.get(URLBuilder.build());
+    String data = WebClient.get(new URL(URLBuilder.build()));
     Validator.throwWrongParameterException(data);
 
     if (data.contains("SQL")) {
       throw new SQLServerException();
     }
 
-    Type type = new TypeToken<Map<String, String>>() {}.getType();
+    Type type = new TypeToken<Map<String, String>>() {
+    }.getType();
     Map<String, String> serviceMap = gson.fromJson(data, type);
     List<ServiceWithForward> serviceList = new ArrayList<>();
 
@@ -239,7 +233,7 @@ public class SMSActivateApi {
         .append("operator", operator)
         .append("forward", forward ? "1" : "0");
 
-    String data = WebClient.get(URLBuilder.build());
+    String data = WebClient.get(new URL(URLBuilder.build()));
 
     Validator.throwWrongParameterException(data);
     Validator.throwNoNumbersOrNoBalance(data);
@@ -324,7 +318,7 @@ public class SMSActivateApi {
         .append("multiForward", multiForward)
         .append("operator", operator);
 
-    String data = WebClient.get(URLBuilder.build());
+    String data = WebClient.get(new URL(URLBuilder.build()));
 
     Validator.throwWrongParameterException(data);
     Validator.throwNoNumbersOrNoBalance(data);
@@ -336,7 +330,8 @@ public class SMSActivateApi {
       throw new BannedException(date);
     }
 
-    Type type = new TypeToken<List<Map<String, Object>>>() {}.getType();
+    Type type = new TypeToken<List<Map<String, Object>>>() {
+    }.getType();
     List<Map<String, Object>> phoneMapList = gson.fromJson(data, type);
     List<Phone> phoneList = new ArrayList<>();
 
@@ -396,7 +391,7 @@ public class SMSActivateApi {
         .append("id", phone.getId())
         .append("forward", forward ? "1" : "0");
 
-    String data = WebClient.get(URLBuilder.build());
+    String data = WebClient.get(new URL(URLBuilder.build()));
     Validator.throwWrongParameterException(data);
 
     return AccessStatusActivation.getStatusByName(data);
@@ -418,7 +413,7 @@ public class SMSActivateApi {
     URLBuilder.append("action", "getStatus")
         .append("id", phone.getId());
 
-    String data = WebClient.get(URLBuilder.build());
+    String data = WebClient.get(new URL(URLBuilder.build()));
     String name = data;
     String code = null;
 
@@ -449,15 +444,16 @@ public class SMSActivateApi {
    * @throws IOException             if an I/O exception occurs.
    * @throws WrongParameterException if one of parameters is incorrect.
    * @throws SQLServerException      if error happened on SQL-server.
+   * @throws WrongResponse           if server response is not correct.
    */
   @NotNull
   public String getFullSms(@NotNull Phone phone)
-      throws IOException, SQLServerException, WrongParameterException {
+      throws IOException, SQLServerException, WrongParameterException, WrongResponse {
     URLBuilder URLBuilder = new URLBuilder("api_key", apiKey);
     URLBuilder.append("action", "getFullSms")
         .append("id", phone.getId());
 
-    String data = WebClient.get(URLBuilder.build());
+    String data = WebClient.get(new URL(URLBuilder.build()));
     Validator.throwWrongParameterException(data);
 
     if (data.contains("SQL")) {
@@ -467,7 +463,12 @@ public class SMSActivateApi {
     if (data.contains("FULL")) {
       return data.split(":")[1];
     } else {
-      return "";
+      StateActivationResponse stateActivationResponse = StateActivationResponse.getStateByName(data);
+
+      throw new WrongResponse(
+          stateActivationResponse.getEnglishMessage(),
+          stateActivationResponse.getRussianMessage()
+      );
     }
   }
 
@@ -477,18 +478,15 @@ public class SMSActivateApi {
    * @return price list country.
    * @throws IOException             if an I/O exception occurs.
    * @throws WrongParameterException if one of parameters is incorrect.
-   * @throws BannedException         if account has been banned.
    * @throws SQLServerException      if error happened on SQL-server.
-   * @throws NoBalanceException      if no numbers.
-   * @throws NoNumberException       if in account balance is zero.
    */
   @NotNull
-  public List<ServiceWithCountry> getPrices() throws SQLServerException, NoBalanceException, IOException, BannedException, NoNumberException, WrongParameterException {
+  public List<ServiceByCountry> getPrices() throws SQLServerException, IOException, WrongParameterException {
     return getPrices(null, null);
   }
 
   /**
-   * Returns the actual prices by country.
+   * Returns the actual rent prices by country.
    *
    * @param service   service for needed price list (default null).
    *                  <pre>{@code null, null -> all service and all country.}</pre>
@@ -499,7 +497,7 @@ public class SMSActivateApi {
    * @throws SQLServerException      if error happened on SQL-server.
    */
   @NotNull
-  public List<ServiceWithCountry> getPrices(Service service, Integer countryId)
+  public List<ServiceByCountry> getPrices(Service service, Integer countryId)
       throws IOException, SQLServerException, WrongParameterException {
 
     String shortNameService = (service == null) ? null : service.getShortName();
@@ -509,7 +507,7 @@ public class SMSActivateApi {
         .append("service", shortNameService)
         .append("country", countryId);
 
-    String data = WebClient.get(URLBuilder.build());
+    String data = WebClient.get(new URL(URLBuilder.build()));
 
     Validator.throwWrongParameterException(data);
 
@@ -517,9 +515,10 @@ public class SMSActivateApi {
       throw new SQLServerException();
     }
 
-    Type type = new TypeToken<Map<String, Map<String, Map<String, Double>>>>() {}.getType();
+    Type type = new TypeToken<Map<String, Map<String, Map<String, Double>>>>() {
+    }.getType();
     Map<String, Map<String, Map<String, Double>>> countryMap = gson.fromJson(data, type);
-    List<ServiceWithCountry> serviceWithCountryList = new ArrayList<>();
+    List<ServiceByCountry> serviceByCountryList = new ArrayList<>();
 
     countryMap.forEach((countryCode, serviceMap) -> {
       List<ServiceWithCost> serviceWithCostList = new ArrayList<>();
@@ -532,13 +531,13 @@ public class SMSActivateApi {
         ));
       });
 
-      serviceWithCountryList.add(new ServiceWithCountry(
+      serviceByCountryList.add(new ServiceByCountry(
           new Country(Integer.parseInt(countryCode)),
           serviceWithCostList
       ));
     });
 
-    return serviceWithCountryList;
+    return serviceByCountryList;
   }
 
   /**
@@ -557,7 +556,7 @@ public class SMSActivateApi {
       put("action", "getCountries");
     }});
 
-    String data = WebClient.get(URLBuilder.build());
+    String data = WebClient.get(new URL(URLBuilder.build()));
 
     Validator.throwWrongParameterException(data);
 
@@ -565,7 +564,8 @@ public class SMSActivateApi {
       throw new SQLServerException();
     }
 
-    Type type = new TypeToken<Map<String, Map<String, Object>>>() {}.getType();
+    Type type = new TypeToken<Map<String, Map<String, Object>>>() {
+    }.getType();
     Map<String, Map<String, Object>> countryInformationMap = gson.fromJson(data, type);
     List<Country> countryList = new ArrayList<>();
 
@@ -604,7 +604,7 @@ public class SMSActivateApi {
       put("action", "getQiwiRequisites");
     }});
 
-    String data = WebClient.get(URLBuilder.build());
+    String data = WebClient.get(new URL(URLBuilder.build()));
 
     Validator.throwWrongParameterException(data);
 
@@ -612,7 +612,8 @@ public class SMSActivateApi {
       throw new SQLServerException();
     }
 
-    Type type = new TypeToken<Map<String, String>>() {}.getType();
+    Type type = new TypeToken<Map<String, String>>() {
+    }.getType();
     Map<String, String> qiwiMap = gson.fromJson(data, type);
 
     QiwiStatus qiwiStatus = QiwiStatus.getStatusByName(qiwiMap.get("status").toUpperCase());
@@ -630,13 +631,14 @@ public class SMSActivateApi {
    * @throws SQLServerException      if error happened on SQL-server.
    */
   @NotNull
-  public Phone getAdditionalService(@NotNull Phone phone)
+  public Phone getAdditionalService(@NotNull Phone phone, @NotNull Service service)
       throws IOException, SQLServerException, WrongParameterException {
     URLBuilder URLBuilder = new URLBuilder("api_key", apiKey);
     URLBuilder.append("action", "getAdditionalService")
-        .append("parentId", phone.getId());
+        .append("parentId", phone.getId())
+        .append("service", service.getShortName());
 
-    String data = WebClient.get(URLBuilder.build());
+    String data = WebClient.get(new URL(URLBuilder.build()));
     Validator.throwWrongParameterException(data);
 
     if (data.contains("SQL")) {
@@ -684,14 +686,15 @@ public class SMSActivateApi {
         .append("order", "id")
         .append("orderBy", "asc");
 
-    String data = WebClient.get(URLBuilder.build());
+    String data = WebClient.get(new URL(URLBuilder.build()));
     Validator.throwWrongParameterException(data);
 
     if (data.contains("SQL")) {
       throw new SQLServerException();
     }
 
-    Type type = new TypeToken<Map<String, Object>>() {}.getType();
+    Type type = new TypeToken<Map<String, Object>>() {
+    }.getType();
 
     Map<String, Object> responseMap = gson.fromJson(data, type);
     if (responseMap.get("status").toString().equalsIgnoreCase("fail")) {
@@ -753,7 +756,7 @@ public class SMSActivateApi {
         .append("operator", operator)
         .append("time", time);
 
-    String data = WebClient.get(URLBuilder.build());
+    String data = WebClient.get(new URL(URLBuilder.build()));
 
     Validator.throwWrongParameterException(data);
 
@@ -761,7 +764,8 @@ public class SMSActivateApi {
       throw new SQLServerException();
     }
 
-    Type type = new TypeToken<Map<String, Map<String, Object>>>() {}.getType();
+    Type type = new TypeToken<Map<String, Map<String, Object>>>() {
+    }.getType();
     Map<String, Map<String, Object>> rentCountriesServices = gson.fromJson(data, type);
 
     Map<String, Object> countryMap = rentCountriesServices.get("countries");
@@ -792,7 +796,7 @@ public class SMSActivateApi {
 
     Country country = new Country(countryId);
 
-    return new Rent(operatorNameList, new ServiceWithCountry(country, serviceWithCostList), countryIdList);
+    return new Rent(operatorNameList, new ServiceByCountry(country, serviceWithCostList), countryIdList);
   }
 
   /**
@@ -845,14 +849,15 @@ public class SMSActivateApi {
         .append("url", urlWebhook)
         .append("service", service.getShortName());
 
-    String data = WebClient.get(URLBuilder.build());
+    String data = WebClient.get(new URL(URLBuilder.build()));
     Validator.throwWrongParameterException(data);
 
     if (data.contains("SQL")) {
       throw new SQLServerException();
     }
 
-    Type type = new TypeToken<Map<String, Object>>() {}.getType();
+    Type type = new TypeToken<Map<String, Object>>() {
+    }.getType();
     Map<String, Object> phoneMap = gson.fromJson(data, type);
     StatusRentNumberResponse statusRent = StatusRentNumberResponse.getStatusByName(phoneMap.get("status").toString().toUpperCase());
 
@@ -891,14 +896,15 @@ public class SMSActivateApi {
     URLBuilder.append("action", "getRentStatus").
         append("id", phone.getId());
 
-    String data = WebClient.get(URLBuilder.build());
+    String data = WebClient.get(new URL(URLBuilder.build()));
     Validator.throwWrongParameterException(data);
 
     if (data.contains("SQL")) {
       throw new SQLServerException();
     }
 
-    Type type = new TypeToken<Map<String, Object>>() {}.getType();
+    Type type = new TypeToken<Map<String, Object>>() {
+    }.getType();
     Map<String, Object> responseMap = gson.fromJson(data, type);
     StateRentResponse stateRentResponse = StateRentResponse.getStateRentByName(responseMap.get("status").toString());
 
@@ -943,14 +949,15 @@ public class SMSActivateApi {
         .append("id", phone.getId())
         .append("status", status.getId());
 
-    String data = WebClient.get(URLBuilder.build());
+    String data = WebClient.get(new URL(URLBuilder.build()));
     Validator.throwWrongParameterException(data);
 
     if (data.contains("SQL")) {
       throw new SQLServerException();
     }
 
-    Type type = new TypeToken<Map<String, String>>() {}.getType();
+    Type type = new TypeToken<Map<String, String>>() {
+    }.getType();
     Map<String, String> stateMap = gson.fromJson(data, type);
     StateRentResponse stateRentResponse = StateRentResponse.getStateRentByName(stateMap.get("status").toUpperCase());
 
@@ -981,14 +988,15 @@ public class SMSActivateApi {
       put("action", "getRentList");
     }});
 
-    String data = WebClient.get(URLBuilder.build());
+    String data = WebClient.get(new URL(URLBuilder.build()));
     Validator.throwWrongParameterException(data);
 
     if (data.contains("SQL")) {
       throw new SQLServerException();
     }
 
-    Type type = new TypeToken<Map<String, Object>>() {}.getType();
+    Type type = new TypeToken<Map<String, Object>>() {
+    }.getType();
     Map<String, Object> responseMap = gson.fromJson(data, type);
     StateRentResponse stateRentResponse = StateRentResponse.getStateRentByName(responseMap.get("status").toString().toUpperCase());
 

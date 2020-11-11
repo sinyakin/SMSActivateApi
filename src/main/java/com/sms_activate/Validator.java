@@ -1,4 +1,4 @@
-package com.sms_activate.util;
+package com.sms_activate;
 
 import com.sms_activate.error.*;
 import com.sms_activate.error.rent.ErrorRent;
@@ -6,7 +6,7 @@ import com.sms_activate.error.rent.RentException;
 import com.sms_activate.error.rent.TimeOutRentException;
 import org.jetbrains.annotations.NotNull;
 
-public class Validator {
+class Validator {
   /**
    * Throws the error by type.
    *

@@ -54,7 +54,7 @@ src
 
 ### Packages
 * activation
-* serviceWithCountry
+* serviceByCountry
 * error
   * rent
 * phone

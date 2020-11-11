@@ -5,7 +5,7 @@ import org.jetbrains.annotations.NotNull;
 
 import java.util.List;
 
-public class ServiceWithCountry {
+public class ServiceByCountry {
   /**
    * Information about country.
    */
@@ -22,7 +22,7 @@ public class ServiceWithCountry {
    * @param country  information about country.
    * @param serviceWithCostList list services in country.
    */
-  public ServiceWithCountry(@NotNull Country country, @NotNull List<ServiceWithCost> serviceWithCostList) {
+  public ServiceByCountry(@NotNull Country country, @NotNull List<ServiceWithCost> serviceWithCostList) {
     this.country = country;
     this.serviceWithCostList = serviceWithCostList;
   }
