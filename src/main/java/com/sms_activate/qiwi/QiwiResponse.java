@@ -7,17 +7,17 @@ public class QiwiResponse {
   /**
    * Status qiwi wallet.
    */
-  private QiwiStatus qiwiStatus;
+  private final QiwiStatus qiwiStatus;
 
   /**
    * Number qiwi wallet.
    */
-  private String walletNumber;
+  private final String walletNumber;
 
   /**
    * Comment specified in payment.
    */
-  private String comment;
+  private final String comment;
 
   /**
    * Constructor the qiwi response with status, walletNumber.
