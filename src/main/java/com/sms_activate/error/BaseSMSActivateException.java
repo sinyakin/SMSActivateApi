@@ -14,7 +14,7 @@ public class BaseSMSActivateException extends Exception {
   private final String russianMessage;
 
   /**
-   * Constructor base sms activate exception with sublang.
+   * Constructor base sms activate exception with multilang.
    *
    * @param englishMessage message on england language.
    * @param russianMessage message on russian language.

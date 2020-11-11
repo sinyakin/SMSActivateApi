@@ -7,7 +7,13 @@ import com.sms_activate.activation.StateActivationResponse;
 import com.sms_activate.activation.StatusActivationRequest;
 import com.sms_activate.country.Country;
 import com.sms_activate.country.ServiceByCountry;
-import com.sms_activate.error.*;
+import com.sms_activate.error.BannedException;
+import com.sms_activate.error.BaseSMSActivateException;
+import com.sms_activate.error.NoBalanceException;
+import com.sms_activate.error.NoNumberException;
+import com.sms_activate.error.SQLServerException;
+import com.sms_activate.error.WrongParameterException;
+import com.sms_activate.error.WrongResponse;
 import com.sms_activate.error.rent.ErrorRent;
 import com.sms_activate.error.rent.RentException;
 import com.sms_activate.phone.Phone;
@@ -73,6 +79,7 @@ public class SMSActivateApi {
 
   /**
    * Returns the referral link.
+   *
    * @return referral link
    */
   @NotNull
@@ -305,7 +312,7 @@ public class SMSActivateApi {
    */
   @NotNull
   public List<Phone> getMultiServiceNumber(@NotNull String multiService, int countryId,
-      @Nullable String multiForward, @Nullable String operator
+                                           @Nullable String multiForward, @Nullable String operator
   ) throws IOException, WrongParameterException, BannedException, SQLServerException, NoBalanceException, NoNumberException {
     String trimMultiService = multiService.replace("\\s", "");
 
@@ -843,7 +850,7 @@ public class SMSActivateApi {
   ) throws IOException, SQLServerException, WrongParameterException, RentException, NoBalanceException, NoNumberException {
     URLBuilder URLBuilder = new URLBuilder("api_key", apiKey);
     URLBuilder.append("action", "getRentNumber")
-        .append("time", time)
+        .append("rent_time", time)
         .append("country", countryId)
         .append("operator", operator)
         .append("url", urlWebhook)

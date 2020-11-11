@@ -8,7 +8,7 @@ public class PhoneRent extends Phone {
   /**
    * End date of rent
    */
-  private String endDate;
+  private final String endDate;
 
   /**
    * Constructor of phone rent.

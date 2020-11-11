@@ -4,7 +4,7 @@ import org.jetbrains.annotations.NotNull;
 
 public class WrongResponse extends BaseSMSActivateException {
   /**
-   * Constructor sms activate exception with sublang.
+   * Constructor sms activate exception with multilang.
    *
    * @param englishMessage message on england language.
    * @param russianMessage message on russian language.
