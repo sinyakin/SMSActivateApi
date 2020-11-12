@@ -1,7 +1,7 @@
 package example;
 import com.sms_activate.SMSActivateApi;
-import com.sms_activate.error.SQLServerException;
-import com.sms_activate.error.WrongParameterException;
+import com.sms_activate.error.common.SQLServerException;
+import com.sms_activate.error.common.WrongParameterException;
 import com.sms_activate.service.ServiceWithForward;
 
 import java.io.IOException;
@@ -15,8 +15,9 @@ public class GetNumbersStatusRun {
       List<ServiceWithForward> serviceWithForwardList = smsActivateApi.getNumbersStatus();
 
       for (ServiceWithForward serviceWithForward : serviceWithForwardList) {
-        System.out.println("short name: " + serviceWithForward.getShortName());
-        System.out.println("count number: " + serviceWithForward.getCountNumber());
+        System.out.println("> short name: " + serviceWithForward.getShortName());
+        System.out.println(">> count number: " + serviceWithForward.getCountNumber());
+        System.out.println("----------------------------------------------------\n");
       }
     } catch (WrongParameterException | SQLServerException e) {
       System.out.println(e.getEnglishMessage());

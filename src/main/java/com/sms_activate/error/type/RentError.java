@@ -1,19 +1,16 @@
-package com.sms_activate.error.rent;
+package com.sms_activate.error.type;
 
 import org.jetbrains.annotations.NotNull;
 
-public enum ErrorRent {
-  ALREADY_FINISH("ALREADY_FINISH", "Аренда уже завершена.", "Rent has been finish."),
-  ALREADY_CANCEL("ALREADY_CANCEL", "Аренда уже отменена.", "Rent has been cancel."),
+public enum RentError {
+  ALREADY_FINISH("ALREADY_FINISH", "Аренда уже завершена.", "Rent has been finished."),
+  ALREADY_CANCEL("ALREADY_CANCEL", "Аренда уже отменена.", "Rent has been canceled."),
+  STATUS_FINISH("STATUS_FINISH", "Аренда оплачна и завершена.", "Rent has been payed and finished."),
+  STATUS_CANCEL("STATUS_CANCEL", "Аренда отменена с возвратом денег.", "Rent canceled with a refund."),
+  STATUS_WAIT_CODE("STATUS_WAIT_CODE", "Ожидание первой смс.", "Waiting first sms."),
   NO_ID_RENT("NO_ID_RENT", "Не указан id Аренды.", "Not specified id rent."),
-  INCORECT_STATUS("INCORECT_STATUS", "Отсутствует или неправильно указан статус.", "Missing or incorrect status."),
   CANT_CANCEL("CANT_CANCEL", "Невозможно отменить аренду (более 20 мин.).", "It is impossible to cancel the lease (more than 20 minutes)."),
   INVALID_PHONE("INVALID_PHONE", "Номер арендован не вами (неправильный id аренды).", "The room was not rented by you (wrong rental id)."),
-  // todo decompose
-  SQL_ERROR("SQL_ERROR", "Ошибка sql сервера.", "Error sql server."),
-  NO_NUMBERS("NO_NUMBERS", "Арендованных номеров нет.", "There are no rented numbers."),
-  ACCOUNT_INACTIVE("ACCOUNT_INACTIVE", "Свободных номеров нет.", "There are no vacant numbers."),
-  NO_BALANCE("NO_BALANCE", "Нет денег на счету.", "Balance in your account is zero."),
   UNKNOWN("UNKNOWN", "Неизвестная ошибка аренды.", "Unknown rent error.");
 
   /**
@@ -37,20 +34,10 @@ public enum ErrorRent {
    * @param russianMessage error message on russian.
    * @param englishMessage error message on england.
    */
-  ErrorRent(@NotNull String response, @NotNull String russianMessage, @NotNull String englishMessage) {
+  RentError(@NotNull String response, @NotNull String russianMessage, @NotNull String englishMessage) {
     this.russianMessage = russianMessage;
     this.englishMessage = englishMessage;
     this.response = response;
-  }
-
-  /**
-   * Returns the response from server.
-   *
-   * @return response from server.
-   */
-  @NotNull
-  protected String getResponse() {
-    return this.response;
   }
 
   /**
@@ -90,12 +77,12 @@ public enum ErrorRent {
    * @return state error.
    */
   @NotNull
-  public static ErrorRent getStateByName(@NotNull String name) {
+  public static RentError getErroByName(@NotNull String name) {
     name = name.toUpperCase();
 
-    for (ErrorRent errorRent : values()) {
-      if (errorRent.response.equals(name)) {
-        return errorRent;
+    for (RentError rentError : values()) {
+      if (rentError.response.equals(name)) {
+        return rentError;
       }
     }
 

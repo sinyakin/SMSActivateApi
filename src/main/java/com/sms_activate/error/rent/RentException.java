@@ -1,6 +1,6 @@
 package com.sms_activate.error.rent;
 
-import com.sms_activate.error.BaseSMSActivateException;
+import com.sms_activate.error.common.BaseSMSActivateException;
 import org.jetbrains.annotations.NotNull;
 
 public class RentException extends BaseSMSActivateException {

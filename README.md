@@ -87,11 +87,13 @@ For checking all services use method getNumbersStatus
 
 Example
 ```java
-SMSActivateApi smsActivateApi = new SMSActivateApi("65942e7978ce8d2fc9f31bAffd325160", "937725");
+SMSActivateApi smsActivateApi = new SMSActivateApi("API_KEY", "REFERRAL_LINK");
 List<ServiceWithForward> serviceWithForwardList = smsActivateApi.getNumbersStatus();
 
+System.out.println("List of available services:"\n);
 for (ServiceWithForward serviceWithForward : serviceWithForwardList) {
-  System.out.println("short name: " + serviceWithForward.getShortName());
-  System.out.println("count number: " + serviceWithForward.getCountNumber());
+  System.out.println("> short name: " + serviceWithForward.getShortName());
+  System.out.println(">> count number: " + serviceWithForward.getCountNumber());
+  System.out.println("--------------------------------------------------------\n")
 }
 ```

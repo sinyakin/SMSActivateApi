@@ -8,13 +8,12 @@ import com.sms_activate.activation.StatusActivationRequest;
 import com.sms_activate.country.Country;
 import com.sms_activate.country.ServiceByCountry;
 import com.sms_activate.error.BannedException;
-import com.sms_activate.error.BaseSMSActivateException;
 import com.sms_activate.error.NoBalanceException;
 import com.sms_activate.error.NoNumberException;
-import com.sms_activate.error.SQLServerException;
-import com.sms_activate.error.WrongParameterException;
-import com.sms_activate.error.WrongResponse;
-import com.sms_activate.error.rent.ErrorRent;
+import com.sms_activate.error.WrongResponseException;
+import com.sms_activate.error.common.BaseSMSActivateException;
+import com.sms_activate.error.common.SQLServerException;
+import com.sms_activate.error.common.WrongParameterException;
 import com.sms_activate.error.rent.RentException;
 import com.sms_activate.phone.Phone;
 import com.sms_activate.phone.PhoneRent;
@@ -35,10 +34,14 @@ import java.math.BigDecimal;
 import java.util.*;
 
 /**
- * TODO:
- *  remove other
+ * <p>The class is a high-level API for interacting with the SMS-Activate API.
+ * API capabilities allow you to work with the service through your software.
+ * Before starting work, you must have an API key and a referral link to use all the API capabilities.</p>
+ *
+ * <p>All methods and constructor for this class throw WrongParameterException</p>
+ *
+ * @see WrongParameterException
  */
-
 public class SMSActivateApi {
   /**
    * Json deserializer and serializer.
@@ -105,14 +108,10 @@ public class SMSActivateApi {
       put(URLKey.API_KEY.getName(), apiKey);
       put(URLKey.ACTION.getName(), "getBalance");
     }});
-// TODO: 11.11.2020
 
     String data = WebClient.get(URLBuilder.build());
-    Validator.throwWrongParameterException(data);
 
-    if (data.contains("SQL")) {
-      throw new SQLServerException();
-    }
+    Validator.throwCommonExceptionByName(data);
 
     String[] parts = data.split(":");
 
@@ -136,11 +135,8 @@ public class SMSActivateApi {
     }});
 
     String data = WebClient.get(URLBuilder.build());
-    Validator.throwWrongParameterException(data);
 
-    if (data.contains("SQL")) {
-      throw new SQLServerException();
-    }
+    Validator.throwCommonExceptionByName(data);
 
     String[] parts = data.split(":");
 
@@ -180,14 +176,12 @@ public class SMSActivateApi {
         .append(URLKey.OPERATOR.getName(), operator);
 
     String data = WebClient.get(URLBuilder.build());
-    Validator.throwWrongParameterException(data);
 
-    if (data.contains("SQL")) {
-      throw new SQLServerException();
-    }
+    Validator.throwCommonExceptionByName(data);
 
     Type type = new TypeToken<Map<String, String>>() {
     }.getType();
+
     Map<String, String> serviceMap = gson.fromJson(data, type);
     List<ServiceWithForward> serviceList = new ArrayList<>();
 
@@ -258,12 +252,10 @@ public class SMSActivateApi {
 
     String data = WebClient.get(URLBuilder.build());
 
-    Validator.throwWrongParameterException(data);
-    Validator.throwNoNumbersOrNoBalance(data);
+    Validator.throwCommonExceptionByName(data);
+    Validator.throwNoNumbersOrNoBalanceExceptionByName(data);
 
-    if (data.contains("SQL")) {
-      throw new SQLServerException();
-    } else if (data.contains("BANNED")) {
+    if (data.contains("BANNED")) {
       String date = data.split(":")[1];
       throw new BannedException(date);
     }
@@ -334,18 +326,17 @@ public class SMSActivateApi {
 
     String data = WebClient.get(URLBuilder.build());
 
-    Validator.throwWrongParameterException(data);
-    Validator.throwNoNumbersOrNoBalance(data);
+    Validator.throwCommonExceptionByName(data);
+    Validator.throwNoNumbersOrNoBalanceExceptionByName(data);
 
-    if (data.contains("SQL")) {
-      throw new SQLServerException();
-    } else if (data.contains("BANNED")) {
+    if (data.contains("BANNED")) {
       String date = data.split(":")[1];
       throw new BannedException(date);
     }
 
     Type type = new TypeToken<List<Map<String, Object>>>() {
     }.getType();
+
     List<Map<String, Object>> phoneMapList = gson.fromJson(data, type);
     List<Phone> phoneList = new ArrayList<>();
 
@@ -376,10 +367,11 @@ public class SMSActivateApi {
    * @return access activation.
    * @throws IOException             if an I/O exception occurs.
    * @throws WrongParameterException if one of parameters is incorrect.
+   * @throws SQLServerException      if error happened on SQL-server.
    */
   @NotNull
   public AccessStatusActivation setStatus(@NotNull Phone phone, @NotNull StatusActivationRequest status)
-      throws IOException, WrongParameterException {
+      throws IOException, WrongParameterException, SQLServerException {
     return setStatus(phone, status, false);
   }
 
@@ -392,10 +384,11 @@ public class SMSActivateApi {
    * @return access activation.
    * @throws IOException             if an I/O exception occurs.
    * @throws WrongParameterException if one of parameters is incorrect.
+   * @throws SQLServerException      if error happened on SQL-server.
    */
   @NotNull
   public AccessStatusActivation setStatus(@NotNull Phone phone, @NotNull StatusActivationRequest status, boolean forward)
-      throws IOException, WrongParameterException {
+      throws IOException, WrongParameterException, SQLServerException {
     URLBuilder URLBuilder = new URLBuilder(URLKey.API_KEY.getName(), apiKey);
     URLBuilder.append(URLKey.ACTION.getName(), "setStatus")
         .append(URLKey.STATUS.getName(), status.getId())
@@ -403,7 +396,8 @@ public class SMSActivateApi {
         .append(URLKey.FORWARD.getName(), forward ? "1" : "0");
 
     String data = WebClient.get(URLBuilder.build());
-    Validator.throwWrongParameterException(data);
+
+    Validator.throwCommonExceptionByName(data);
 
     return AccessStatusActivation.getStatusByName(data);
   }
@@ -425,23 +419,18 @@ public class SMSActivateApi {
         .append(URLKey.ID.getName(), phone.getId());
 
     String data = WebClient.get(URLBuilder.build());
-    String name = data;
     String code = null;
 
-    Validator.throwWrongParameterException(data);
-
-    if (data.contains("SQL")) {
-      throw new SQLServerException();
-    }
+    Validator.throwCommonExceptionByName(data);
 
     if (data.contains(":")) {
       String[] parts = data.split(":");
 
-      name = parts[0];
+      data = parts[0];
       code = parts[1];
     }
 
-    StateActivationResponse state = StateActivationResponse.getStateByName(name);
+    StateActivationResponse state = StateActivationResponse.getStateByName(data);
     state.setCodeFromSMS(code);
 
     return state;
@@ -455,28 +444,25 @@ public class SMSActivateApi {
    * @throws IOException             if an I/O exception occurs.
    * @throws WrongParameterException if one of parameters is incorrect.
    * @throws SQLServerException      if error happened on SQL-server.
-   * @throws WrongResponse           if server response is not correct.
+   * @throws WrongResponseException  if server response is not correct.
    */
   @NotNull
   public String getFullSms(@NotNull Phone phone)
-      throws IOException, SQLServerException, WrongParameterException, WrongResponse {
+      throws IOException, SQLServerException, WrongParameterException, WrongResponseException {
     URLBuilder URLBuilder = new URLBuilder(URLKey.API_KEY.getName(), apiKey);
     URLBuilder.append(URLKey.ACTION.getName(), "getFullSms")
         .append(URLKey.ID.getName(), phone.getId());
 
     String data = WebClient.get(URLBuilder.build());
-    Validator.throwWrongParameterException(data);
 
-    if (data.contains("SQL")) {
-      throw new SQLServerException();
-    }
+    Validator.throwCommonExceptionByName(data);
 
     if (data.contains("FULL")) {
       return data.split(":")[1];
     } else {
       StateActivationResponse stateActivationResponse = StateActivationResponse.getStateByName(data);
 
-      throw new WrongResponse(
+      throw new WrongResponseException(
           stateActivationResponse.getEnglishMessage(),
           stateActivationResponse.getRussianMessage()
       );
@@ -510,9 +496,7 @@ public class SMSActivateApi {
   @NotNull
   public List<ServiceByCountry> getPrices(Service service, Integer countryId)
       throws IOException, SQLServerException, WrongParameterException {
-
     String shortNameService = (service == null) ? null : service.getShortName();
-// TODO: 11.11.2020
 
     URLBuilder URLBuilder = new URLBuilder(URLKey.API_KEY.getName(), apiKey);
     URLBuilder.append(URLKey.ACTION.getName(), "getPrices")
@@ -521,14 +505,11 @@ public class SMSActivateApi {
 
     String data = WebClient.get(URLBuilder.build());
 
-    Validator.throwWrongParameterException(data);
-
-    if (data.contains("SQL")) {
-      throw new SQLServerException();
-    }
+    Validator.throwCommonExceptionByName(data);
 
     Type type = new TypeToken<Map<String, Map<String, Map<String, Double>>>>() {
     }.getType();
+
     Map<String, Map<String, Map<String, Double>>> countryMap = gson.fromJson(data, type);
     List<ServiceByCountry> serviceByCountryList = new ArrayList<>();
 
@@ -570,19 +551,16 @@ public class SMSActivateApi {
 
     String data = WebClient.get(URLBuilder.build());
 
-    Validator.throwWrongParameterException(data);
-
-    if (data.contains("SQL")) {
-      throw new SQLServerException();
-    }
+    Validator.throwCommonExceptionByName(data);
 
     Type type = new TypeToken<Map<String, Map<String, Object>>>() {
     }.getType();
+
     Map<String, Map<String, Object>> countryInformationMap = gson.fromJson(data, type);
     List<Country> countryList = new ArrayList<>();
 
     for (Map<String, Object> countryMap : countryInformationMap.values()) {
-      int id = new BigDecimal(countryMap.get(URLKey.ID.getName()).toString()).intValue();
+      int id = new BigDecimal(countryMap.get("id").toString()).intValue();
 
       String rus = countryMap.get("rus").toString();
       String eng = countryMap.get("eng").toString();
@@ -618,17 +596,13 @@ public class SMSActivateApi {
 
     String data = WebClient.get(URLBuilder.build());
 
-    Validator.throwWrongParameterException(data);
-
-    if (data.contains("SQL")) {
-      throw new SQLServerException();
-    }
+    Validator.throwCommonExceptionByName(data);
 
     Type type = new TypeToken<Map<String, String>>() {
     }.getType();
     Map<String, String> qiwiMap = gson.fromJson(data, type);
 
-    QiwiStatus qiwiStatus = QiwiStatus.getStatusByName(qiwiMap.get(URLKey.STATUS.getName()).toUpperCase());
+    QiwiStatus qiwiStatus = QiwiStatus.getStatusByName(qiwiMap.get("status").toUpperCase());
 
     return new QiwiResponse(qiwiStatus, qiwiMap.get("wallet"), qiwiMap.get("comment"));
   }
@@ -651,11 +625,8 @@ public class SMSActivateApi {
         .append(URLKey.SERVICE.getName(), service.getShortName());
 
     String data = WebClient.get(URLBuilder.build());
-    Validator.throwWrongParameterException(data);
 
-    if (data.contains("SQL")) {
-      throw new SQLServerException();
-    }
+    Validator.throwCommonExceptionByName(data);
 
     String[] parts = data.split(":");
     String number = parts[2];
@@ -687,10 +658,11 @@ public class SMSActivateApi {
    * @throws IOException             if an I/O exception occurs.
    * @throws WrongParameterException if one of parameters is incorrect.
    * @throws SQLServerException      if error happened on SQL-server.
+   * @throws WrongResponseException  if response incorrect.
    */
   @NotNull
   public List<Phone> getCurrentActivationsDataTables(int start, int length)
-      throws IOException, BaseSMSActivateException {
+      throws IOException, WrongResponseException, BaseSMSActivateException {
     URLBuilder URLBuilder = new URLBuilder(URLKey.API_KEY.getName(), apiKey);
     URLBuilder.append(URLKey.ACTION.getName(), "getCurrentActivationsDataTables")
         .append(URLKey.START.getName(), start)
@@ -699,17 +671,15 @@ public class SMSActivateApi {
         .append(URLKey.ORDER_BY.getName(), "asc");
 
     String data = WebClient.get(URLBuilder.build());
-    Validator.throwWrongParameterException(data);
 
-    if (data.contains("SQL")) {
-      throw new SQLServerException();
-    }
+    Validator.throwCommonExceptionByName(data);
 
     Type type = new TypeToken<Map<String, Object>>() {
     }.getType();
 
     Map<String, Object> responseMap = gson.fromJson(data, type);
-    if (responseMap.get(URLKey.STATUS.getName()).toString().equalsIgnoreCase("fail")) {
+
+    if (responseMap.get("status").toString().equalsIgnoreCase("fail")) {
       throw new BaseSMSActivateException("No activations.", "Нет активаций.");
     }
 
@@ -717,11 +687,11 @@ public class SMSActivateApi {
     List<Phone> phoneList = new ArrayList<>();
 
     for (Map<String, Object> currentPhoneActivationMap : currentPhoneActivationList) {
-      int id = new BigDecimal(currentPhoneActivationMap.get(URLKey.ID.getName()).toString()).intValue();
-      boolean forward = Boolean.parseBoolean(currentPhoneActivationMap.get(URLKey.FORWARD.getName()).toString());
+      int id = new BigDecimal(currentPhoneActivationMap.get("id").toString()).intValue();
+      boolean forward = Boolean.parseBoolean(currentPhoneActivationMap.get("forward").toString());
 
       String number = String.valueOf(currentPhoneActivationMap.get("phone"));
-      Service service = new Service(currentPhoneActivationMap.get(URLKey.SERVICE.getName()).toString());
+      Service service = new Service(currentPhoneActivationMap.get("service").toString());
 
       phoneList.add(new Phone(number, service, id, forward));
     }
@@ -770,14 +740,11 @@ public class SMSActivateApi {
 
     String data = WebClient.get(URLBuilder.build());
 
-    Validator.throwWrongParameterException(data);
-
-    if (data.contains("SQL")) {
-      throw new SQLServerException();
-    }
+    Validator.throwCommonExceptionByName(data);
 
     Type type = new TypeToken<Map<String, Map<String, Object>>>() {
     }.getType();
+
     Map<String, Map<String, Object>> rentCountriesServices = gson.fromJson(data, type);
 
     Map<String, Object> countryMap = rentCountriesServices.get("countries");
@@ -860,22 +827,19 @@ public class SMSActivateApi {
         .append(URLKey.SERVICE.getName(), service.getShortName());
 
     String data = WebClient.get(URLBuilder.build());
-    Validator.throwWrongParameterException(data);
 
-    if (data.contains("SQL")) {
-      throw new SQLServerException();
-    }
+    Validator.throwCommonExceptionByName(data);
+    Validator.throwNoNumbersOrNoBalanceExceptionByName(data);
 
     Type type = new TypeToken<Map<String, Object>>() {
     }.getType();
+
     Map<String, Object> phoneMap = gson.fromJson(data, type);
     StateRentResponse statusRent = StateRentResponse.getStateRentByName(phoneMap.get("status").toString().toUpperCase());
 
     if (statusRent == StateRentResponse.ERROR) {
-      String errorMessage = phoneMap.get("message").toString();
-      ErrorRent errorRent = ErrorRent.getStateByName(errorMessage);
-
-      Validator.throwStateErrorRent(errorRent);
+      String error = phoneMap.get("message").toString();
+      Validator.throwRentExceptionsByName(error);
     }
 
     phoneMap = (Map<String, Object>) phoneMap.get("phone");
@@ -907,20 +871,19 @@ public class SMSActivateApi {
         append(URLKey.ID.getName(), phone.getId());
 
     String data = WebClient.get(URLBuilder.build());
-    Validator.throwWrongParameterException(data);
 
-    if (data.contains("SQL")) {
-      throw new SQLServerException();
-    }
+    Validator.throwCommonExceptionByName(data);
+    Validator.throwNoNumbersOrNoBalanceExceptionByName(data);
 
     Type type = new TypeToken<Map<String, Object>>() {
     }.getType();
+
     Map<String, Object> responseMap = gson.fromJson(data, type);
-    StateRentResponse stateRentResponse = StateRentResponse.getStateRentByName(responseMap.get(URLKey.STATUS.getName()).toString());
+    StateRentResponse stateRentResponse = StateRentResponse.getStateRentByName(responseMap.get("status").toString());
 
     if (stateRentResponse == StateRentResponse.ERROR) {
-      ErrorRent errorRent = ErrorRent.getStateByName(responseMap.get("message").toString());
-      Validator.throwStateErrorRent(errorRent);
+      String error = responseMap.get("message").toString();
+      Validator.throwRentExceptionsByName(error);
     }
 
     Map<String, Map<String, Object>> valuesMap = (Map<String, Map<String, Object>>) responseMap.get("values");
@@ -960,20 +923,18 @@ public class SMSActivateApi {
         .append(URLKey.STATUS.getName(), status.getId());
 
     String data = WebClient.get(URLBuilder.build());
-    Validator.throwWrongParameterException(data);
 
-    if (data.contains("SQL")) {
-      throw new SQLServerException();
-    }
+    Validator.throwCommonExceptionByName(data);
 
     Type type = new TypeToken<Map<String, String>>() {
     }.getType();
+
     Map<String, String> stateMap = gson.fromJson(data, type);
-    StateRentResponse stateRentResponse = StateRentResponse.getStateRentByName(stateMap.get(URLKey.STATUS.getName()).toUpperCase());
+    StateRentResponse stateRentResponse = StateRentResponse.getStateRentByName(stateMap.get("status").toUpperCase());
 
     if (stateRentResponse == StateRentResponse.ERROR) {
-      ErrorRent errorRent = ErrorRent.getStateByName(stateMap.get("message"));
-      Validator.throwStateErrorRent(errorRent);
+      String error = stateMap.get("message");
+      Validator.throwRentExceptionsByName(error);
     }
 
     return StateRentResponse.SUCCESS;
@@ -999,20 +960,19 @@ public class SMSActivateApi {
     }});
 
     String data = WebClient.get(URLBuilder.build());
-    Validator.throwWrongParameterException(data);
 
-    if (data.contains("SQL")) {
-      throw new SQLServerException();
-    }
+    Validator.throwCommonExceptionByName(data);
+    Validator.throwNoNumbersOrNoBalanceExceptionByName(data);
 
     Type type = new TypeToken<Map<String, Object>>() {
     }.getType();
+
     Map<String, Object> responseMap = gson.fromJson(data, type);
-    StateRentResponse stateRentResponse = StateRentResponse.getStateRentByName(responseMap.get(URLKey.STATUS.getName()).toString().toUpperCase());
+    StateRentResponse stateRentResponse = StateRentResponse.getStateRentByName(responseMap.get("status").toString().toUpperCase());
 
     if (stateRentResponse != StateRentResponse.SUCCESS) {
-      ErrorRent errorRent = ErrorRent.getStateByName(responseMap.get("message").toString().toUpperCase());
-      Validator.throwStateErrorRent(errorRent);
+      String error = responseMap.get("message").toString();
+      Validator.throwRentExceptionsByName(error);
     }
 
     Map<String, Map<String, Object>> valuesMap = (Map<String, Map<String, Object>>) responseMap.get("values");

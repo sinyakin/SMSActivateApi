@@ -1,5 +1,6 @@
 package com.sms_activate.error;
 
+import com.sms_activate.error.common.BaseSMSActivateException;
 import org.jetbrains.annotations.NotNull;
 
 public class BannedException extends BaseSMSActivateException {

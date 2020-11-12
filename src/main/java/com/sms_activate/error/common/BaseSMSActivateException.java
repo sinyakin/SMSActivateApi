@@ -1,4 +1,4 @@
-package com.sms_activate.error;
+package com.sms_activate.error.common;
 
 import org.jetbrains.annotations.NotNull;
 
@@ -54,6 +54,6 @@ public class BaseSMSActivateException extends Exception {
   @Override
   @NotNull
   public String getMessage() {
-    return String.join(" / ", englishMessage, russianMessage);
+    return String.join("/", englishMessage, russianMessage);
   }
 }
