@@ -621,7 +621,7 @@ public class SMSActivateApi {
       throws IOException, SQLServerException, WrongParameterException {
     URLBuilder URLBuilder = new URLBuilder(URLKey.API_KEY.getName(), apiKey);
     URLBuilder.append(URLKey.ACTION.getName(), "getAdditionalService")
-        .append(URLKey.PARENT_ID.getName(), phone.getId())
+        .append(URLKey.ID.getName(), phone.getId())
         .append(URLKey.SERVICE.getName(), service.getShortName());
 
     String data = WebClient.get(URLBuilder.build());

@@ -6,7 +6,7 @@ import org.jetbrains.annotations.NotNull;
  * URL key for handle in server.
  */
 enum URLKey {
-  API_KEY("apiKey"),
+  API_KEY("api_key"),
   ID("id"),
   SERVICE("service"),
   STATUS("status"),
@@ -24,8 +24,7 @@ enum URLKey {
   START("start"),
   LENGTH("length"),
   ORDER("order"),
-  ORDER_BY("orderBy"),
-  PARENT_ID("parentId")
+  ORDER_BY("orderBy")
   ;
 
   /**

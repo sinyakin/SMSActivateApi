@@ -11,13 +11,23 @@ import java.util.List;
 public class GetNumbersStatusRun {
   public static void main(String[] args) {
     try {
-      SMSActivateApi smsActivateApi = new SMSActivateApi("65942e7978ce8d2fc9f31bAffd325160", "937725");
-      List<ServiceWithForward> serviceWithForwardList = smsActivateApi.getNumbersStatus();
+      int countryId = 0; // see more https://sms-activate.ru/ru/api2
+      String operator = "mts"; // see more https://sms-activate.ru/ru/api2
+
+      SMSActivateApi smsActivateApi = new SMSActivateApi("API_KEY", "REFERRAL_LINK");
+      List<ServiceWithForward> serviceWithForwardList = smsActivateApi.getNumbersStatus(/*countryId, operator*/);
 
       for (ServiceWithForward serviceWithForward : serviceWithForwardList) {
         System.out.println("> short name: " + serviceWithForward.getShortName());
         System.out.println(">> count number: " + serviceWithForward.getCountNumber());
-        System.out.println("----------------------------------------------------\n");
+
+        if (serviceWithForward.isForward()) {
+          System.out.println(">> forward supported");
+        } else {
+          System.out.println(">> forward not supported");
+        }
+
+        System.out.println("----------------------------------------------------");
       }
     } catch (WrongParameterException | SQLServerException e) {
       System.out.println(e.getEnglishMessage());

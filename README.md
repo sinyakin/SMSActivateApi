@@ -65,14 +65,14 @@ src
 Include lib in maven
 ```xml
 <dependecy>
-  <groupId>com.sms_api</groupId>
-  <artifactId>sms-activate</artifactId>
+  <groupId>to be continued...</groupId>
+  <artifactId>to be continued...</artifactId>
 </dependecy>
 ```
 
 Import lib in your project.
 ```java
-import com.sms_activate.SMSActivateApi;
+import to be continued....SMSActivateApi;
 ```
 
 To use this lib you are need API-key and referral link from site.
