@@ -3,6 +3,8 @@ package com.sms_activate;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
+import java.io.IOException;
+import java.net.URL;
 import java.util.Map;
 import java.util.HashMap;
 import java.util.stream.Collectors;
@@ -60,8 +62,8 @@ class URLBuilder {
    * @return http query string.
    */
   @NotNull
-  public String build() {
-    return BASE_URL + this.parameterMap.entrySet().stream().map(x -> {
+  public URL build() throws IOException {
+    String urlParameters = this.parameterMap.entrySet().stream().map(x -> {
       Object value = x.getValue();
       String key = x.getKey();
 
@@ -71,16 +73,7 @@ class URLBuilder {
 
       return "";
     }).collect(Collectors.joining("&"));
-  }
 
-
-  /**
-   * Returns a url parameter string.
-   *
-   * @return url parameter string.
-   */
-  @Override
-  public String toString() {
-    return build();
+    return new URL(BASE_URL + urlParameters);
   }
 }

@@ -4,11 +4,11 @@ import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 public enum StateActivationResponse {
-  STATUS_WAIT_CODE("STATUS_WAIT_CODE", "Ожидание смс.", "Waiting sms."),
-  STATUS_WAIT_RETRY("STATUS_WAIT_RETRY", "Ожидание уточнения кода.", "Waiting for code clarification."),
-  STATUS_WAIT_RESEND("STATUS_WAIT_RESEND", "Ожидание повторной отправки смс.", "Waiting for re-sending SMS."),
-  STATUS_CANCEL("STATUS_CANCEL", "Активация отменена.", "Activation canceled."),
-  STATUS_OK("STATUS_OK", "Код получен.", "Code received."),
+  WAIT_CODE("STATUS_WAIT_CODE", "Ожидание смс.", "Waiting sms."),
+  WAIT_RETRY("STATUS_WAIT_RETRY", "Ожидание уточнения кода.", "Waiting for code clarification."),
+  WAIT_RESEND("STATUS_WAIT_RESEND", "Ожидание повторной отправки смс.", "Waiting for re-sending SMS."),
+  CANCEL("STATUS_CANCEL", "Активация отменена.", "Activation canceled."),
+  OK("STATUS_OK", "Код получен.", "Code received."),
   UNKNOWN("UNKNOWN",  "Неизвестный статус активации.", "Unknown status activation.");
 
   /**

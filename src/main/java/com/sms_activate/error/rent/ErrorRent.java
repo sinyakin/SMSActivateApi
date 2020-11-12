@@ -9,6 +9,7 @@ public enum ErrorRent {
   INCORECT_STATUS("INCORECT_STATUS", "Отсутствует или неправильно указан статус.", "Missing or incorrect status."),
   CANT_CANCEL("CANT_CANCEL", "Невозможно отменить аренду (более 20 мин.).", "It is impossible to cancel the lease (more than 20 minutes)."),
   INVALID_PHONE("INVALID_PHONE", "Номер арендован не вами (неправильный id аренды).", "The room was not rented by you (wrong rental id)."),
+  // todo decompose
   SQL_ERROR("SQL_ERROR", "Ошибка sql сервера.", "Error sql server."),
   NO_NUMBERS("NO_NUMBERS", "Арендованных номеров нет.", "There are no rented numbers."),
   ACCOUNT_INACTIVE("ACCOUNT_INACTIVE", "Свободных номеров нет.", "There are no vacant numbers."),
@@ -90,8 +91,10 @@ public enum ErrorRent {
    */
   @NotNull
   public static ErrorRent getStateByName(@NotNull String name) {
+    name = name.toUpperCase();
+
     for (ErrorRent errorRent : values()) {
-      if (errorRent.getResponse().equalsIgnoreCase(name)) {
+      if (errorRent.response.equals(name)) {
         return errorRent;
       }
     }

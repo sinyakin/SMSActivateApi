@@ -3,10 +3,10 @@ package com.sms_activate.activation;
 import org.jetbrains.annotations.NotNull;
 
 public enum AccessStatusActivation {
-  ACCESS_READY("ACCESS_READY", "Готовность номера подтверждена.", "Number readiness confirmed."),
-  ACCESS_RETRY_GET("ACCESS_RETRY_GET", "Ожидание нового смс.", "Wait new sms."),
-  ACCESS_ACTIVATION("ACCESS_ACTIVATION", "Сервис успешно активирован.", "The service has been successfully activated."),
-  ACCESS_CANCEL("ACCESS_CANCEL", "Активация отменена.", "Activation has been canceled."),
+  READY("ACCESS_READY", "Готовность номера подтверждена.", "Number readiness confirmed."),
+  RETRY_GET("ACCESS_RETRY_GET", "Ожидание нового смс.", "Wait new sms."),
+  ACTIVATION("ACCESS_ACTIVATION", "Сервис успешно активирован.", "The service has been successfully activated."),
+  CANCEL("ACCESS_CANCEL", "Активация отменена.", "Activation has been canceled."),
   UNKNOWN("UNKNOWN", "Неизвестный статус активации.", "Unknown status activation.");
 
   /**
@@ -64,7 +64,7 @@ public enum AccessStatusActivation {
    */
   @NotNull
   public String getMessage() {
-    return String.join("/", englishMessage, russianMessage);
+    return String.join(" / ", englishMessage, russianMessage);
   }
 
   /**

@@ -3,8 +3,14 @@ package com.sms_activate.rent;
 import org.jetbrains.annotations.NotNull;
 
 public enum StateRentResponse {
-  SUCCESS("Статус изменен успешно.", "Status has been changed."),
-  ERROR("Ошибка.", "Error.");
+  SUCCESS("success", "Статус изменен успешно.", "Status has been changed."),
+  ERROR("error", "Ошибка.", "Error."),
+  UNKNOWN("", "Неизвестный статуст аренды.", "Unknown status rent.");
+
+  /**
+   * Response from server.
+   */
+  private final String response;
 
   /**
    * Message on russian language.
@@ -22,7 +28,8 @@ public enum StateRentResponse {
    * @param russianMessage message on russian language.
    * @param englishMessage message on england language
    */
-  StateRentResponse(@NotNull String russianMessage, @NotNull String englishMessage) {
+  StateRentResponse(@NotNull String response, @NotNull String russianMessage, @NotNull String englishMessage) {
+    this.response = response;
     this.russianMessage = russianMessage;
     this.englishMessage = englishMessage;
   }
@@ -65,6 +72,14 @@ public enum StateRentResponse {
    */
   @NotNull
   public static StateRentResponse getStateRentByName(@NotNull String name) {
-    return StateRentResponse.valueOf(StateRentResponse.class, name);
+    name = name.toUpperCase();
+
+    for (StateRentResponse stateRentResponse : values()) {
+      if (stateRentResponse.response.equals(name)) {
+        return stateRentResponse;
+      }
+    }
+
+    return UNKNOWN;
   }
 }

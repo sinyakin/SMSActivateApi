@@ -4,6 +4,7 @@ import com.sms_activate.error.*;
 import com.sms_activate.error.rent.ErrorRent;
 import com.sms_activate.error.rent.RentException;
 import com.sms_activate.error.rent.TimeOutRentException;
+import com.sms_activate.rent.StateRentResponse;
 import org.jetbrains.annotations.NotNull;
 
 class Validator {
@@ -93,11 +94,12 @@ class Validator {
    * @throws NoBalanceException if no numbers.
    * @throws NoNumberException  if in account balance is zero.
    */
+  // TODO: 11.11.2020
   public static void throwNoNumbersOrNoBalance(@NotNull String name) throws NoNumberException, NoBalanceException {
-    if (name.equalsIgnoreCase("no_numbers")) {
+    /*if (name.equalsIgnoreCase(StateRentResponse.ERROR.name())"no_numbers")) {
       throw new NoNumberException();
     } else if (name.equalsIgnoreCase("no_balance")) {
       throw new NoBalanceException("There is no money in the account.", "Нет денег на счету.");
-    }
+    }*/
   }
 }

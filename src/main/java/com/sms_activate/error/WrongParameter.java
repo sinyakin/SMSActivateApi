@@ -66,15 +66,6 @@ public enum WrongParameter {
   }
 
   /**
-   * Returns the response.
-   * @return response.
-   */
-  @NotNull
-  protected String getResponse() {
-    return response;
-  }
-
-  /**
    * Returns the single concat messages.
    *
    * @return single concat messages.
@@ -91,8 +82,10 @@ public enum WrongParameter {
    */
   @NotNull
   public static WrongParameter getWrongParameterByName(@NotNull String name) {
+    name = name.toUpperCase();
+
     for (WrongParameter wrongParameter : values()) {
-      if (wrongParameter.response.equalsIgnoreCase(name)) {
+      if (wrongParameter.response.equals(name)) {
        return wrongParameter;
       }
     }
