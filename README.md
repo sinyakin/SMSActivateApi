@@ -79,7 +79,9 @@ To use this lib you are need API-key and referral link from site.
 
 In this your can get API-key and referral link.
 
-[SMS-Activate](https://sms-activate.ru/ru/pp)
+[SMS-Activate referral link](https://sms-activate.ru/ru/pp)
+[SMS-Activate API-Key](https://sms-activate.ru/ru/profile)
+[SMS-Activate API-Key](https://sms-activate.ru/ru/api2)
 
 ### Check all service
 
