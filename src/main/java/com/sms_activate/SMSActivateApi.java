@@ -170,6 +170,10 @@ public class SMSActivateApi {
   @NotNull
   public List<ServiceWithForward> getNumbersStatus(@Nullable Integer countryId, @Nullable String operator)
       throws IOException, WrongParameterException, SQLServerException {
+    if (countryId != null && countryId < 0) {
+      throw new WrongParameterException("Wrong ID country.", "Неверный ID страны.");
+    }
+
     URLBuilder URLBuilder = new URLBuilder(URLKey.API_KEY.getName(), apiKey);
     URLBuilder.append(URLKey.ACTION.getName(), "getNumbersStatus")
         .append(URLKey.COUNTRY.getName(), countryId)
@@ -202,7 +206,7 @@ public class SMSActivateApi {
    * Returns the phone by service, ref, countryId.
    *
    * @param service   service short name.
-   * @param countryId number country.
+   * @param countryId id country.
    * @return phone for activation.
    * @throws IOException             if an I/O exception occurs.
    * @throws WrongParameterException if one of parameters is incorrect.
@@ -223,7 +227,7 @@ public class SMSActivateApi {
    * Returns the phone number by service, ref, countryId, phoneException, operator, forward
    *
    * @param service        service for activation.
-   * @param countryId      number country.
+   * @param countryId      id country.
    * @param phoneException excepted phone number prefix. Specify separated by commas.
    *                       <pre>{@code   7918,7900111}</pre>
    * @param operator       mobile operator. May be specify separated by commas.
@@ -240,6 +244,9 @@ public class SMSActivateApi {
   public Phone getNumber(@NotNull Service service, int countryId, String phoneException,
                          String operator, boolean forward)
       throws IOException, SQLServerException, WrongParameterException, NoBalanceException, NoNumberException, BannedException {
+    if (countryId < 0) {
+      throw new WrongParameterException("Wrong ID country.", "Неверный ID страны.");
+    }
 
     URLBuilder URLBuilder = new URLBuilder(URLKey.API_KEY.getName(), apiKey);
     URLBuilder.append(URLKey.ACTION.getName(), "getNumber")
@@ -274,7 +281,7 @@ public class SMSActivateApi {
    * <pre> multiService -> vk,av,go,tg. </pre>
    *
    * @param multiService services for ordering (not be null).
-   * @param countryId    code country.
+   * @param countryId    id country.
    * @return list phone.
    * @throws IOException             if an I/O exception occurs.
    * @throws WrongParameterException if one of parameters is incorrect.
@@ -295,7 +302,7 @@ public class SMSActivateApi {
    * <pre>multiService -> vk,av,go,tg<br/>multiForward -> 0,0,1,0; 0,0,0,0 - correct; 0,1,1,0 - incorrect.</pre>
    *
    * @param multiService services for ordering (not be null).
-   * @param countryId    code country.
+   * @param countryId    id country.
    * @param multiForward is it necessary to request a number with forwarding.
    * @param operator     mobile operator.
    * @return list phone.
@@ -314,6 +321,8 @@ public class SMSActivateApi {
 
     if (multiForward != null) {
       multiForward = multiForward.replace("\\s", "");
+    } else if (countryId < 0) {
+      throw new WrongParameterException("Wrong ID country.", "Неверный ID страны.");
     }
 
     URLBuilder URLBuilder = new URLBuilder(URLKey.API_KEY.getName(), apiKey);
@@ -487,15 +496,19 @@ public class SMSActivateApi {
    *
    * @param service   service for needed price list (default null).
    *                  <pre>{@code null, null -> all service and all country.}</pre>
-   * @param countryId country number (default null).
+   * @param countryId id number (default null).
    * @return price list country.
    * @throws IOException             if an I/O exception occurs.
    * @throws WrongParameterException if one of parameters is incorrect.
    * @throws SQLServerException      if error happened on SQL-server.
    */
   @NotNull
-  public List<ServiceByCountry> getPrices(Service service, Integer countryId)
+  public List<ServiceByCountry> getPrices(@Nullable Service service, @Nullable Integer countryId)
       throws IOException, SQLServerException, WrongParameterException {
+    if (countryId != null && countryId < 0) {
+      throw new WrongParameterException("Wrong ID country.", "Неверный ID страны.");
+    }
+
     String shortNameService = (service == null) ? null : service.getShortName();
 
     URLBuilder URLBuilder = new URLBuilder(URLKey.API_KEY.getName(), apiKey);
@@ -719,7 +732,7 @@ public class SMSActivateApi {
    * @param time      time rent in hours (default 1).
    *                  time >= 1
    * @param operator  mobile operator.
-   * @param countryId country id (default 0).
+   * @param countryId id country (default 0).
    * @return the rent object with countries supported rent and accessed services by country.
    * @throws IOException             if an I/O exception occurs.
    * @throws WrongParameterException if one of parameters is incorrect.
@@ -730,6 +743,8 @@ public class SMSActivateApi {
       throws IOException, SQLServerException, WrongParameterException {
     if (time <= 0) {
       throw new WrongParameterException("Time can't be negative or equals 0.", "Время не может быть меньше или равно 0");
+    } else if (countryId < 0) {
+      throw new WrongParameterException("Wrong ID country.", "Неверный ID страны.");
     }
 
     URLBuilder URLBuilder = new URLBuilder(URLKey.API_KEY.getName(), apiKey);
@@ -818,6 +833,10 @@ public class SMSActivateApi {
       @Nullable String operator, int countryId,
       @Nullable String urlWebhook
   ) throws IOException, SQLServerException, WrongParameterException, RentException, NoBalanceException, NoNumberException {
+    if (countryId < 0) {
+      throw new WrongParameterException("Wrong ID country.", "Неверный ID страны.");
+    }
+
     URLBuilder URLBuilder = new URLBuilder(URLKey.API_KEY.getName(), apiKey);
     URLBuilder.append(URLKey.ACTION.getName(), "getRentNumber")
         .append(URLKey.RENT_TIME.getName(), time)
