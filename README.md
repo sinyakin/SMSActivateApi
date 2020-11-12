@@ -3,50 +3,59 @@
 
 <pre style="font-family: 'Arial Narrow', sans-serif; font-size: 12pt; font-weight: bold;">
     <code>
-src
-└── main
-     └── java
-         └── com
-             └── sms_activate
-                 ├── URLBuilder.java
-                 ├── SMSActivateApi.java
-                 ├── Sms.java
-                 ├── Validator.java
-                 ├── WebClient.java
-                 ├── activation
-                 │     ├── AccessStatusActivation.java
-                 │     ├── StateActivationResponse.java
-                 │     └── StatusActivationRequest.java
-                 ├── country
-                 │     ├── Country.java
-                 │     └── ServiceWithCountry.java
-                 ├── error
-                 │     ├── BannedException.java
-                 │     ├── BaseSMSActivateException.java
-                 │     ├── NoBalanceException.java
-                 │     ├── NoNumberException.java
-                 │     ├── SQLServerException.java
-                 │     ├── WrongParameter.java
-                 │     ├── WrongParameterException.java
-                 │     └── rent
-                 │         ├── ErrorRent.java
-                 │         ├── RentException.java
-                 │         └── TimeOutRentException.java
-                 ├── phone
-                 │     ├── Phone.java
-                 │     └── PhoneRent.java
-                 ├── qiwi
-                 │     ├── QiwiResponse.java
-                 │     └── QiwiStatus.java
-                 ├── rent
-                 │     ├── Rent.java
-                 │     ├── StateRentResponse.java
-                 │     ├── StatusRentNumberResponse.java
-                 │     └── StatusRentRequest.java
-                 └── service
-                       ├── Service.java
-                       ├── ServiceWithCost.java
-                       └── ServiceWithForward.java
+└── src
+    └── main
+         └── java
+             ├── com
+             │     └── sms_activate
+             │         ├── SMSActivateApi.java
+             │         ├── Sms.java
+             │         ├── URLBuilder.java
+             │         ├── URLKey.java
+             │         ├── Validator.java
+             │         ├── WebClient.java
+             │         ├── activation
+             │         │     ├── AccessStatusActivation.java
+             │         │     ├── StateActivationResponse.java
+             │         │     └── StatusActivationRequest.java
+             │         ├── country
+             │         │     ├── Country.java
+             │         │     └── ServiceByCountry.java
+             │         ├── error
+             │         │     ├── BannedException.java
+             │         │     ├── NoBalanceException.java
+             │         │     ├── NoNumberException.java
+             │         │     ├── WrongResponseException.java
+             │         │     ├── common
+             │         │     │     ├── BaseSMSActivateException.java
+             │         │     │     ├── SQLServerException.java
+             │         │     │     └── WrongParameterException.java
+             │         │     ├── rent
+             │         │     │     ├── RentException.java
+             │         │     │     └── TimeOutRentException.java
+             │         │     └── type
+             │         │         ├── RentError.java
+             │         │         ├── Shortage.java
+             │         │         └── WrongParameter.java
+             │         ├── phone
+             │         │     ├── Phone.java
+             │         │     └── PhoneRent.java
+             │         ├── qiwi
+             │         │     ├── QiwiResponse.java
+             │         │     └── QiwiStatus.java
+             │         ├── rent
+             │         │     ├── Rent.java
+             │         │     ├── StateRentResponse.java
+             │         │     └── StatusRentRequest.java
+             │         └── service
+             │             ├── Service.java
+             │             ├── ServiceWithCost.java
+             │             └── ServiceWithForward.java
+             └── example
+                 ├── GetBalanceAndCashBackRun.java
+                 ├── GetNumberRun.java
+                 └── GetNumbersStatusRun.java
+
     </code>
 </pre>
 
@@ -54,7 +63,9 @@ src
 * activation
 * serviceByCountry
 * error
+  * common
   * rent
+  * type
 * phone
 * qiwi
 * rent
