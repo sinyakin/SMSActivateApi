@@ -18,7 +18,7 @@ public class Phone {
   /**
    * Forward phone number
    */
-  private boolean forward;
+  private boolean forward = false;
 
   /**
    * Service for phone number.

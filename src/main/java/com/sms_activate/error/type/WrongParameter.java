@@ -6,7 +6,7 @@ public enum WrongParameter {
   BAD_ACTION("BAD_ACTION", "Некорректное действие.", "Wrong action."),
   BAD_SERVICE("BAD_SERVICE", "Некорректное наименование сервиса.", "Wrong name service."),
   BAD_KEY("BAD_KEY", "Неверный API-ключ.", "Wrong api-key."),
-  BAD_STATUS("BAD_STATUS", "Попытка установить несуществующий статус.", "An attempt to establish a non-existent status."),
+  BAD_STATUS("BAD_STATUS", "Попытка установить несуществующий статус.", "An attempt to setup a non-existent status."),
   WRONG_OPERATOR("WRONG_OPERATOR", "Некорректный оператор.", "Wrong operator"),
   WRONG_EXCEPTION_PHONE("WRONG_EXCEPTION_PHONE", "Некорректные исключающие префиксы.", "Wrong exception prefix."),
   WRONG_SERVICE("WRONG_SERVICE", "Некорректные сервисы.", "Wrong services."),

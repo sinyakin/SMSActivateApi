@@ -6,7 +6,7 @@ public enum AccessStatusActivation {
   READY("ACCESS_READY", "Готовность номера подтверждена.", "Number readiness confirmed."),
   RETRY_GET("ACCESS_RETRY_GET", "Ожидание нового смс.", "Wait new sms."),
   ACTIVATION("ACCESS_ACTIVATION", "Сервис успешно активирован.", "The service has been successfully activated."),
-  CANCEL("ACCESS_CANCEL", "Активация отменена.", "Activation has been canceled."),
+  CANCEL("ACCESS_CANCEL", "Активация была отменена.", "Activation has been canceled."),
   UNKNOWN("UNKNOWN", "Неизвестный статус активации.", "Unknown status activation.");
 
   /**

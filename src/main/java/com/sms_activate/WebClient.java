@@ -1,18 +1,32 @@
 package com.sms_activate;
 
+import com.sms_activate.error.common.SQLServerException;
+import com.sms_activate.error.common.WrongParameterException;
 import org.jetbrains.annotations.NotNull;
 
-import java.io.BufferedReader;
-import java.io.BufferedWriter;
-import java.io.IOException;
-import java.io.InputStreamReader;
-import java.io.OutputStreamWriter;
+import java.io.*;
 import java.net.HttpURLConnection;
 import java.net.URL;
 import java.net.URLConnection;
 import java.util.List;
 
 class WebClient {
+  /**
+   * Get data or throw common exception if error is happened.
+   *
+   * @param url       target url.
+   * @param validator data validator.
+   * @return load data from url.
+   * @throws IOException             if an I/O exception occurs.
+   * @throws WrongParameterException if one of parameters is incorrect.
+   * @throws SQLServerException      if error happened on SQL-server.
+   */
+  public static String getOrThrowCommonException(@NotNull URL url, @NotNull Validator validator) throws IOException, WrongParameterException, SQLServerException {
+    String data = get(url);
+    validator.throwCommonExceptionByName(data);
+    return data;
+  }
+
   /**
    * Method get to load data by URL object.
    *
