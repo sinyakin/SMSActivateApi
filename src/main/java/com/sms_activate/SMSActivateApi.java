@@ -31,7 +31,10 @@ import org.jetbrains.annotations.Nullable;
 import java.io.IOException;
 import java.lang.reflect.Type;
 import java.math.BigDecimal;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
+import java.util.Map;
 
 /**
  * <p>The class is a high-level API for interacting with the SMS-Activate API.
@@ -102,20 +105,8 @@ public class SMSActivateApi {
    * @throws SQLServerException      if error happened on SQL-server.
    */
   @NotNull
-  public BigDecimal getBalance()
-      throws IOException, WrongParameterException, SQLServerException {
-    URLBuilder URLBuilder = new URLBuilder(new HashMap<String, Object>() {{
-      put(URLKey.API_KEY.getName(), apiKey);
-      put(URLKey.ACTION.getName(), "getBalance");
-    }});
-
-    String data = WebClient.get(URLBuilder.build());
-
-    Validator.throwCommonExceptionByName(data);
-
-    String[] parts = data.split(":");
-
-    return new BigDecimal(parts[1]);
+  public BigDecimal getBalance() throws IOException, WrongParameterException, SQLServerException {
+    return getBalance(SMSActivateAction.GET_BALANCE);
   }
 
   /**
@@ -129,18 +120,7 @@ public class SMSActivateApi {
   @NotNull
   public BigDecimal getBalanceAndCashBack()
       throws IOException, WrongParameterException, SQLServerException {
-    URLBuilder URLBuilder = new URLBuilder(new HashMap<String, Object>() {{
-      put(URLKey.API_KEY.getName(), apiKey);
-      put(URLKey.ACTION.getName(), "getBalanceAndCashBack");
-    }});
-
-    String data = WebClient.get(URLBuilder.build());
-
-    Validator.throwCommonExceptionByName(data);
-
-    String[] parts = data.split(":");
-
-    return new BigDecimal(parts[1]);
+    return getBalance(SMSActivateAction.GET_BALANCE_AND_CASHBACK);
   }
 
   /**
@@ -174,12 +154,11 @@ public class SMSActivateApi {
       throw new WrongParameterException("Wrong ID country.", "Неверный ID страны.");
     }
 
-    URLBuilder URLBuilder = new URLBuilder(URLKey.API_KEY.getName(), apiKey);
-    URLBuilder.append(URLKey.ACTION.getName(), "getNumbersStatus")
-        .append(URLKey.COUNTRY.getName(), countryId)
-        .append(URLKey.OPERATOR.getName(), operator);
+    SMSActivateURLBuilder SMSActivateURLBuilder = new SMSActivateURLBuilder(apiKey, SMSActivateAction.GET_NUMBERS_STATUS);
+    SMSActivateURLBuilder.append(SMSActivateURLKey.COUNTRY, countryId)
+        .append(SMSActivateURLKey.OPERATOR, operator);
 
-    String data = WebClient.get(URLBuilder.build());
+    String data = WebClient.get(SMSActivateURLBuilder.build());
 
     Validator.throwCommonExceptionByName(data);
 
@@ -248,16 +227,15 @@ public class SMSActivateApi {
       throw new WrongParameterException("Wrong ID country.", "Неверный ID страны.");
     }
 
-    URLBuilder URLBuilder = new URLBuilder(URLKey.API_KEY.getName(), apiKey);
-    URLBuilder.append(URLKey.ACTION.getName(), "getNumber")
-        .append(URLKey.REF.getName(), ref)
-        .append(URLKey.SERVICE.getName(), service.getShortName())
-        .append(URLKey.COUNTRY.getName(), countryId)
-        .append(URLKey.PHONE_EXCEPTION.getName(), phoneException)
-        .append(URLKey.OPERATOR.getName(), operator)
-        .append(URLKey.FORWARD.getName(), forward ? "1" : "0");
+    SMSActivateURLBuilder SMSActivateURLBuilder = new SMSActivateURLBuilder(apiKey, SMSActivateAction.GET_NUMBER);
+    SMSActivateURLBuilder.append(SMSActivateURLKey.REF, ref)
+        .append(SMSActivateURLKey.SERVICE, service.getShortName())
+        .append(SMSActivateURLKey.COUNTRY, countryId)
+        .append(SMSActivateURLKey.PHONE_EXCEPTION, phoneException)
+        .append(SMSActivateURLKey.OPERATOR, operator)
+        .append(SMSActivateURLKey.FORWARD, forward ? "1" : "0");
 
-    String data = WebClient.get(URLBuilder.build());
+    String data = WebClient.get(SMSActivateURLBuilder.build());
 
     Validator.throwCommonExceptionByName(data);
     Validator.throwNoNumbersOrNoBalanceExceptionByName(data);
@@ -325,15 +303,14 @@ public class SMSActivateApi {
       throw new WrongParameterException("Wrong ID country.", "Неверный ID страны.");
     }
 
-    URLBuilder URLBuilder = new URLBuilder(URLKey.API_KEY.getName(), apiKey);
-    URLBuilder.append(URLKey.ACTION.getName(), "getMultiServiceNumber")
-        .append(URLKey.REF.getName(), ref)
-        .append(URLKey.MULTI_SERVICE.getName(), trimMultiService)
-        .append(URLKey.COUNTRY.getName(), countryId)
-        .append(URLKey.MULTI_FORWARD.getName(), multiForward)
-        .append(URLKey.OPERATOR.getName(), operator);
+    SMSActivateURLBuilder SMSActivateURLBuilder = new SMSActivateURLBuilder(apiKey, SMSActivateAction.GET_MULTI_SERVICE_NUMBER);
+    SMSActivateURLBuilder.append(SMSActivateURLKey.REF, ref)
+        .append(SMSActivateURLKey.MULTI_SERVICE, trimMultiService)
+        .append(SMSActivateURLKey.COUNTRY, countryId)
+        .append(SMSActivateURLKey.MULTI_FORWARD, multiForward)
+        .append(SMSActivateURLKey.OPERATOR, operator);
 
-    String data = WebClient.get(URLBuilder.build());
+    String data = WebClient.get(SMSActivateURLBuilder.build());
 
     Validator.throwCommonExceptionByName(data);
     Validator.throwNoNumbersOrNoBalanceExceptionByName(data);
@@ -398,13 +375,12 @@ public class SMSActivateApi {
   @NotNull
   public AccessStatusActivation setStatus(@NotNull Phone phone, @NotNull StatusActivationRequest status, boolean forward)
       throws IOException, WrongParameterException, SQLServerException {
-    URLBuilder URLBuilder = new URLBuilder(URLKey.API_KEY.getName(), apiKey);
-    URLBuilder.append(URLKey.ACTION.getName(), "setStatus")
-        .append(URLKey.STATUS.getName(), status.getId())
-        .append(URLKey.ID.getName(), phone.getId())
-        .append(URLKey.FORWARD.getName(), forward ? "1" : "0");
+    SMSActivateURLBuilder SMSActivateURLBuilder = new SMSActivateURLBuilder(apiKey, SMSActivateAction.SET_STATUS);
+    SMSActivateURLBuilder.append(SMSActivateURLKey.STATUS, status.getId())
+        .append(SMSActivateURLKey.ID, phone.getId())
+        .append(SMSActivateURLKey.FORWARD, forward ? "1" : "0");
 
-    String data = WebClient.get(URLBuilder.build());
+    String data = WebClient.get(SMSActivateURLBuilder.build());
 
     Validator.throwCommonExceptionByName(data);
 
@@ -423,12 +399,10 @@ public class SMSActivateApi {
   @NotNull
   public StateActivationResponse getStatus(@NotNull Phone phone)
       throws IOException, WrongParameterException, SQLServerException {
-    URLBuilder URLBuilder = new URLBuilder(URLKey.API_KEY.getName(), apiKey);
-    URLBuilder.append(URLKey.ACTION.getName(), "getStatus")
-        .append(URLKey.ID.getName(), phone.getId());
+    SMSActivateURLBuilder SMSActivateURLBuilder = new SMSActivateURLBuilder(apiKey, SMSActivateAction.GET_STATUS).append(SMSActivateURLKey.ID, phone.getId());
 
-    String data = WebClient.get(URLBuilder.build());
     String code = null;
+    String data = WebClient.get(SMSActivateURLBuilder.build());
 
     Validator.throwCommonExceptionByName(data);
 
@@ -458,11 +432,9 @@ public class SMSActivateApi {
   @NotNull
   public String getFullSms(@NotNull Phone phone)
       throws IOException, SQLServerException, WrongParameterException, WrongResponseException {
-    URLBuilder URLBuilder = new URLBuilder(URLKey.API_KEY.getName(), apiKey);
-    URLBuilder.append(URLKey.ACTION.getName(), "getFullSms")
-        .append(URLKey.ID.getName(), phone.getId());
+    SMSActivateURLBuilder SMSActivateURLBuilder = new SMSActivateURLBuilder(apiKey, SMSActivateAction.GET_FULL_SMS).append(SMSActivateURLKey.ID, phone.getId());
 
-    String data = WebClient.get(URLBuilder.build());
+    String data = WebClient.get(SMSActivateURLBuilder.build());
 
     Validator.throwCommonExceptionByName(data);
 
@@ -511,12 +483,11 @@ public class SMSActivateApi {
 
     String shortNameService = (service == null) ? null : service.getShortName();
 
-    URLBuilder URLBuilder = new URLBuilder(URLKey.API_KEY.getName(), apiKey);
-    URLBuilder.append(URLKey.ACTION.getName(), "getPrices")
-        .append(URLKey.SERVICE.getName(), shortNameService)
-        .append(URLKey.COUNTRY.getName(), countryId);
+    SMSActivateURLBuilder SMSActivateURLBuilder = new SMSActivateURLBuilder(apiKey, SMSActivateAction.GET_PRICES);
+    SMSActivateURLBuilder.append(SMSActivateURLKey.SERVICE, shortNameService)
+        .append(SMSActivateURLKey.COUNTRY, countryId);
 
-    String data = WebClient.get(URLBuilder.build());
+    String data = WebClient.get(SMSActivateURLBuilder.build());
 
     Validator.throwCommonExceptionByName(data);
 
@@ -557,12 +528,9 @@ public class SMSActivateApi {
   @NotNull
   public List<Country> getCountries()
       throws IOException, WrongParameterException, SQLServerException {
-    URLBuilder URLBuilder = new URLBuilder(new HashMap<String, Object>() {{
-      put(URLKey.API_KEY.getName(), apiKey);
-      put(URLKey.ACTION.getName(), "getCountries");
-    }});
+    SMSActivateURLBuilder SMSActivateURLBuilder = new SMSActivateURLBuilder(apiKey, SMSActivateAction.GET_COUNTRIES);
 
-    String data = WebClient.get(URLBuilder.build());
+    String data = WebClient.get(SMSActivateURLBuilder.build());
 
     Validator.throwCommonExceptionByName(data);
 
@@ -602,12 +570,10 @@ public class SMSActivateApi {
   @NotNull
   public QiwiResponse getQiwiRequisites()
       throws IOException, SQLServerException, WrongParameterException {
-    URLBuilder URLBuilder = new URLBuilder(new HashMap<String, Object>() {{
-      put(URLKey.API_KEY.getName(), apiKey);
-      put(URLKey.ACTION.getName(), "getQiwiRequisites");
-    }});
+    SMSActivateURLBuilder SMSActivateURLBuilder = new SMSActivateURLBuilder(apiKey, SMSActivateAction.GET_QIWI_REQUISITES);
+    ;
 
-    String data = WebClient.get(URLBuilder.build());
+    String data = WebClient.get(SMSActivateURLBuilder.build());
 
     Validator.throwCommonExceptionByName(data);
 
@@ -632,12 +598,11 @@ public class SMSActivateApi {
   @NotNull
   public Phone getAdditionalService(@NotNull Phone phone, @NotNull Service service)
       throws IOException, SQLServerException, WrongParameterException {
-    URLBuilder URLBuilder = new URLBuilder(URLKey.API_KEY.getName(), apiKey);
-    URLBuilder.append(URLKey.ACTION.getName(), "getAdditionalService")
-        .append(URLKey.ID.getName(), phone.getId())
-        .append(URLKey.SERVICE.getName(), service.getShortName());
+    SMSActivateURLBuilder SMSActivateURLBuilder = new SMSActivateURLBuilder(apiKey, SMSActivateAction.GET_ADDITIONAL_SERVICE);
+    SMSActivateURLBuilder.append(SMSActivateURLKey.ID, phone.getId())
+        .append(SMSActivateURLKey.SERVICE, service.getShortName());
 
-    String data = WebClient.get(URLBuilder.build());
+    String data = WebClient.get(SMSActivateURLBuilder.build());
 
     Validator.throwCommonExceptionByName(data);
 
@@ -676,14 +641,13 @@ public class SMSActivateApi {
   @NotNull
   public List<Phone> getCurrentActivationsDataTables(int start, int length)
       throws IOException, WrongResponseException, BaseSMSActivateException {
-    URLBuilder URLBuilder = new URLBuilder(URLKey.API_KEY.getName(), apiKey);
-    URLBuilder.append(URLKey.ACTION.getName(), "getCurrentActivationsDataTables")
-        .append(URLKey.START.getName(), start)
-        .append(URLKey.LENGTH.getName(), length)
-        .append(URLKey.ORDER.getName(), URLKey.ID.getName())
-        .append(URLKey.ORDER_BY.getName(), "asc");
+    SMSActivateURLBuilder SMSActivateURLBuilder = new SMSActivateURLBuilder(apiKey, SMSActivateAction.GET_CURRENT_ACTIVATION);
+    SMSActivateURLBuilder.append(SMSActivateURLKey.START, start)
+        .append(SMSActivateURLKey.LENGTH, length)
+        .append(SMSActivateURLKey.ORDER, SMSActivateURLKey.ID.getName())
+        .append(SMSActivateURLKey.ORDER_BY, "asc");
 
-    String data = WebClient.get(URLBuilder.build());
+    String data = WebClient.get(SMSActivateURLBuilder.build());
 
     Validator.throwCommonExceptionByName(data);
 
@@ -729,17 +693,17 @@ public class SMSActivateApi {
   /**
    * Returns the rent object with countries supported rent and accessed services by country.
    *
+   * @param countryId id country (default 0).
+   * @param operator  mobile operator.
    * @param time      time rent in hours (default 1).
    *                  time >= 1
-   * @param operator  mobile operator.
-   * @param countryId id country (default 0).
    * @return the rent object with countries supported rent and accessed services by country.
    * @throws IOException             if an I/O exception occurs.
    * @throws WrongParameterException if one of parameters is incorrect.
    * @throws SQLServerException      if error happened on SQL-server.
    */
   @NotNull
-  public Rent getRentServicesAndCountries(int time, String operator, int countryId)
+  public Rent getRentServicesAndCountries(int countryId, @Nullable String operator, int time)
       throws IOException, SQLServerException, WrongParameterException {
     if (time <= 0) {
       throw new WrongParameterException("Time can't be negative or equals 0.", "Время не может быть меньше или равно 0");
@@ -747,13 +711,12 @@ public class SMSActivateApi {
       throw new WrongParameterException("Wrong ID country.", "Неверный ID страны.");
     }
 
-    URLBuilder URLBuilder = new URLBuilder(URLKey.API_KEY.getName(), apiKey);
-    URLBuilder.append(URLKey.ACTION.getName(), "getRentServicesAndCountries")
-        .append(URLKey.COUNTRY.getName(), countryId)
-        .append(URLKey.OPERATOR.getName(), operator)
-        .append(URLKey.TIME.getName(), time);
+    SMSActivateURLBuilder SMSActivateURLBuilder = new SMSActivateURLBuilder(apiKey, SMSActivateAction.GET_RENT_SERVICES_AND_COUNTRIES)
+        .append(SMSActivateURLKey.COUNTRY, countryId)
+        .append(SMSActivateURLKey.OPERATOR, operator)
+        .append(SMSActivateURLKey.TIME, time);
 
-    String data = WebClient.get(URLBuilder.build());
+    String data = WebClient.get(SMSActivateURLBuilder.build());
 
     Validator.throwCommonExceptionByName(data);
 
@@ -837,15 +800,14 @@ public class SMSActivateApi {
       throw new WrongParameterException("Wrong ID country.", "Неверный ID страны.");
     }
 
-    URLBuilder URLBuilder = new URLBuilder(URLKey.API_KEY.getName(), apiKey);
-    URLBuilder.append(URLKey.ACTION.getName(), "getRentNumber")
-        .append(URLKey.RENT_TIME.getName(), time)
-        .append(URLKey.COUNTRY.getName(), countryId)
-        .append(URLKey.OPERATOR.getName(), operator)
-        .append(URLKey.URL.getName(), urlWebhook)
-        .append(URLKey.SERVICE.getName(), service.getShortName());
+    SMSActivateURLBuilder SMSActivateURLBuilder = new SMSActivateURLBuilder(apiKey, SMSActivateAction.GET_RENT_NUMBER);
+    SMSActivateURLBuilder.append(SMSActivateURLKey.RENT_TIME, time)
+        .append(SMSActivateURLKey.COUNTRY, countryId)
+        .append(SMSActivateURLKey.OPERATOR, operator)
+        .append(SMSActivateURLKey.URL, urlWebhook)
+        .append(SMSActivateURLKey.SERVICE, service.getShortName());
 
-    String data = WebClient.get(URLBuilder.build());
+    String data = WebClient.get(SMSActivateURLBuilder.build());
 
     Validator.throwCommonExceptionByName(data);
     Validator.throwNoNumbersOrNoBalanceExceptionByName(data);
@@ -885,11 +847,9 @@ public class SMSActivateApi {
   @NotNull
   public List<Sms> getRentStatus(@NotNull Phone phone)
       throws IOException, SQLServerException, WrongParameterException, RentException, NoBalanceException, NoNumberException {
-    URLBuilder URLBuilder = new URLBuilder(URLKey.API_KEY.getName(), apiKey);
-    URLBuilder.append(URLKey.ACTION.getName(), "getRentStatus").
-        append(URLKey.ID.getName(), phone.getId());
+    SMSActivateURLBuilder SMSActivateURLBuilder = new SMSActivateURLBuilder(apiKey, SMSActivateAction.GET_RENT_STATUS).append(SMSActivateURLKey.ID, phone.getId());
 
-    String data = WebClient.get(URLBuilder.build());
+    String data = WebClient.get(SMSActivateURLBuilder.build());
 
     Validator.throwCommonExceptionByName(data);
     Validator.throwNoNumbersOrNoBalanceExceptionByName(data);
@@ -936,12 +896,11 @@ public class SMSActivateApi {
   @NotNull
   public StateRentResponse setRentStatus(@NotNull Phone phone, @NotNull StatusRentRequest status)
       throws IOException, SQLServerException, WrongParameterException, RentException, NoBalanceException, NoNumberException {
-    URLBuilder URLBuilder = new URLBuilder(URLKey.API_KEY.getName(), apiKey);
-    URLBuilder.append(URLKey.ACTION.getName(), "setRentStatus")
-        .append(URLKey.ID.getName(), phone.getId())
-        .append(URLKey.STATUS.getName(), status.getId());
+    SMSActivateURLBuilder SMSActivateURLBuilder = new SMSActivateURLBuilder(apiKey, SMSActivateAction.SET_RENT_STATUS);
+    SMSActivateURLBuilder.append(SMSActivateURLKey.ID, phone.getId())
+        .append(SMSActivateURLKey.STATUS, status.getId());
 
-    String data = WebClient.get(URLBuilder.build());
+    String data = WebClient.get(SMSActivateURLBuilder.build());
 
     Validator.throwCommonExceptionByName(data);
 
@@ -973,12 +932,9 @@ public class SMSActivateApi {
   @NotNull
   public List<Phone> getRentList()
       throws IOException, SQLServerException, WrongParameterException, RentException, NoBalanceException, NoNumberException {
-    URLBuilder URLBuilder = new URLBuilder(new HashMap<String, Object>() {{
-      put(URLKey.API_KEY.getName(), apiKey);
-      put(URLKey.ACTION.getName(), "getRentList");
-    }});
+    SMSActivateURLBuilder SMSActivateURLBuilder = new SMSActivateURLBuilder(apiKey, SMSActivateAction.GET_RENT_LIST);
 
-    String data = WebClient.get(URLBuilder.build());
+    String data = WebClient.get(SMSActivateURLBuilder.build());
 
     Validator.throwCommonExceptionByName(data);
     Validator.throwNoNumbersOrNoBalanceExceptionByName(data);
@@ -1005,5 +961,26 @@ public class SMSActivateApi {
     }
 
     return phoneList;
+  }
+
+  /**
+   * Returns the current account balance by specific action.
+   *
+   * @param smsActivateAction name specific action.
+   * @return current account balance.
+   * @throws IOException             if an I/O exception occurs.
+   * @throws WrongParameterException if one of parameters is incorrect.
+   * @throws SQLServerException      if error happened on SQL-server.
+   */
+  private BigDecimal getBalance(@NotNull SMSActivateAction smsActivateAction)
+      throws WrongParameterException, SQLServerException, IOException {
+    SMSActivateURLBuilder SMSActivateURLBuilder = new SMSActivateURLBuilder(apiKey, smsActivateAction);
+    String data = WebClient.get(SMSActivateURLBuilder.build());
+
+    Validator.throwCommonExceptionByName(data);
+
+    String[] parts = data.split(":");
+
+    return new BigDecimal(parts[1]);
   }
 }

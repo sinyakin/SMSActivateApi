@@ -52,7 +52,7 @@ class Validator {
    * @throws WrongParameterException if one of parameters is incorrect.
    * @throws SQLServerException      if error happened on SQL-server.
    */
-  public static void throwCommonExceptionByName(@NotNull String name)
+  static void throwCommonExceptionByName(@NotNull String name)
       throws WrongParameterException, SQLServerException {
     throwWrongParameterExceptionByName(name);
 

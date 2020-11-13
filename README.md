@@ -10,7 +10,7 @@
                   └── sms_activate
                       ├── SMSActivateApi.java
                       ├── Sms.java
-                      ├── URLBuilder.java
+                      ├── SMSActivateURLBuilder.java
                       ├── URLKey.java
                       ├── Validator.java
                       ├── WebClient.java

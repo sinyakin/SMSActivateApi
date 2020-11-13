@@ -5,7 +5,7 @@ import org.jetbrains.annotations.NotNull;
 /**
  * URL key for handle in server.
  */
-enum URLKey {
+enum SMSActivateURLKey {
   API_KEY("api_key"),
   ID("id"),
   SERVICE("service"),
@@ -36,7 +36,7 @@ enum URLKey {
    * Constructor URL-key with name in URL-address.
    * @param name name parameter in URL.
    */
-  URLKey(@NotNull String name) {
+  SMSActivateURLKey(@NotNull String name) {
     this.name = name;
   }
 
