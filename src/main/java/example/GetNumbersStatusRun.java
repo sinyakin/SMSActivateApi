@@ -7,14 +7,16 @@ import com.sms_activate.service.ServiceWithForward;
 import java.io.IOException;
 import java.util.List;
 
-
-public class GetNumbersStatusRun {
+  public class GetNumbersStatusRun {
   public static void main(String[] args) {
     try {
       int countryId = 0; // see more https://sms-activate.ru/ru/api2
       String operator = "mts"; // see more https://sms-activate.ru/ru/api2
 
       SMSActivateApi smsActivateApi = new SMSActivateApi("API_KEY", "REFERRAL_LINK");
+      System.out.println("API_KEY: " + smsActivateApi.getApiKey());
+      System.out.println("REFERRAL_LINK: " + smsActivateApi.getRef());
+
       List<ServiceWithForward> serviceWithForwardList = smsActivateApi.getNumbersStatus(/*countryId, operator*/);
 
       for (ServiceWithForward serviceWithForward : serviceWithForwardList) {

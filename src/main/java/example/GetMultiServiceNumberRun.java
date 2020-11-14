@@ -17,7 +17,7 @@ public class GetMultiServiceNumberRun {
   public static void main(String[] args) {
     try {
       SMSActivateApi smsActivateApi = new SMSActivateApi("API_KEY", "REFERRAL_LINK");
-      List<Phone> phoneList = smsActivateApi.getMultiServiceNumber("go,tg", 0, "0, 0", "mts");
+      List<Phone> phoneList = smsActivateApi.getMultiServiceNumber("go,tg", 0/*, "0, 0", "mts"*/);
 
       for (Phone phone : phoneList) {
         System.out.println("id > " + phone.getId());

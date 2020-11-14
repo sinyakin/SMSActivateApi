@@ -46,9 +46,9 @@ public class Phone {
    */
   public Phone(@NotNull String number, @Nullable Service service, int id, boolean forward) {
     this.number = number;
+    this.service = service;
     this.id = id;
     this.forward = forward;
-    this.service = service;
   }
 
   /**
@@ -59,6 +59,16 @@ public class Phone {
   @NotNull
   public String getNumber() {
     return number;
+  }
+
+  /**
+   * Returns the service for phone number.
+   *
+   * @return service for phone number (not be null).
+   */
+  @Nullable
+  public Service getService() {
+    return service;
   }
 
   /**
@@ -77,15 +87,5 @@ public class Phone {
    */
   public boolean isForward() {
     return forward;
-  }
-
-  /**
-   * Returns the service for phone number.
-   *
-   * @return service for phone number (not be null).
-   */
-  @Nullable
-  public Service getService() {
-    return service;
   }
 }

@@ -58,7 +58,7 @@ class SMSActivateURLBuilder {
    * @param value value to be associated with the specified key.
    */
   public SMSActivateURLBuilder append(@NotNull SMSActivateURLKey key, @Nullable Integer value) {
-    return append(key, value + "");
+    return append(key, String.valueOf(value));
   }
 
   /**

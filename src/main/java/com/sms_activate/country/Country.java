@@ -64,8 +64,16 @@ public class Country {
    * @param supportRent         support rent.
    * @param supportMultiService support multiservice.
    */
-  public Country(int id, @NotNull String russianName, @NotNull String englandName, @NotNull String chineseName,
-                 boolean visible, boolean supportRetry, boolean supportRent, boolean supportMultiService) {
+  public Country(
+      int id,
+      @NotNull String russianName,
+      @NotNull String englandName,
+      @NotNull String chineseName,
+      boolean visible,
+      boolean supportRetry,
+      boolean supportRent,
+      boolean supportMultiService
+  ) {
     this.id = id;
     this.russianName = russianName;
     this.englandName = englandName;

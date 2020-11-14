@@ -21,6 +21,7 @@ class WebClient {
    * @throws WrongParameterException if one of parameters is incorrect.
    * @throws SQLServerException      if error happened on SQL-server.
    */
+  @NotNull
   public static String getOrThrowCommonException(@NotNull URL url, @NotNull Validator validator) throws IOException, WrongParameterException, SQLServerException {
     String data = get(url);
     validator.throwCommonExceptionByName(data);
