@@ -1,4 +1,4 @@
-package example;
+package example.api.activation;
 
 import com.sms_activate.SMSActivateApi;
 import com.sms_activate.activation.AccessStatusActivation;

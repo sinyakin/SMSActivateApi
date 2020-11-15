@@ -1,4 +1,4 @@
-package example;
+package example.api.activation;
 
 import com.sms_activate.SMSActivateApi;
 import com.sms_activate.activation.AccessStatusActivation;
@@ -12,7 +12,6 @@ import com.sms_activate.phone.Phone;
 import com.sms_activate.service.Service;
 
 import java.io.IOException;
-import java.util.function.Function;
 
 public class GetNumberRun {
   public static void main(String[] args) {

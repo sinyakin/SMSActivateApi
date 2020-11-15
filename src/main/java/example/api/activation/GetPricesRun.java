@@ -1,11 +1,9 @@
-package example;
+package example.api.activation;
 
 import com.sms_activate.SMSActivateApi;
-import com.sms_activate.country.Country;
 import com.sms_activate.country.ServiceByCountry;
 import com.sms_activate.error.common.SQLServerException;
 import com.sms_activate.error.common.WrongParameterException;
-import org.jetbrains.annotations.NotNull;
 
 import java.io.IOException;
 import java.util.List;
