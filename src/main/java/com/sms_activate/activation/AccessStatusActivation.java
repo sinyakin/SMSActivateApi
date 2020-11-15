@@ -20,7 +20,7 @@ public enum AccessStatusActivation {
   private final String russianMessage;
 
   /**
-   * Message on england language.
+   * Message on english language.
    */
   private final String englishMessage;
 
@@ -28,7 +28,7 @@ public enum AccessStatusActivation {
    * Constructor AccessStatusActivation with multilang.
    *
    * @param russianMessage message on russian.
-   * @param englishMessage message on england.
+   * @param englishMessage message on english.
    * @param response response from server.
    */
   AccessStatusActivation(@NotNull String response, @NotNull String russianMessage, @NotNull String englishMessage) {
@@ -48,9 +48,9 @@ public enum AccessStatusActivation {
   }
 
   /**
-   * Returns the message on england.
+   * Returns the message on english.
    *
-   * @return message on england.
+   * @return message on english.
    */
   @NotNull
   public String getEnglishMessage() {

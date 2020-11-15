@@ -18,7 +18,7 @@ public enum StateRentResponse {
   private final String russianMessage;
 
   /**
-   * Message on england language.
+   * Message on english language.
    */
   private final String englishMessage;
 
@@ -26,7 +26,7 @@ public enum StateRentResponse {
    * Constructor state with messages.
    *
    * @param russianMessage message on russian language.
-   * @param englishMessage message on england language
+   * @param englishMessage message on english language
    */
   StateRentResponse(@NotNull String response, @NotNull String russianMessage, @NotNull String englishMessage) {
     this.response = response;
@@ -45,9 +45,9 @@ public enum StateRentResponse {
   }
 
   /**
-   * Returns the message on england.
+   * Returns the message on english.
    *
-   * @return message on england.
+   * @return message on english.
    */
   @NotNull
   public String getEnglishMessage() {

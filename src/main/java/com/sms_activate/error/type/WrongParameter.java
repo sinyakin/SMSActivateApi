@@ -29,7 +29,7 @@ public enum WrongParameter {
   private final String russianMessage;
 
   /**
-   * Message error on england language.
+   * Message error on english language.
    */
   private final String englishMessage;
 
@@ -37,7 +37,7 @@ public enum WrongParameter {
    * Constructor WrongParameter with multilang.
    *
    * @param russianMessage error message on russian.
-   * @param englishMessage error message on england.
+   * @param englishMessage error message on english.
    * @param response response from server.
    */
   WrongParameter(@NotNull String response, @NotNull String russianMessage, @NotNull String englishMessage) {
@@ -57,9 +57,9 @@ public enum WrongParameter {
   }
 
   /**
-   * Returns the error message on england.
+   * Returns the error message on english.
    *
-   * @return error message on england.
+   * @return error message on english.
    */
   @NotNull
   public String getEnglishMessage() {

@@ -20,7 +20,7 @@ public enum StatusActivationRequest {
   private final String russianMessage;
 
   /**
-   * Message on england language.
+   * Message on english language.
    */
   private final String englishMessage;
 
@@ -29,7 +29,7 @@ public enum StatusActivationRequest {
    *
    * @param id             special id status.
    * @param russianMessage description status on russian language.
-   * @param englishMessage description status on england language.
+   * @param englishMessage description status on english language.
    */
   StatusActivationRequest(int id, @NotNull String russianMessage, @NotNull String englishMessage) {
     this.id = id;
@@ -48,9 +48,9 @@ public enum StatusActivationRequest {
   }
 
   /**
-   * Returns the message on england.
+   * Returns the message on english.
    *
-   * @return message on england.
+   * @return message on english.
    */
   @NotNull
   public String getEnglishMessage() {

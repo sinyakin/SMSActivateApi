@@ -24,7 +24,7 @@ public enum RentError {
   private final String russianMessage;
 
   /**
-   * Message error on england language.
+   * Message error on english language.
    */
   private final String englishMessage;
 
@@ -32,7 +32,7 @@ public enum RentError {
    * Constructor state error with multilang.
    *
    * @param russianMessage error message on russian.
-   * @param englishMessage error message on england.
+   * @param englishMessage error message on english.
    */
   RentError(@NotNull String response, @NotNull String russianMessage, @NotNull String englishMessage) {
     this.russianMessage = russianMessage;
@@ -51,9 +51,9 @@ public enum RentError {
   }
 
   /**
-   * Returns the error message on england.
+   * Returns the error message on english.
    *
-   * @return error message on england.
+   * @return error message on english.
    */
   @NotNull
   public String getEnglishMessage() {

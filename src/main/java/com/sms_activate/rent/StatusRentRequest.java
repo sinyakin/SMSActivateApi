@@ -18,7 +18,7 @@ public enum StatusRentRequest {
   private final String russianMessage;
 
   /**
-   * Message status on england language.
+   * Message status on english language.
    */
   private final String englishMessage;
 
@@ -27,7 +27,7 @@ public enum StatusRentRequest {
    *
    * @param id             is status.
    * @param russianMessage message on russian lang.
-   * @param englishMessage message on england lang.
+   * @param englishMessage message on english lang.
    */
   StatusRentRequest(int id, @NotNull String russianMessage, @NotNull String englishMessage) {
     this.id = id;
@@ -55,9 +55,9 @@ public enum StatusRentRequest {
   }
 
   /**
-   * Returns the message on england.
+   * Returns the message on english.
    *
-   * @return message on england.
+   * @return message on english.
    */
   @NotNull
   public String getEnglishMessage() {

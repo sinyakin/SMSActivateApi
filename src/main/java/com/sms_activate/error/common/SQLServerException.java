@@ -10,7 +10,7 @@ public class SQLServerException extends BaseSMSActivateException {
   /**
    * Constructor sms activate exception with multilang.
    *
-   * @param englishMessage message on england language.
+   * @param englishMessage message on english language.
    * @param russianMessage message on russian language.
    */
   public SQLServerException(@NotNull String englishMessage, @NotNull String russianMessage) {

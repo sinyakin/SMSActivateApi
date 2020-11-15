@@ -18,7 +18,7 @@ public enum QiwiStatus {
   private final String russianMessage;
 
   /**
-   * Message on england language.
+   * Message on english language.
    */
   private final String englishMessage;
 
@@ -27,7 +27,7 @@ public enum QiwiStatus {
    *
    * @param id             id status.
    * @param russianMessage message on russian language.
-   * @param englishMessage message on england language.
+   * @param englishMessage message on english language.
    */
   QiwiStatus(int id, @NotNull String russianMessage, @NotNull String englishMessage) {
     this.id = id;
@@ -55,9 +55,9 @@ public enum QiwiStatus {
   }
 
   /**
-   * Returns the message on england.
+   * Returns the message on english.
    *
-   * @return message on england.
+   * @return message on english.
    */
   @NotNull
   public String getEnglishMessage() {

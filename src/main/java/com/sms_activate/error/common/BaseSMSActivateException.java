@@ -4,7 +4,7 @@ import org.jetbrains.annotations.NotNull;
 
 public class BaseSMSActivateException extends Exception {
   /**
-   * Message on england language.
+   * Message on english language.
    */
   private final String englishMessage;
 
@@ -16,7 +16,7 @@ public class BaseSMSActivateException extends Exception {
   /**
    * Constructor base sms activate exception with multilang.
    *
-   * @param englishMessage message on england language.
+   * @param englishMessage message on english language.
    * @param russianMessage message on russian language.
    */
   public BaseSMSActivateException(@NotNull String englishMessage, @NotNull String russianMessage) {
@@ -27,9 +27,9 @@ public class BaseSMSActivateException extends Exception {
   }
 
   /**
-   * Returns the message on england language.
+   * Returns the message on english language.
    *
-   * @return message on england language.
+   * @return message on english language.
    */
   @NotNull
   public String getEnglishMessage() {
