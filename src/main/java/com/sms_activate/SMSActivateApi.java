@@ -64,21 +64,20 @@ public class SMSActivateApi {
   /**
    * Personal referral link.
    */
-  private final String ref;
+  private String ref = null;
 
   /**
-   * Constructor API sms-activate with API key.
+   * Constructor API sms-activate with API key and ref.
    *
    * @param apiKey API key (not be null).
    * @throws WrongParameterException if api-key is incorrect.
    */
-  public SMSActivateApi(@NotNull String apiKey, @NotNull String ref) throws WrongParameterException {
+  public SMSActivateApi(@NotNull String apiKey) throws WrongParameterException {
     if (apiKey.length() != 32) {
-      throw new WrongParameterException("API-key of wrong length.", "API неправильной длины.");
+      throw new WrongParameterException("API-key of wrong length.", "API ключ неправильной длины.");
     }
 
     this.apiKey = apiKey;
-    this.ref = ref;
   }
 
   /**
@@ -92,11 +91,20 @@ public class SMSActivateApi {
   }
 
   /**
+   * Sets the personal referral links.
+   *
+   * @param ref personal referral links.
+   */
+  public void setRef(@NotNull String ref) {
+    this.ref = ref;
+  }
+
+  /**
    * Returns the referral link.
    *
    * @return referral link
    */
-  @NotNull
+  @Nullable
   public String getRef() {
     return ref;
   }
@@ -703,7 +711,8 @@ public class SMSActivateApi {
       throws IOException, SQLServerException, WrongParameterException {
     if (time <= 0) {
       throw new WrongParameterException("Time can't be negative or equals 0.", "Время не может быть меньше или равно 0");
-    } if (countryId < 0) {
+    }
+    if (countryId < 0) {
       throw new WrongParameterException("Wrong ID country.", "Неверный ID страны.");
     }
 
@@ -765,7 +774,7 @@ public class SMSActivateApi {
   @NotNull
   public PhoneRent getRentNumber(@NotNull Service service)
       throws IOException, SQLServerException, RentException, WrongParameterException, NoBalanceException, NoNumberException {
-    return getRentNumber(service, 0,  null, 1, null);
+    return getRentNumber(service, 0, null, 1, null);
   }
 
   /**
