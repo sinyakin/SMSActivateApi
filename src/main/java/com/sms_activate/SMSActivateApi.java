@@ -74,7 +74,7 @@ public class SMSActivateApi {
    */
   public SMSActivateApi(@NotNull String apiKey, @NotNull String ref) throws WrongParameterException {
     if (apiKey.length() != 32) {
-      throw new WrongParameterException("API-key of wrong length.", "API неправильной длины");
+      throw new WrongParameterException("API-key of wrong length.", "API неправильной длины.");
     }
 
     this.apiKey = apiKey;
@@ -620,9 +620,9 @@ public class SMSActivateApi {
    * @throws WrongResponseException  if response incorrect.
    */
   @NotNull
-  public List<Phone> getCurrentActivationsDataTables()
+  public List<Phone> getCurrentActivations()
       throws IOException, SQLServerException, WrongResponseException, WrongParameterException {
-    return getCurrentActivationsDataTables(0, 10);
+    return getCurrentActivations(0, 10);
   }
 
   /**
@@ -637,7 +637,7 @@ public class SMSActivateApi {
    * @throws WrongResponseException  if response incorrect.
    */
   @NotNull
-  public List<Phone> getCurrentActivationsDataTables(int start, int length)
+  public List<Phone> getCurrentActivations(int start, int length)
       throws IOException, WrongParameterException, SQLServerException, WrongResponseException {
     SMSActivateURLBuilder smsActivateURLBuilder = new SMSActivateURLBuilder(apiKey, SMSActivateAction.GET_CURRENT_ACTIVATION);
     smsActivateURLBuilder.append(SMSActivateURLKey.START, start)
@@ -683,7 +683,7 @@ public class SMSActivateApi {
   @NotNull
   public Rent getRentServicesAndCountries()
       throws IOException, SQLServerException, WrongParameterException {
-    return getRentServicesAndCountries(0, null, 0);
+    return getRentServicesAndCountries(0, null, 1);
   }
 
   /**
@@ -703,9 +703,7 @@ public class SMSActivateApi {
       throws IOException, SQLServerException, WrongParameterException {
     if (time <= 0) {
       throw new WrongParameterException("Time can't be negative or equals 0.", "Время не может быть меньше или равно 0");
-    }
-
-    if (countryId < 0) {
+    } if (countryId < 0) {
       throw new WrongParameterException("Wrong ID country.", "Неверный ID страны.");
     }
 
@@ -926,14 +924,17 @@ public class SMSActivateApi {
   private Map<String, Object> getRentDataFromJson(@NotNull URL url)
       throws SQLServerException, IOException, WrongParameterException, NoBalanceException, NoNumberException, RentException {
     String data = WebClient.getOrThrowCommonException(url, validator);
-    validator.throwNoNumbersOrNoBalanceExceptionByName(data);
 
     Type type = new TypeToken<Map<String, Object>>() {
     }.getType();
 
     Map<String, Object> responseMap = gson.fromJson(data, type);
 
-    validator.validateRentStateResponse(responseMap.get("status"), responseMap.get("message"));
+    String message = String.valueOf(responseMap.get("message"));
+    String status = String.valueOf(responseMap.get("status"));
+
+    validator.throwNoNumbersOrNoBalanceExceptionByName(message);
+    validator.validateRentStateResponse(status, message);
     return responseMap;
   }
 

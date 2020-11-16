@@ -7,6 +7,7 @@
     <groupId>org.sms_api</groupId>
     <artifactId>sms-activate</artifactId>
     <version>1.0</version>
+    <packaging>jar</packaging>
 
     <name>SmsActivateApi</name>
     <description>Lib for working with sms activate API.</description>

@@ -40,7 +40,7 @@ public class Rent {
    * @return country rent phone.
    */
   @NotNull
-  public ServiceByCountry getCountry() {
+  public ServiceByCountry getServiceByCountry() {
     return serviceByCountry;
   }
 

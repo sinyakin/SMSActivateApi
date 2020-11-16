@@ -28,76 +28,17 @@ public class GetAndSetStatusRun {
 
     try {
       SMSActivateApi smsActivateApi = new SMSActivateApi("API_KEY", "REFERRAL_LINK");
-      List<ServiceWithForward> serviceList = smsActivateApi.getNumbersStatus();
+      List<ServiceWithForward> serviceList = smsActivateApi.getNumbersStatus(/*0, "mts"*/);
 
       serviceList.forEach(GetAndSetStatusRun::printInfoAboutService);
-
-      System.out.print("Input service name: ");
-      Service service = new Service(scanner.next());
-
-      Phone phone = smsActivateApi.getNumber(service, 0);
-      printInfoAboutPhone(phone);
-
-      System.out.println("Please register number in service " + service.getShortName());
-
-      StateActivationResponse stateActivationResponse = smsActivateApi.getStatus(phone);
-      System.out.println(stateActivationResponse.getEnglishMessage());
-
-      while (true) {
-        try {
-          System.out.println("Input c(cancel)/f(finish)/s(sms code)/q(quit)");
-          String response = scanner.next().toLowerCase();
-          boolean isQuit = response.equals("q");
-
-          if (isQuit) {
-            break;
-          }
-
-          switch (response) {
-            case "c":
-              AccessStatusActivation accessStatusActivation = smsActivateApi.setStatus(phone, StatusActivationRequest.CANCEL);
-
-              if (accessStatusActivation == AccessStatusActivation.CANCEL) {
-                System.out.println(accessStatusActivation.getMessage());
-                return;
-              }
-              break;
-            case "f":
-              accessStatusActivation = smsActivateApi.setStatus(phone, StatusActivationRequest.FINISH);
-
-              if (accessStatusActivation == AccessStatusActivation.ACTIVATION) {
-                System.out.println(accessStatusActivation.getMessage());
-                return;
-              }
-              break;
-            case "s":
-              String smsCode = smsActivateApi.getFullSms(phone);
-              System.out.println("smsCode: " + smsCode);
-              break;
-          }
-        } catch (BaseSMSActivateException e) {
-          System.out.println(e.getEnglishMessage());
-        } finally {
-          System.out.println("Current status activation: " + smsActivateApi.getStatus(phone).getEnglishMessage());
-        }
-      }
-
-      stateActivationResponse = smsActivateApi.getStatus(phone);
-      System.out.println(stateActivationResponse.getEnglishMessage());
-    } catch (WrongParameterException | NoNumberException | NoBalanceException | SQLServerException | BannedException e) {
+    } catch (WrongParameterException | SQLServerException e) {
       System.out.println(e.getEnglishMessage());
     } catch (IOException e) {
       e.printStackTrace();
     }
   }
 
-  private static void printInfoAboutPhone(@NotNull Phone phone) {
-    System.out.println("Id: " + phone.getId());
-    System.out.println("Number: " + phone.getNumber());
-    printInfoAboutService(phone.getService());
-  }
-
-  private static void printInfoAboutService(@NotNull Service service) {
+  public static void printInfoAboutService(@NotNull Service service) {
     System.out.println("Service: " + service.getShortName());
 
     if (service.getCountNumber() != 0) {
