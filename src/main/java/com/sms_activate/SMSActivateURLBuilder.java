@@ -52,16 +52,6 @@ class SMSActivateURLBuilder {
   }
 
   /**
-   * Appends the specified pair (key, value), where key is Number, to parameter URL.
-   *
-   * @param key   key with which the specified value is to be associated (not be null).
-   * @param value value to be associated with the specified key.
-   */
-  public SMSActivateURLBuilder append(@NotNull SMSActivateURLKey key, @Nullable Integer value) {
-    return append(key, String.valueOf(value));
-  }
-
-  /**
    * Builds the http query string.
    *
    * @return http query string.

@@ -1,15 +1,14 @@
 package com.sms_activate;
 
-import com.sms_activate.error.NoBalanceException;
-import com.sms_activate.error.NoNumberException;
-import com.sms_activate.error.common.SQLServerException;
-import com.sms_activate.error.common.WrongParameterException;
-import com.sms_activate.error.rent.RentException;
-import com.sms_activate.error.rent.TimeOutRentException;
-import com.sms_activate.error.type.RentError;
-import com.sms_activate.error.type.Shortage;
-import com.sms_activate.error.type.WrongParameter;
-import com.sms_activate.rent.StateRentResponse;
+import com.sms_activate.old.error.NoBalanceException;
+import com.sms_activate.old.error.NoNumberException;
+import com.sms_activate.old.error.common.SMSActivateBaseException;
+import com.sms_activate.old.error.common.WrongParameterException;
+import com.sms_activate.old.error.rent.RentException;
+import com.sms_activate.old.error.type.RentError;
+import com.sms_activate.old.error.type.Shortage;
+import com.sms_activate.old.error.type.WrongParameter;
+import com.sms_activate.old.rent.StateRentResponse;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -24,7 +23,7 @@ class Validator {
     WrongParameter wrongParameter = WrongParameter.getWrongParameterByName(name);
 
     if (wrongParameter != WrongParameter.UNKNOWN) {
-      throw new WrongParameterException(wrongParameter.getEnglishMessage(), wrongParameter.getRussianMessage());
+      throw new WrongParameterException(wrongParameter);
     }
   }
 
@@ -50,15 +49,15 @@ class Validator {
    *
    * @param name name error.
    *             unknown if wrong parameter not contains in enum (it's may be SQLServerException), else throw WrongParameter.
-   * @throws WrongParameterException if one of parameters is incorrect.
-   * @throws SQLServerException      if error happened on SQL-server.
+   * @throws WrongParameterException  if one of parameters is incorrect.
+   * @throws SMSActivateBaseException if error happened on SQL-server.
    */
   public void throwCommonExceptionByName(@NotNull String name)
-      throws WrongParameterException, SQLServerException {
+      throws SMSActivateBaseException {
     throwWrongParameterExceptionByName(name);
 
     if (name.contains("SQL")) {
-      throw new SQLServerException();
+      throw new SMSActivateBaseException("Error SQL-server.", "Ошибка SQL-сервера.");
     }
   }
 
@@ -66,14 +65,14 @@ class Validator {
    * Throws rent error by name.
    *
    * @param name name error
-   * @throws RentException        if rent is cancel or finish.
-   * @throws TimeOutRentException if rent has been canceled, finish or it is no longer possible to cancel the rental.
+   * @throws RentException            if rent is cancel or finish.
+   * @throws SMSActivateBaseException if rent has been canceled, finish or it is no longer possible to cancel the rental.
    */
-  public void throwRentExceptionsByName(@NotNull String name) throws RentException, TimeOutRentException {
+  public void throwRentExceptionsByName(@NotNull String name) throws SMSActivateBaseException {
     RentError rentError = RentError.getErroByName(name);
 
     if (rentError == RentError.CANT_CANCEL || rentError == RentError.ALREADY_CANCEL || rentError == RentError.ALREADY_FINISH) {
-      throw new TimeOutRentException(rentError.getEnglishMessage(), rentError.getRussianMessage());
+      throw new SMSActivateBaseException(rentError.getEnglishMessage(), rentError.getRussianMessage());
     } else {
       throw new RentException(rentError.getEnglishMessage(), rentError.getRussianMessage());
     }
@@ -86,7 +85,7 @@ class Validator {
    * @param message message on error.
    * @throws RentException if rent is cancel or finish.
    */
-  public void validateRentStateResponse(@NotNull Object status, @Nullable Object message) throws RentException {
+  public void validateRentStateResponse(@NotNull Object status, @Nullable Object message) throws SMSActivateBaseException {
     StateRentResponse stateRentResponse = StateRentResponse.getStateRentByName(status.toString());
 
     if (stateRentResponse != StateRentResponse.SUCCESS) {
