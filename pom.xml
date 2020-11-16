@@ -7,7 +7,10 @@
     <groupId>org.sms_api</groupId>
     <artifactId>sms-activate</artifactId>
     <version>1.0</version>
-    <packaging>jar</packaging>
+    <modules>
+        <module>example</module>
+    </modules>
+    <packaging>pom</packaging>
 
     <name>SmsActivateApi</name>
     <description>Lib for working with sms activate API.</description>
@@ -84,7 +87,7 @@
                 </property>
             </activation>
             <modules>
-                <module><!-- Move the example module to a separate project and add to this. --></module>
+                <module>example</module>
             </modules>
         </profile>
 
