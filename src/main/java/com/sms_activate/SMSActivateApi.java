@@ -104,7 +104,7 @@ public class SMSActivateApi {
    *
    * @return referral link
    */
-  @Nullable
+  @NotNull
   public String getRef() {
     return ref;
   }
