@@ -13,7 +13,7 @@ import java.util.List;
       int countryId = 0; // see more https://sms-activate.ru/ru/api2
       String operator = "mts"; // see more https://sms-activate.ru/ru/api2
 
-      SMSActivateApi smsActivateApi = new SMSActivateApi("API_KEY", "REFERRAL_LINK");
+      SMSActivateApi smsActivateApi = new SMSActivateApi("API_KEY");
       System.out.println("API_KEY: " + smsActivateApi.getApiKey());
       System.out.println("REFERRAL_LINK: " + smsActivateApi.getRef());
 

@@ -15,7 +15,7 @@ import java.io.IOException;
 public class GetAndSetRentStatusRun {
   public static void main(String[] args) {
     try {
-      SMSActivateApi smsActivateApi = new SMSActivateApi("9A34fbf73d52752607e37ebA26f6f0bf", "");
+      SMSActivateApi smsActivateApi = new SMSActivateApi("API_KEY");
       Phone phone = smsActivateApi.getRentNumber(new Service("go"));
       System.out.println(phone.getId());
       System.out.println(phone.getNumber());

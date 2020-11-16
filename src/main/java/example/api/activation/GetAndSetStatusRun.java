@@ -27,7 +27,7 @@ public class GetAndSetStatusRun {
     Scanner scanner = new Scanner(System.in);
 
     try {
-      SMSActivateApi smsActivateApi = new SMSActivateApi("API_KEY", "REFERRAL_LINK");
+      SMSActivateApi smsActivateApi = new SMSActivateApi("API_KEY");
       List<ServiceWithForward> serviceList = smsActivateApi.getNumbersStatus(/*0, "mts"*/);
 
       serviceList.forEach(GetAndSetStatusRun::printInfoAboutService);

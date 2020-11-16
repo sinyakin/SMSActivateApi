@@ -11,7 +11,7 @@ import java.util.List;
 public class GetPricesRun {
   public static void main(String[] args) {
     try {
-      SMSActivateApi smsActivateApi = new SMSActivateApi("API_KEY", "REFERRAL_LINK");
+      SMSActivateApi smsActivateApi = new SMSActivateApi("API_KEY");
       List<ServiceByCountry> serviceByCountryList = smsActivateApi.getPrices();
 
       serviceByCountryList.forEach(x -> {

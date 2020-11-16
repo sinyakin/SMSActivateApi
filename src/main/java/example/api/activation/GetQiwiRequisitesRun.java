@@ -10,7 +10,7 @@ import java.io.IOException;
 public class GetQiwiRequisitesRun {
   public static void main(String[] args) {
     try {
-      SMSActivateApi smsActivateApi = new SMSActivateApi("API_KEY", "REFERRAL_LINK");
+      SMSActivateApi smsActivateApi = new SMSActivateApi("API_KEY");
       QiwiResponse qiwiResponse = smsActivateApi.getQiwiRequisites();
       System.out.println("Status: " + qiwiResponse.getQiwiStatus().getMessage());
       System.out.println("Comment: " + qiwiResponse.getComment());

@@ -17,7 +17,7 @@ import java.util.Scanner;
 public class GetAdditionalServiceRun {
   public static void main(String[] args) {
     try {
-      SMSActivateApi smsActivateApi = new SMSActivateApi("API_KEY", "REFERRAL_LINK");
+      SMSActivateApi smsActivateApi = new SMSActivateApi("API_KEY");
       Service service = new Service("ot"); // ot - other
       int countryId = 0; //russia
       Phone phone = smsActivateApi.getNumber(service, countryId, null, null, true);

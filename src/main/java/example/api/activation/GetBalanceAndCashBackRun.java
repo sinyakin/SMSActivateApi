@@ -9,7 +9,7 @@ import java.io.IOException;
 public class GetBalanceAndCashBackRun {
   public static void main(String[] args) {
     try {
-      SMSActivateApi smsActivateApi = new SMSActivateApi("API_KEY", "REFERRAL_LINK");
+      SMSActivateApi smsActivateApi = new SMSActivateApi("API_KEY");
 
       System.out.println("Balance: " + smsActivateApi.getBalance().toString());
       System.out.println("Balance + cashback: " + smsActivateApi.getBalanceAndCashBack().toString());

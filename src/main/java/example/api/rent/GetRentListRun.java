@@ -15,7 +15,7 @@ import java.util.List;
 public class GetRentListRun {
   public static void main(String[] args) {
     try {
-      SMSActivateApi smsActivateApi = new SMSActivateApi("API_KEY", "");
+      SMSActivateApi smsActivateApi = new SMSActivateApi("API_KEY");
       List<Phone> phoneList = smsActivateApi.getRentList();
       phoneList.forEach(GetRentListRun::printInfoAboutPhone);
     } catch (WrongParameterException | NoBalanceException | NoNumberException | SQLServerException | RentException e) {

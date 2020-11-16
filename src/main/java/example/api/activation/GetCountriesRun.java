@@ -12,7 +12,7 @@ import java.util.List;
 public class GetCountriesRun {
   public static void main(String[] args) {
     try {
-      SMSActivateApi smsActivateApi = new SMSActivateApi("API_KEY", "REFERRAL_LINK");
+      SMSActivateApi smsActivateApi = new SMSActivateApi("API_KEY");
       List<Country> countryList = smsActivateApi.getCountries();
 
       countryList.forEach(GetCountriesRun::printCountryInfo);

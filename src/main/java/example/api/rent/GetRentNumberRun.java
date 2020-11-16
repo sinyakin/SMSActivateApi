@@ -14,7 +14,7 @@ import java.io.IOException;
 public class GetRentNumberRun {
   public static void main(String[] args) {
     try {
-      SMSActivateApi smsActivateApi = new SMSActivateApi("API_KEY", "REFERRAL_LINK");
+      SMSActivateApi smsActivateApi = new SMSActivateApi("API_KEY");
       PhoneRent phone = smsActivateApi.getRentNumber(new Service("go")/*, 0, "mts", 3, null*/);
 
       System.out.println(phone.getId());

@@ -16,7 +16,7 @@ import java.io.IOException;
 public class GetNumberRun {
   public static void main(String[] args) {
     try {
-      SMSActivateApi smsActivateApi = new SMSActivateApi("API_KEY", "REFERRAL_LINK");
+      SMSActivateApi smsActivateApi = new SMSActivateApi("API_KEY");
       Phone phone = smsActivateApi.getNumber(new Service("go"), 0);
 
       System.out.println("Id: " + phone.getId());
