@@ -20,7 +20,7 @@ enum SMSActivateURLKey {
   PHONE_EXCEPTION("phoneException"),
   MULTI_FORWARD("multiForward"),
   MULTI_SERVICE("multiService"),
-  RENT_TIME("rentTime"),
+  RENT_TIME("rent_time"),
   START("start"),
   LENGTH("length"),
   ORDER("order"),

@@ -11,7 +11,7 @@ import java.io.IOException;
 public class GetRentServicesAndCountriesRun {
   public static void main(String[] args) {
     try {
-      SMSActivateApi smsActivateApi = new SMSActivateApi("9A34fbf73d52752607e37ebA26f6f0bf", "REFERRAL_LINK");
+      SMSActivateApi smsActivateApi = new SMSActivateApi("API_KEY", "REFERRAL_LINK");
       Rent rent = smsActivateApi.getRentServicesAndCountries(/*0, "mts", 1*/);
 
       ServiceByCountry serviceByCountry = rent.getServiceByCountry();

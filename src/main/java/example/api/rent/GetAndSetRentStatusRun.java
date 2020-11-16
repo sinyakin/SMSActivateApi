@@ -7,25 +7,25 @@ import com.sms_activate.error.common.SQLServerException;
 import com.sms_activate.error.common.WrongParameterException;
 import com.sms_activate.error.rent.RentException;
 import com.sms_activate.phone.Phone;
-import org.jetbrains.annotations.NotNull;
+import com.sms_activate.rent.StatusRentRequest;
+import com.sms_activate.service.Service;
 
 import java.io.IOException;
-import java.util.List;
 
-public class GetRentListRun {
+public class GetAndSetRentStatusRun {
   public static void main(String[] args) {
     try {
-      SMSActivateApi smsActivateApi = new SMSActivateApi("API_KEY", "");
-      List<Phone> phoneList = smsActivateApi.getRentList();
-      phoneList.forEach(GetRentListRun::printInfoAboutPhone);
+      SMSActivateApi smsActivateApi = new SMSActivateApi("9A34fbf73d52752607e37ebA26f6f0bf", "");
+      Phone phone = smsActivateApi.getRentNumber(new Service("go"));
+      System.out.println(phone.getId());
+      System.out.println(phone.getNumber());
+
+      //System.out.println(smsActivateApi.getRentStatus(phone));
+      System.out.println(smsActivateApi.setRentStatus(phone, StatusRentRequest.CANCEL).getMessage());
     } catch (WrongParameterException | NoBalanceException | NoNumberException | SQLServerException | RentException e) {
       System.out.println(e.getMessage());
     } catch (IOException e) {
       e.printStackTrace();
     }
-  }
-  private static void printInfoAboutPhone(@NotNull Phone phone) {
-    System.out.println("Id: " + phone.getId());
-    System.out.println("Number: " + phone.getNumber());
   }
 }

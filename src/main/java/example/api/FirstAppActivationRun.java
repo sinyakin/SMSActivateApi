@@ -25,7 +25,7 @@ public class FirstAppActivationRun {
     Scanner scanner = new Scanner(System.in);
 
     try {
-      SMSActivateApi smsActivateApi = new SMSActivateApi("9A34fbf73d52752607e37ebA26f6f0bf", "REFERRAL_LINK");
+      SMSActivateApi smsActivateApi = new SMSActivateApi("API_KEY", "REFERRAL_LINK");
       List<ServiceWithForward> serviceList = smsActivateApi.getNumbersStatus(/*0, "mts"*/);
 
       serviceList.forEach(GetAndSetStatusRun::printInfoAboutService);
