@@ -3,6 +3,7 @@ package com.sms_activate;
 import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
 import com.sms_activate.arch.*;
+import com.sms_activate.arch.activation.SMSActivateActivation;
 import com.sms_activate.arch.activation.SMSActivateGetCountriesResponse;
 import com.sms_activate.arch.activation.SMSActivateGetCurrentActivation;
 import com.sms_activate.arch.activation.SMSActivateGetNumbersStatusResponse;
@@ -191,7 +192,7 @@ public class SMSActivateApi {
   /**
    * Returns the phone by service, ref, countryId.
    *
-   * @param service   service short name.
+   * @param service   service name for activation.
    * @param countryId id country.
    * @return phone for activation.
    * @throws IOException             if an I/O exception occurs.
@@ -201,14 +202,14 @@ public class SMSActivateApi {
    * @throws NoNumberException       if in account balance is zero.
    */
   @NotNull
-  public Phone getNumber(@NotNull Service service, int countryId) throws IOException, SMSActivateBaseException {
+  public SMSActivateActivation getNumber(@NotNull String service, int countryId) throws IOException, SMSActivateBaseException {
     return getNumber(service, countryId, null, null, false);
   }
 
   /**
    * Returns the phone number by service, ref, countryId, phoneException, operator, forward
    *
-   * @param service        service for activation.
+   * @param service        service name for activation.
    * @param countryId      id country.
    * @param phoneException excepted phone number prefix. Specify separated by commas.
    *                       <pre>{@code   7918,7900111}</pre>
@@ -222,8 +223,8 @@ public class SMSActivateApi {
    * @throws BannedException         if account has been banned.
    */
   @NotNull
-  public Phone getNumber(
-      @NotNull Service service,
+  public SMSActivateActivation getNumber(
+      @NotNull String service,
       int countryId,
       @Nullable String phoneException,
       @Nullable String operator,
@@ -235,7 +236,7 @@ public class SMSActivateApi {
 
     SMSActivateURLBuilder smsActivateURLBuilder = new SMSActivateURLBuilder(apiKey, SMSActivateAction.GET_NUMBER);
     smsActivateURLBuilder.append(SMSActivateURLKey.REF, ref)
-        .append(SMSActivateURLKey.SERVICE, service.getShortName())
+        .append(SMSActivateURLKey.SERVICE, service)
         .append(SMSActivateURLKey.COUNTRY, String.valueOf(countryId))
         .append(SMSActivateURLKey.PHONE_EXCEPTION, phoneException)
         .append(SMSActivateURLKey.OPERATOR, operator)
@@ -254,7 +255,7 @@ public class SMSActivateApi {
     String number = parts[2];
     int id = new BigDecimal(parts[1]).intValue();
 
-    return new Phone(number, service, id, forward);
+    return new SMSActivateActivation(SMSActivateStatusResponse.SUCCESS, id, forward, number, service);
   }
 
   /**
