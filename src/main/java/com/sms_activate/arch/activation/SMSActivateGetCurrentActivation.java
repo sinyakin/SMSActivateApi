@@ -1,5 +1,7 @@
-package com.sms_activate.arch;
+package com.sms_activate.arch.activation;
 
+import com.sms_activate.arch.SMSActivateMainResponse;
+import com.sms_activate.arch.SMSActivateStatusResponse;
 import org.jetbrains.annotations.NotNull;
 
 public class SMSActivateGetCurrentActivation extends SMSActivateMainResponse {
