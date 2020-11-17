@@ -3,57 +3,68 @@ package com.sms_activate.arch;
 import org.jetbrains.annotations.NotNull;
 
 public class SMSActivateGetCountriesResponse extends SMSActivateMainResponse {
-  private final String chn;
-  private final String eng;
-  private final String rus;
+  private final int id;
 
-  private final boolean retry;
-  private final boolean visible;
-  private final boolean multiService;
+  private final String chineseMessage;
+  private final String englishMessage;
+  private final String russianMessage;
+
+  private final boolean supportRent;
+  private final boolean supportRetry;
+  private final boolean supportVisible;
+  private final boolean supportMultiService;
 
   public SMSActivateGetCountriesResponse(
+      @NotNull SMSActivateStatusResponse status,
       int id,
-      @NotNull String chn,
-      @NotNull String eng,
-      @NotNull String rus,
-      boolean retry,
-      boolean visible,
-      boolean multiService
+      @NotNull String chineseMessage,
+      @NotNull String englishMessage,
+      @NotNull String russianMessage,
+      boolean supportRent,
+      boolean supportRetry,
+      boolean supportVisible,
+      boolean supportMultiService
   ) {
-    super(id);
-    this.chn = chn;
-    this.eng = eng;
-    this.rus = rus;
+    super(status);
+    this.id = id;
+    this.chineseMessage = chineseMessage;
+    this.englishMessage = englishMessage;
+    this.russianMessage = russianMessage;
 
-    this.visible = visible;
-    this.retry = retry;
-    this.multiService = multiService;
+    this.supportRent = supportRent;
+    this.supportRetry = supportRetry;
+    this.supportVisible = supportVisible;
+    this.supportMultiService = supportMultiService;
   }
 
   @NotNull
-  public String getChn() {
-    return chn;
+  public String getChineseMessage() {
+    return chineseMessage;
   }
 
   @NotNull
-  public String getEng() {
-    return eng;
+  public String getEnglishMessage() {
+    return englishMessage;
   }
 
   @NotNull
-  public String getRus() {
-    return rus;
+  public String getRussianMessage() {
+    return russianMessage;
   }
 
-  public boolean isRetry() {
-    return retry;
+  public boolean isSupportRent() {
+    return supportRent;
   }
 
-  public boolean isVisible() {
-    return visible;
+  public boolean isSupportRetry() {
+    return supportRetry;
   }
 
-  public boolean isMultiService() {
-    return multiService;
+  public boolean isSupportVisible() {
+    return supportVisible;
+  }
+
+  public boolean isSupportMultiService() {
+    return supportMultiService;
   }
 }

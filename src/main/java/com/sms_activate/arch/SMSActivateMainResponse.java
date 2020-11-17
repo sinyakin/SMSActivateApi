@@ -1,13 +1,15 @@
 package com.sms_activate.arch;
 
-public class SMSActivateMainResponse {
-  private final int id;
+import org.jetbrains.annotations.NotNull;
 
-  public SMSActivateMainResponse(int id) {
-    this.id = id;
+public class SMSActivateMainResponse {
+  private final SMSActivateStatusResponse status;
+
+  public SMSActivateMainResponse(@NotNull SMSActivateStatusResponse status) {
+    this.status = status;
   }
 
-  public int getId() {
-    return id;
+  public SMSActivateStatusResponse getStatus() {
+    return status;
   }
 }

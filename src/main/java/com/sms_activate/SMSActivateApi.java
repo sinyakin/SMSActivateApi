@@ -2,6 +2,9 @@ package com.sms_activate;
 
 import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
+import com.sms_activate.arch.SMSActivateGetCountriesResponse;
+import com.sms_activate.arch.SMSActivateGetNumbersStatusResponse;
+import com.sms_activate.arch.SMSActivateStatusResponse;
 import com.sms_activate.old.Sms;
 import com.sms_activate.old.activation.AccessStatusActivation;
 import com.sms_activate.old.activation.StateActivationResponse;
@@ -29,7 +32,6 @@ import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 import java.io.IOException;
-import java.lang.reflect.Type;
 import java.math.BigDecimal;
 import java.net.URL;
 import java.util.ArrayList;
@@ -143,7 +145,7 @@ public class SMSActivateApi {
    * @throws WrongParameterException if one of parameters is incorrect. 
    */
   @NotNull
-  public List<ServiceWithForward> getNumbersStatus()
+  public List<SMSActivateGetNumbersStatusResponse> getNumbersStatus()
       throws IOException, SMSActivateBaseException {
     return getNumbersStatus(null, null);
   }
@@ -158,7 +160,7 @@ public class SMSActivateApi {
    * @throws WrongParameterException if one of parameters is incorrect. 
    */
   @NotNull
-  public List<ServiceWithForward> getNumbersStatus(@Nullable Integer countryId, @Nullable String operator)
+  public List<SMSActivateGetNumbersStatusResponse> getNumbersStatus(@Nullable Integer countryId, @Nullable String operator)
       throws IOException, SMSActivateBaseException {
     if (countryId != null && countryId < 0) {
       throw new WrongParameterException("Wrong ID country.", "Неверный ID страны.");
@@ -170,19 +172,17 @@ public class SMSActivateApi {
 
     String data = SMSActivateWebClient.getOrThrowCommonException(smsActivateURLBuilder.build(), validator);
 
-    Type type = new TypeToken<Map<String, String>>() {
-    }.getType();
-
-    Map<String, String> serviceMap = gson.fromJson(data, type);
-    List<ServiceWithForward> serviceList = new ArrayList<>();
+    Map<String, String> serviceMap = gson.fromJson(data, new TypeToken<Map<String, String>>(){}.getType());
+    List<SMSActivateGetNumbersStatusResponse> serviceList = new ArrayList<>();
 
     serviceMap.forEach((key, value) -> {
       String[] partsKey = key.split("_");
 
-      serviceList.add(new ServiceWithForward(
-          partsKey[0],
+      serviceList.add(new SMSActivateGetNumbersStatusResponse (
+          SMSActivateStatusResponse.SUCCESS,
+          Boolean.parseBoolean(partsKey[1]),
           Integer.parseInt(value),
-          Boolean.parseBoolean(partsKey[1])
+          partsKey[0]
       ));
     });
 
@@ -202,10 +202,7 @@ public class SMSActivateApi {
    * @throws NoNumberException       if in account balance is zero.
    */
   @NotNull
-  public Phone getNumber(
-      @NotNull Service service,
-      int countryId
-  ) throws IOException, SMSActivateBaseException {
+  public Phone getNumber(@NotNull Service service, int countryId) throws IOException, SMSActivateBaseException {
     return getNumber(service, countryId, null, null, false);
   }
 
@@ -332,10 +329,7 @@ public class SMSActivateApi {
       throw new BannedException(date);
     }
 
-    Type type = new TypeToken<List<Map<String, Object>>>() {
-    }.getType();
-
-    List<Map<String, Object>> phoneMapList = gson.fromJson(data, type);
+    List<Map<String, Object>> phoneMapList = gson.fromJson(data, new TypeToken<List<Map<String, Object>>>(){}.getType());
     List<Phone> phoneList = new ArrayList<>();
 
     int indexForwardPhoneNumber = (multiForward == null) ? -1 : Arrays.asList(multiForward.split(",")).indexOf("1"); //index phone where need forwarding
@@ -512,10 +506,9 @@ public class SMSActivateApi {
 
     String data = SMSActivateWebClient.getOrThrowCommonException(smsActivateURLBuilder.build(), validator);
 
-    Type type = new TypeToken<Map<String, Map<String, Map<String, Double>>>>() {
-    }.getType();
+    Map<String, Map<String, Map<String, Double>>> countryMap = gson.fromJson(data,
+        new TypeToken<Map<String, Map<String, Map<String, Double>>>>(){}.getType());
 
-    Map<String, Map<String, Map<String, Double>>> countryMap = gson.fromJson(data, type);
     List<ServiceByCountry> serviceByCountryList = new ArrayList<>();
 
     countryMap.forEach((countryCode, serviceMap) -> {
@@ -544,16 +537,15 @@ public class SMSActivateApi {
    * @throws WrongParameterException if one of parameters is incorrect. 
    */
   @NotNull
-  public List<Country> getCountries() throws IOException, SMSActivateBaseException {
+  public List<SMSActivateGetCountriesResponse> getCountries() throws IOException, SMSActivateBaseException {
     SMSActivateURLBuilder smsActivateURLBuilder = new SMSActivateURLBuilder(apiKey, SMSActivateAction.GET_COUNTRIES);
 
     String data = SMSActivateWebClient.getOrThrowCommonException(smsActivateURLBuilder.build(), validator);
 
-    Type type = new TypeToken<Map<String, Map<String, Object>>>() {
-    }.getType();
+    Map<String, Map<String, Object>> countryInformationMap = gson.fromJson(data,
+        new TypeToken<Map<String, Map<String, Object>>>(){}.getType());
 
-    Map<String, Map<String, Object>> countryInformationMap = gson.fromJson(data, type);
-    List<Country> countryList = new ArrayList<>();
+    List<SMSActivateGetCountriesResponse> countryList = new ArrayList<>();
 
     for (Map<String, Object> countryMap : countryInformationMap.values()) {
       int id = new BigDecimal(countryMap.get("id").toString()).intValue();
@@ -567,7 +559,7 @@ public class SMSActivateApi {
       boolean isSupportRent = Boolean.parseBoolean(countryMap.get("rent").toString());
       boolean isSupportMultiService = Boolean.parseBoolean(countryMap.get("multiService").toString());
 
-      countryList.add(new Country(id, rus, eng, chn,
+      countryList.add(new SMSActivateGetCountriesResponse(SMSActivateStatusResponse.SUCCESS, id, rus, eng, chn,
           isVisible, isSupportRetry, isSupportRent, isSupportMultiService));
     }
 
@@ -587,11 +579,9 @@ public class SMSActivateApi {
 
     String data = SMSActivateWebClient.getOrThrowCommonException(smsActivateURLBuilder.build(), validator);
 
-    Type type = new TypeToken<Map<String, String>>() {
-    }.getType();
-    Map<String, String> qiwiMap = gson.fromJson(data, type);
+    Map<String, String> qiwiMap = gson.fromJson(data, new TypeToken<Map<String, String>>(){}.getType());
 
-    QiwiStatus qiwiStatus = QiwiStatus.getStatusByName(qiwiMap.get("status").toUpperCase());
+    QiwiStatus qiwiStatus = QiwiStatus.getStatusByName(qiwiMap.get("status"));
 
     return new QiwiResponse(qiwiStatus, qiwiMap.get("wallet"), qiwiMap.get("comment"));
   }
@@ -653,10 +643,7 @@ public class SMSActivateApi {
 
     String data = SMSActivateWebClient.getOrThrowCommonException(smsActivateURLBuilder.build(), validator);
 
-    Type type = new TypeToken<Map<String, Object>>() {
-    }.getType();
-
-    Map<String, Object> responseMap = gson.fromJson(data, type);
+    Map<String, Object> responseMap = gson.fromJson(data, new TypeToken<Map<String, Object>>(){}.getType());
 
     if (responseMap.get("status").toString().equalsIgnoreCase("fail")) {
       return new ArrayList<Phone>();
@@ -719,10 +706,8 @@ public class SMSActivateApi {
 
     String data = SMSActivateWebClient.getOrThrowCommonException(smsActivateURLBuilder.build(), validator);
 
-    Type type = new TypeToken<Map<String, Map<String, Object>>>() {
-    }.getType();
-
-    Map<String, Map<String, Object>> rentCountriesServices = gson.fromJson(data, type);
+    Map<String, Map<String, Object>> rentCountriesServices = gson.fromJson(data,
+        new TypeToken<Map<String, Map<String, Object>>>(){}.getType());
 
     Map<String, Object> countryMap = rentCountriesServices.get("countries");
     Map<String, Object> operatorMap = rentCountriesServices.get("operators");
@@ -868,10 +853,7 @@ public class SMSActivateApi {
 
     String data = SMSActivateWebClient.getOrThrowCommonException(smsActivateURLBuilder.build(), validator);
 
-    Type type = new TypeToken<Map<String, String>>() {
-    }.getType();
-
-    Map<String, String> responseMap = gson.fromJson(data, type);
+    Map<String, String> responseMap = gson.fromJson(data, new TypeToken<Map<String, String>>(){}.getType());
     validator.validateRentStateResponse(responseMap.get("status"), responseMap.get("message"));
 
     return StateRentResponse.SUCCESS;
@@ -921,10 +903,7 @@ public class SMSActivateApi {
       throws  IOException , SMSActivateBaseException, NoBalanceException, NoNumberException {
     String data = SMSActivateWebClient.getOrThrowCommonException(url, validator);
 
-    Type type = new TypeToken<Map<String, Object>>() {
-    }.getType();
-
-    Map<String, Object> responseMap = gson.fromJson(data, type);
+    Map<String, Object> responseMap = gson.fromJson(data, new TypeToken<Map<String, Object>>(){}.getType());
 
     String message = String.valueOf(responseMap.get("message"));
     String status = String.valueOf(responseMap.get("status"));
