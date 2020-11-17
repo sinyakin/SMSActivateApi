@@ -7,7 +7,7 @@ public class SMSActivateGetNumbersStatusResponse extends SMSActivateMainResponse
   private final int countNumber;
   private final String nameService;
 
-  public SMSActivateGetNumbersStatusResponse (
+  public SMSActivateGetNumbersStatusResponse(
       @NotNull SMSActivateStatusResponse status,
       boolean forward,
       int countNumber,

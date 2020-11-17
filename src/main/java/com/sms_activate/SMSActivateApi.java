@@ -2,9 +2,7 @@ package com.sms_activate;
 
 import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
-import com.sms_activate.arch.SMSActivateGetCountriesResponse;
-import com.sms_activate.arch.SMSActivateGetNumbersStatusResponse;
-import com.sms_activate.arch.SMSActivateStatusResponse;
+import com.sms_activate.arch.*;
 import com.sms_activate.old.Sms;
 import com.sms_activate.old.activation.AccessStatusActivation;
 import com.sms_activate.old.activation.StateActivationResponse;
@@ -574,16 +572,10 @@ public class SMSActivateApi {
    * @throws WrongParameterException if one of parameters is incorrect. 
    */
   @NotNull
-  public QiwiResponse getQiwiRequisites() throws IOException, SMSActivateBaseException {
+  public SMSActivateGetQiwiRequisitesResponse getQiwiRequisites() throws IOException, SMSActivateBaseException {
     SMSActivateURLBuilder smsActivateURLBuilder = new SMSActivateURLBuilder(apiKey, SMSActivateAction.GET_QIWI_REQUISITES);
-
     String data = SMSActivateWebClient.getOrThrowCommonException(smsActivateURLBuilder.build(), validator);
-
-    Map<String, String> qiwiMap = gson.fromJson(data, new TypeToken<Map<String, String>>(){}.getType());
-
-    QiwiStatus qiwiStatus = QiwiStatus.getStatusByName(qiwiMap.get("status"));
-
-    return new QiwiResponse(qiwiStatus, qiwiMap.get("wallet"), qiwiMap.get("comment"));
+    return gson.fromJson(data, new TypeToken<SMSActivateGetQiwiRequisitesResponse>(){}.getType());
   }
 
   /**
@@ -618,7 +610,7 @@ public class SMSActivateApi {
    * @throws WrongParameterException if one of parameters is incorrect.
    */
   @NotNull
-  public List<Phone> getCurrentActivations()
+  public List<SMSActivateGetCurrentActivation> getCurrentActivations()
       throws IOException, SMSActivateBaseException {
     return getCurrentActivations(0, 10);
   }
@@ -633,7 +625,7 @@ public class SMSActivateApi {
    * @throws WrongParameterException if one of parameters is incorrect. 
    */
   @NotNull
-  public List<Phone> getCurrentActivations(int start, int length)
+  public List<SMSActivateGetCurrentActivation> getCurrentActivations(int start, int length)
       throws IOException , SMSActivateBaseException {
     SMSActivateURLBuilder smsActivateURLBuilder = new SMSActivateURLBuilder(apiKey, SMSActivateAction.GET_CURRENT_ACTIVATION);
     smsActivateURLBuilder.append(SMSActivateURLKey.START, String.valueOf(start))
@@ -646,23 +638,25 @@ public class SMSActivateApi {
     Map<String, Object> responseMap = gson.fromJson(data, new TypeToken<Map<String, Object>>(){}.getType());
 
     if (responseMap.get("status").toString().equalsIgnoreCase("fail")) {
-      return new ArrayList<Phone>();
+      return new ArrayList<>();
     }
 
-    List<Map<String, Object>> currentPhoneActivationList = (List<Map<String, Object>>) responseMap.get("array");
-    List<Phone> phoneList = new ArrayList<>();
+    List<Map<String, Object>> currentActivationMapList = (List<Map<String, Object>>) responseMap.get("array");
+    List<SMSActivateGetCurrentActivation> smsActivateGetCurrentActivationList = new ArrayList<>();
 
-    for (Map<String, Object> currentPhoneActivationMap : currentPhoneActivationList) {
-      int id = new BigDecimal(currentPhoneActivationMap.get("id").toString()).intValue();
-      boolean forward = Boolean.parseBoolean(currentPhoneActivationMap.get("forward").toString());
+    for (Map<String, Object> currentActivationMap : currentActivationMapList) {
+      int id = new BigDecimal(String.valueOf(currentActivationMap.get("id"))).intValue();
+      boolean forward = Boolean.parseBoolean(String.valueOf(currentActivationMap.get("forward")));
 
-      String number = String.valueOf(currentPhoneActivationMap.get("phone"));
-      Service service = new Service(currentPhoneActivationMap.get("service").toString());
+      String number = String.valueOf(currentActivationMap.get("phone"));
+      String serviceName = String.valueOf(currentActivationMap.get("service"));
+      String countryName = String.valueOf(currentActivationMap.get("countryName"));
 
-      phoneList.add(new Phone(number, service, id, forward));
+      smsActivateGetCurrentActivationList.add(new SMSActivateGetCurrentActivation(
+          SMSActivateStatusResponse.SUCCESS, id, forward, number, countryName, serviceName));
     }
 
-    return phoneList;
+    return smsActivateGetCurrentActivationList;
   }
 
   /**

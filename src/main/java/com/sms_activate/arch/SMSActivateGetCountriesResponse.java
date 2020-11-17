@@ -37,6 +37,10 @@ public class SMSActivateGetCountriesResponse extends SMSActivateMainResponse {
     this.supportMultiService = supportMultiService;
   }
 
+  public int getId() {
+    return id;
+  }
+
   @NotNull
   public String getChineseMessage() {
     return chineseMessage;
