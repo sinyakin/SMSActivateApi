@@ -11,17 +11,16 @@ public class SMSActivateActivation extends SMSActivateMainResponse {
   private final String serviceName;
 
   public SMSActivateActivation(
-      @NotNull SMSActivateStatusResponse status,
       int id,
-      boolean forward,
       @NotNull String number,
-      @NotNull String serviceName
+      @NotNull String serviceName,
+      boolean forward
   ) {
-    super(status);
+    super(SMSActivateStatusResponse.SUCCESS);
     this.id = id;
-    this.forward = forward;
     this.number = number;
     this.serviceName = serviceName;
+    this.forward = forward;
   }
 
 

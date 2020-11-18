@@ -1,25 +1,24 @@
-package com.sms_activate.arch.activation;
+package com.sms_activate.arch.activation.currentactivation;
 
 import com.sms_activate.arch.SMSActivateMainResponse;
 import com.sms_activate.arch.SMSActivateStatusResponse;
 import org.jetbrains.annotations.NotNull;
 
-public class SMSActivateGetCurrentActivation extends SMSActivateMainResponse {
+public class SMSActivateGetCurrentActivationResponse extends SMSActivateMainResponse {
   private final int id;
   private final boolean forward;
   private final String number;
   private final String serviceName;
   private final String countryName;
 
-  public SMSActivateGetCurrentActivation(
-      @NotNull SMSActivateStatusResponse status,
+  public SMSActivateGetCurrentActivationResponse(
       int id,
       boolean forward,
       @NotNull String number,
       @NotNull String serviceName,
       @NotNull String countryName
   ) {
-    super(status);
+    super(SMSActivateStatusResponse.SUCCESS);
     this.id = id;
     this.forward = forward;
     this.number = number;
