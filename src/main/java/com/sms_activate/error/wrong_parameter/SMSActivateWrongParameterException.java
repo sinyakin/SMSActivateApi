@@ -1,8 +1,7 @@
 package com.sms_activate.error.wrong_parameter;
 
-import com.sms_activate.error.SMSActivateBaseException;
+import com.sms_activate.error.base.SMSActivateBaseException;
 import org.jetbrains.annotations.NotNull;
-import org.jetbrains.annotations.Nullable;
 
 /**
  * This exception occurs if one or more parameters that were passed are invalid or do not exist.

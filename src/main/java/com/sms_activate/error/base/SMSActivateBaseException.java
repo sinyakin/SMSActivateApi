@@ -1,8 +1,10 @@
-package com.sms_activate.error;
+package com.sms_activate.error.base;
 
 import org.jetbrains.annotations.NotNull;
 
 public class SMSActivateBaseException extends Exception {
+  private SMSActivateBaseTypeError type;
+
   /**
    * Message on english language.
    */

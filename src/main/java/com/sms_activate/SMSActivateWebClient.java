@@ -1,6 +1,6 @@
 package com.sms_activate;
 
-import com.sms_activate.error.SMSActivateBaseException;
+import com.sms_activate.error.base.SMSActivateBaseException;
 import com.sms_activate.error.wrong_parameter.SMSActivateWrongParameterException;
 import org.jetbrains.annotations.NotNull;
 

@@ -1,0 +1,94 @@
+{
+  "warnings": [
+    {
+      "code": "V009",
+      "cwe": 0,
+      "level": 0,
+      "positions": [
+        {
+          "file": "D:\\Work\\Sms-activate\\SMSActivateApi\\src\\main\\java\\com\\sms_activate\\error\\SMSActivateBannedException.java",
+          "line": 1,
+          "endLine": 1,
+          "column": 1,
+          "endColumn": 100500
+        }
+      ],
+      "message": "To use free version of PVS-Studio, source code files are required to start with a special comment.",
+      "projects": [],
+      "favorite": false,
+      "falseAlarm": false
+    },
+    {
+      "code": "V009",
+      "cwe": 0,
+      "level": 0,
+      "positions": [
+        {
+          "file": "D:\\Work\\Sms-activate\\SMSActivateApi\\src\\main\\java\\com\\sms_activate\\error\\wrong_parameter\\SMSActivateWrongParameter.java",
+          "line": 1,
+          "endLine": 1,
+          "column": 1,
+          "endColumn": 100500
+        }
+      ],
+      "message": "To use free version of PVS-Studio, source code files are required to start with a special comment.",
+      "projects": [],
+      "favorite": false,
+      "falseAlarm": false
+    },
+    {
+      "code": "V009",
+      "cwe": 0,
+      "level": 0,
+      "positions": [
+        {
+          "file": "D:\\Work\\Sms-activate\\SMSActivateApi\\src\\main\\java\\com\\sms_activate\\error\\SMSActivateBaseException.java",
+          "line": 1,
+          "endLine": 1,
+          "column": 1,
+          "endColumn": 100500
+        }
+      ],
+      "message": "To use free version of PVS-Studio, source code files are required to start with a special comment.",
+      "projects": [],
+      "favorite": false,
+      "falseAlarm": false
+    },
+    {
+      "code": "V009",
+      "cwe": 0,
+      "level": 0,
+      "positions": [
+        {
+          "file": "D:\\Work\\Sms-activate\\SMSActivateApi\\src\\main\\java\\com\\sms_activate\\error\\wrong_parameter\\SMSActivateWrongParameterException.java",
+          "line": 1,
+          "endLine": 1,
+          "column": 1,
+          "endColumn": 100500
+        }
+      ],
+      "message": "To use free version of PVS-Studio, source code files are required to start with a special comment.",
+      "projects": [],
+      "favorite": false,
+      "falseAlarm": false
+    },
+    {
+      "code": "V009",
+      "cwe": 0,
+      "level": 0,
+      "positions": [
+        {
+          "file": "D:\\Work\\Sms-activate\\SMSActivateApi\\src\\main\\java\\com\\sms_activate\\error\\SMSActivateUnknownException.java",
+          "line": 1,
+          "endLine": 1,
+          "column": 1,
+          "endColumn": 100500
+        }
+      ],
+      "message": "To use free version of PVS-Studio, source code files are required to start with a special comment.",
+      "projects": [],
+      "favorite": false,
+      "falseAlarm": false
+    }
+  ]
+}

@@ -44,6 +44,10 @@ class SMSActivateURLBuilder {
    * @param value value to be associated with the specified key.
    */
   public SMSActivateURLBuilder append(@NotNull SMSActivateURLKey key, @Nullable String value) {
+    if (value == null || value.isEmpty()) {
+      return this;
+    }
+
     if (!this.parameterMap.containsKey(key)) {
       this.parameterMap.put(key, value);
     }
