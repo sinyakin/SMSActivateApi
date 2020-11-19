@@ -127,7 +127,7 @@ public class SMSActivateApi {
   @NotNull
   public <T extends SMSActivateMainResponse> T getBalanceAndCashBack()
       throws IOException, SMSActivateBaseException {
-    BigDecimal balance = getBalance().getBalance();
+    BigDecimal balance = ((SMSActivateGetBalanceResponse) getBalance()).getBalance();
     BigDecimal balanceAndCashBack = getBalance(SMSActivateAction.GET_BALANCE_AND_CASHBACK);
 
     return (T) new SMSActivateGetBalanceAndCashBackResponse(balance, balanceAndCashBack.subtract(balance));
