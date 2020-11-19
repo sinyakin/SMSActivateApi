@@ -1,4 +1,4 @@
-package com.sms_activate.arch;
+package com.sms_activate.arch.main_response;
 
 import org.jetbrains.annotations.NotNull;
 

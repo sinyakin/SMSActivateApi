@@ -1,6 +1,5 @@
 package com.sms_activate.arch.rent.get_rent_services_and_countries;
 
-import com.sms_activate.arch.SMSActivateMainResponse;
 import org.jetbrains.annotations.NotNull;
 
 import java.math.BigDecimal;

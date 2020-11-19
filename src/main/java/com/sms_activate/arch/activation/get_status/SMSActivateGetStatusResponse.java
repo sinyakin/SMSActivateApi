@@ -1,7 +1,7 @@
 package com.sms_activate.arch.activation.get_status;
 
-import com.sms_activate.arch.SMSActivateMainResponse;
-import com.sms_activate.arch.SMSActivateMainStatusResponse;
+import com.sms_activate.arch.main_response.SMSActivateMainResponse;
+import com.sms_activate.arch.main_response.SMSActivateMainStatusResponse;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
