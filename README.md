@@ -4,17 +4,7 @@
 > to de continued.....
 
 ### Packages
-* activation
-* serviceByCountry
-* error
-  * common
-  * rent
-  * type
-* phone
-* qiwi
-* rent
-* service
-* util
+....
 
 ## Getting started 
 Include lib in maven
@@ -45,14 +35,4 @@ In these links your can get API-key and referral link.
 For checking all services use method getNumbersStatus
 
 Example
-```java
-SMSActivateApi smsActivateApi = new SMSActivateApi("API_KEY");
-List<ServiceWithForward> serviceWithForwardList = smsActivateApi.getNumbersStatus();
-
-System.out.println("List of available services:"\n);
-for (ServiceWithForward serviceWithForward : serviceWithForwardList) {
-  System.out.println("> short name: " + serviceWithForward.getShortName());
-  System.out.println(">> count number: " + serviceWithForward.getCountNumber());
-  System.out.println("--------------------------------------------------------\n")
-}
-```
+....
