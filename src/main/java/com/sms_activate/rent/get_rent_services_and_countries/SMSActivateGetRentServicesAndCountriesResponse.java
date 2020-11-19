@@ -8,7 +8,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
-public class SMSActivateGetRentServicesAndCountriesResponse extends SMSActivateMainResponse {
+public class SMSActivateGetRentServicesAndCountriesResponse {
   private final List<String> operatorNameList;
   private final List<Integer> countryIdList;
   private final Map<String, SMSActivateRentService> smsActivateRentServiceMap; // key is name service
@@ -18,7 +18,6 @@ public class SMSActivateGetRentServicesAndCountriesResponse extends SMSActivateM
       @NotNull List<Integer> countryIdList,
       @NotNull Map<String, SMSActivateRentService> smsActivateRentServiceMap
   ) {
-    super(SMSActivateMainStatusResponse.SUCCESS);
     this.countryIdList = countryIdList;
     this.operatorNameList = operatorNameList;
     this.smsActivateRentServiceMap = smsActivateRentServiceMap;

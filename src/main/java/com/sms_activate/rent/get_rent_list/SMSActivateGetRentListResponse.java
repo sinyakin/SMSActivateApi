@@ -6,11 +6,10 @@ import org.jetbrains.annotations.NotNull;
 
 import java.util.List;
 
-public class SMSActivateGetRentListResponse extends SMSActivateMainResponse {
+public class SMSActivateGetRentListResponse {
   private final List<SMSActivateGetRentResponse> smsActivateGetRentResponseList;
 
   public SMSActivateGetRentListResponse(@NotNull List<SMSActivateGetRentResponse> smsActivateGetRentResponseList) {
-    super(SMSActivateMainStatusResponse.SUCCESS);
     this.smsActivateGetRentResponseList = smsActivateGetRentResponseList;
   }
 

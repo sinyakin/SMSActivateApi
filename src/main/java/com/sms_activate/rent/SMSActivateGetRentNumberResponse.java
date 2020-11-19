@@ -4,14 +4,13 @@ import com.sms_activate.main_response.SMSActivateMainResponse;
 import com.sms_activate.main_response.SMSActivateMainStatusResponse;
 import org.jetbrains.annotations.NotNull;
 
-public class SMSActivateGetRentNumberResponse extends SMSActivateMainResponse {
+public class SMSActivateGetRentNumberResponse {
   private final int id;
   private final String number;
   private final String endDate;
   private final String serviceName;
 
   public SMSActivateGetRentNumberResponse(int id, @NotNull String number, @NotNull String endDate, @NotNull String serviceName) {
-    super(SMSActivateMainStatusResponse.SUCCESS);
     this.id = id;
     this.number = number;
     this.endDate = endDate;
