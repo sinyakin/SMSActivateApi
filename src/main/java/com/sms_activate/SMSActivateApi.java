@@ -2,7 +2,6 @@ package com.sms_activate;
 
 import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
-import com.sms_activate.arch.SMSActivateStatusResponse;
 import com.sms_activate.arch.activation.SMSActivateActivation;
 import com.sms_activate.arch.activation.SMSActivateGetMultiServiceNumberResponse;
 import com.sms_activate.arch.activation.balance.SMSActivateGetBalanceAndCashBackResponse;
@@ -13,11 +12,14 @@ import com.sms_activate.arch.activation.currentactivation.SMSActivateGetCurrentA
 import com.sms_activate.arch.activation.currentactivation.SMSActivateGetCurrentActivationsResponse;
 import com.sms_activate.arch.activation.getprices.SMSActivateGetPriceResponse;
 import com.sms_activate.arch.activation.getprices.SMSActivateGetPricesResponse;
+import com.sms_activate.arch.activation.getstatus.SMSActivateGetStatus;
+import com.sms_activate.arch.activation.getstatus.SMSActivateGetStatusResponse;
 import com.sms_activate.arch.activation.numbersstatus.SMSActivateGetNumberStatusResponse;
 import com.sms_activate.arch.activation.numbersstatus.SMSActivateGetNumbersStatusResponse;
+import com.sms_activate.arch.activation.setstatus.SMSActivateAccessStatus;
+import com.sms_activate.arch.activation.setstatus.SMSActivateSetStatusResponse;
 import com.sms_activate.arch.qiwi.SMSActivateGetQiwiRequisitesResponse;
 import com.sms_activate.old.Sms;
-import com.sms_activate.old.activation.AccessStatusActivation;
 import com.sms_activate.old.activation.StateActivationResponse;
 import com.sms_activate.old.activation.StatusActivationRequest;
 import com.sms_activate.old.country.Country;
@@ -43,6 +45,18 @@ import java.io.IOException;
 import java.math.BigDecimal;
 import java.net.URL;
 import java.util.*;
+
+
+/**
+ * TODO:
+ *  -refactoring validation:
+ *  --activation
+ *  --rent
+ *  -refactoring activation methods
+ *  -refactoring rent methods
+ */
+
+
 
 /**
  * <p>The class is a high-level API for interacting with the SMS-Activate API.
@@ -390,7 +404,7 @@ public class SMSActivateApi {
    * @throws WrongParameterException if one of parameters is incorrect.
    */
   @NotNull
-  public AccessStatusActivation setStatus(@NotNull Phone phone, @NotNull StatusActivationRequest status)
+  public SMSActivateSetStatusResponse setStatus(@NotNull Phone phone, @NotNull StatusActivationRequest status)
       throws IOException, SMSActivateBaseException {
     return setStatus(phone, status, false);
   }
@@ -406,7 +420,7 @@ public class SMSActivateApi {
    * @throws WrongParameterException if one of parameters is incorrect.
    */
   @NotNull
-  public AccessStatusActivation setStatus(
+  public SMSActivateSetStatusResponse setStatus(
       @NotNull Phone phone,
       @NotNull StatusActivationRequest status,
       boolean forward
@@ -418,7 +432,7 @@ public class SMSActivateApi {
 
     String data = SMSActivateWebClient.getOrThrowCommonException(smsActivateURLBuilder.build(), validator);
 
-    return AccessStatusActivation.getStatusByName(data);
+    return new SMSActivateSetStatusResponse(SMSActivateAccessStatus.getStatusByName(data));
   }
 
   /**
@@ -430,7 +444,7 @@ public class SMSActivateApi {
    * @throws WrongParameterException if one of parameters is incorrect.
    */
   @NotNull
-  public StateActivationResponse getStatus(@NotNull Phone phone)
+  public SMSActivateGetStatusResponse getStatus(@NotNull Phone phone)
       throws IOException, SMSActivateBaseException {
     SMSActivateURLBuilder smsActivateURLBuilder = new SMSActivateURLBuilder(apiKey, SMSActivateAction.GET_STATUS);
     smsActivateURLBuilder.append(SMSActivateURLKey.ID, String.valueOf(phone.getId()));
@@ -445,10 +459,9 @@ public class SMSActivateApi {
       code = parts[1];
     }
 
-    StateActivationResponse state = StateActivationResponse.getStateByName(data);
-    state.setCodeFromSMS(code);
+    SMSActivateGetStatus status = SMSActivateGetStatus.getStatusByName(data);
 
-    return state;
+    return new SMSActivateGetStatusResponse(status, code);
   }
 
   /**

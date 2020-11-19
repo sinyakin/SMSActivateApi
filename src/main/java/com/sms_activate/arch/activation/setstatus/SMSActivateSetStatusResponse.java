@@ -1,0 +1,24 @@
+package com.sms_activate.arch.activation.setstatus;
+
+import com.sms_activate.arch.SMSActivateMainResponse;
+import com.sms_activate.arch.SMSActivateStatusResponse;
+import org.jetbrains.annotations.NotNull;
+
+public class SMSActivateSetStatusResponse extends SMSActivateMainResponse {
+  private final SMSActivateAccessStatus smsActivateAccessStatus;
+
+  public SMSActivateSetStatusResponse(@NotNull SMSActivateAccessStatus smsActivateAccessStatus) {
+    super(SMSActivateStatusResponse.SUCCESS);
+    this.smsActivateAccessStatus = smsActivateAccessStatus;
+  }
+
+  @NotNull
+  public String getMessage() {
+    return smsActivateAccessStatus.getMessage();
+  }
+
+  @NotNull
+  public SMSActivateAccessStatus getSMSActivateAccessStatus() {
+    return smsActivateAccessStatus;
+  }
+}
