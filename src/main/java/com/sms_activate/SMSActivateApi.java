@@ -15,7 +15,6 @@ import com.sms_activate.activation.set_status.*;
 import com.sms_activate.error.*;
 import com.sms_activate.error.base.SMSActivateBaseException;
 import com.sms_activate.error.wrong_parameter.*;
-import com.sms_activate.main_response.*;
 import com.sms_activate.qiwi.*;
 import com.sms_activate.rent.*;
 import com.sms_activate.rent.get_rent_list.*;
@@ -110,25 +109,25 @@ public class SMSActivateApi {
    * @throws SMSActivateWrongParameterException if one of parameters is incorrect.
    */
   @NotNull
-  public  getBalance() throws IOException, SMSActivateBaseException {
+  public SMSActivateGetBalanceResponse getBalance() throws IOException, SMSActivateBaseException {
     BigDecimal balance = getBalance(SMSActivateAction.GET_BALANCE);
-    return (T) new SMSActivateGetBalanceResponse(balance);
+    return new SMSActivateGetBalanceResponse(balance);
   }
 
   /**
    * Returns the current account balance plus cashBack.
    *
-   * @return current account balance plus cashBack.
+   * @return current account balance with cashBack.
    * @throws IOException                        if an I/O exception occurs.
    * @throws SMSActivateWrongParameterException if one of parameters is incorrect.
    */
   @NotNull
-  public  getBalanceAndCashBack()
+  public SMSActivateGetBalanceAndCashBackResponse getBalanceAndCashBack()
       throws IOException, SMSActivateBaseException {
-    BigDecimal balance = ((SMSActivateGetBalanceResponse) getBalance()).getBalance();
+    BigDecimal balance = getBalance().getBalance();
     BigDecimal balanceAndCashBack = getBalance(SMSActivateAction.GET_BALANCE_AND_CASHBACK);
 
-    return (T) new SMSActivateGetBalanceAndCashBackResponse(balance, balanceAndCashBack.subtract(balance));
+    return new SMSActivateGetBalanceAndCashBackResponse(balance, balanceAndCashBack.subtract(balance));
   }
 
   /**
@@ -139,7 +138,7 @@ public class SMSActivateApi {
    * @throws SMSActivateWrongParameterException if one of parameters is incorrect.
    */
   @NotNull
-  public  getNumbersStatus()
+  public SMSActivateGetNumbersStatusResponse getNumbersStatus()
       throws IOException, SMSActivateBaseException {
     return getNumbersStatus(null, null);
   }
@@ -154,7 +153,7 @@ public class SMSActivateApi {
    * @throws SMSActivateWrongParameterException if one of parameters is incorrect.
    */
   @NotNull
-  public  getNumbersStatus(@Nullable Integer countryId, @Nullable String operator)
+  public SMSActivateGetNumbersStatusResponse getNumbersStatus(@Nullable Integer countryId, @Nullable String operator)
       throws IOException, SMSActivateBaseException {
     if (countryId != null && countryId < 0) {
       throw new SMSActivateWrongParameterException("Wrong ID country.", "Неверный ID страны.");
@@ -179,7 +178,7 @@ public class SMSActivateApi {
       ));
     });
 
-    return (T) new SMSActivateGetNumbersStatusResponse(smsActivateGetNumbersStatusResponseMap);
+    return new SMSActivateGetNumbersStatusResponse(smsActivateGetNumbersStatusResponseMap);
   }
 
   /**
@@ -404,9 +403,9 @@ public class SMSActivateApi {
     SMSActivateAccessStatus smsActivateAccessStatus = SMSActivateAccessStatus.getStatusByName(data);
 
     if (smsActivateAccessStatus != SMSActivateAccessStatus.UNKNOWN) {
-      return (T) new SMSActivateSetStatusResponse(smsActivateAccessStatus);
+      return new SMSActivateSetStatusResponse(smsActivateAccessStatus);
     } else {
-      return (T) getMainResponseByStatusNameOrThrowException(data);
+      return getMainResponseByStatusNameOrThrowException(data);
     }
   }
 
@@ -437,9 +436,9 @@ public class SMSActivateApi {
     SMSActivateGetStatus status = SMSActivateGetStatus.getStatusByName(data);
 
     if (status != SMSActivateGetStatus.UNKNOWN) {
-      return (T) new SMSActivateGetStatusResponse(status, code);
+      return new SMSActivateGetStatusResponse(status, code);
     } else {
-      return (T) getMainResponseByStatusNameOrThrowException(data);
+      return getMainResponseByStatusNameOrThrowException(data);
     }
   }
 
@@ -460,9 +459,9 @@ public class SMSActivateApi {
     String data = SMSActivateWebClient.getOrThrowCommonException(smsActivateURLBuilder.build(), validator);
 
     if (data.contains("FULL")) {
-      return (T) new SMSActivateGetFillSmsResponse(data.split(":")[1]);
+      return new SMSActivateGetFillSmsResponse(data.split(":")[1]);
     } else {
-      return (T) getMainResponseByStatusNameOrThrowException(data);
+      return getMainResponseByStatusNameOrThrowException(data);
     }
   }
 
@@ -517,7 +516,7 @@ public class SMSActivateApi {
       smsActivateGetPriceMapList.add(smsActivateGetPriceResponseMap);
     });
 
-    return (T) new SMSActivateGetPricesResponse(smsActivateGetPriceMapList);
+    return new SMSActivateGetPricesResponse(smsActivateGetPriceMapList);
   }
 
   /**
@@ -551,7 +550,7 @@ public class SMSActivateApi {
           isVisible, isSupportRetry, isSupportRent, isSupportMultiService));
     }
 
-    return (T) new SMSActivateGetCountriesResponse(countryList);
+    return new SMSActivateGetCountriesResponse(countryList);
   }
 
   /**
@@ -565,7 +564,7 @@ public class SMSActivateApi {
   public  getQiwiRequisites() throws IOException, SMSActivateBaseException {
     SMSActivateURLBuilder smsActivateURLBuilder = new SMSActivateURLBuilder(apiKey, SMSActivateAction.GET_QIWI_REQUISITES);
     String data = SMSActivateWebClient.getOrThrowCommonException(smsActivateURLBuilder.build(), validator);
-    return (T) gson.fromJson(data, new TypeToken<SMSActivateGetQiwiRequisitesResponse>() {}.getType());
+    return gson.fromJson(data, new TypeToken<SMSActivateGetQiwiRequisitesResponse>() {}.getType());
   }
 
   /**
@@ -590,9 +589,9 @@ public class SMSActivateApi {
       String number = parts[2];
       id = new BigDecimal(parts[1]).intValue();
 
-      return (T) new SMSActivateActivation(id, number, serviceName, false);
+      return new SMSActivateActivation(id, number, serviceName, false);
     } else {
-      return (T) getMainResponseByStatusNameOrThrowException(data);
+      return getMainResponseByStatusNameOrThrowException(data);
     }
   }
 
@@ -632,7 +631,7 @@ public class SMSActivateApi {
     Map<String, Object> responseMap = gson.fromJson(data, new TypeToken<Map<String, Object>>() {}.getType());
 
     if (responseMap.get("status").toString().equalsIgnoreCase("fail")) {
-      return (T) new SMSActivateGetCurrentActivationsResponse(new HashMap<>());
+      return new SMSActivateGetCurrentActivationsResponse(new HashMap<>());
     }
 
     List<Map<String, Object>> currentActivationMapList = (List<Map<String, Object>>) responseMap.get("array");
@@ -650,7 +649,7 @@ public class SMSActivateApi {
           id, forward, number, countryName, serviceName));
     }
 
-    return (T) new SMSActivateGetCurrentActivationsResponse(smsActivateGetCurrentActivationResponseMap);
+    return new SMSActivateGetCurrentActivationsResponse(smsActivateGetCurrentActivationResponseMap);
   }
 
   /**
@@ -723,7 +722,7 @@ public class SMSActivateApi {
       ));
     });
 
-    return (T) new SMSActivateGetRentServicesAndCountriesResponse(
+    return new SMSActivateGetRentServicesAndCountriesResponse(
         operatorNameList, countryIdList, smsActivateRentServiceMap
     );
   }
@@ -783,7 +782,7 @@ public class SMSActivateApi {
     String status = String.valueOf(responseMap.get("status"));
 
     if (!status.equalsIgnoreCase("success")) {
-      return (T) getMainResponseByStatusNameOrThrowException(String.valueOf(responseMap.get("message")));
+      return getMainResponseByStatusNameOrThrowException(String.valueOf(responseMap.get("message")));
     }
 
     Map<String, Object> phoneMap = (Map<String, Object>) responseMap.get("phone");
@@ -792,7 +791,7 @@ public class SMSActivateApi {
     int id = new BigDecimal(phoneMap.get("id").toString()).intValue();
     String endDate = phoneMap.get("endDate").toString();
 
-    return (T) new SMSActivateGetRentNumberResponse(id, number, endDate, service);
+    return new SMSActivateGetRentNumberResponse(id, number, endDate, service);
   }
 
   /**
@@ -815,7 +814,7 @@ public class SMSActivateApi {
     String status = String.valueOf(responseMap.get("status"));
 
     if (!status.equalsIgnoreCase("success")) {
-      return (T) getMainResponseByStatusNameOrThrowException(String.valueOf(responseMap.get("message")));
+      return getMainResponseByStatusNameOrThrowException(String.valueOf(responseMap.get("message")));
     }
 
     Map<String, Map<String, Object>> valuesMap = (Map<String, Map<String, Object>>) responseMap.get("values");
@@ -830,7 +829,7 @@ public class SMSActivateApi {
       smsList.add(new SMSActivateSMS(number, serviceShortName, text, date));
     }
 
-    return (T) new SMSActivateGetRentStatusResponse((int) responseMap.get("quantity"), smsList);
+    return new SMSActivateGetRentStatusResponse((int) responseMap.get("quantity"), smsList);
   }
 
   /**
@@ -855,9 +854,9 @@ public class SMSActivateApi {
     SMSActivateMainStatusResponse smsActivateMainStatusResponse = SMSActivateMainStatusResponse.getStatusByName(responseMap.get("status"));
 
     if (smsActivateMainStatusResponse != SMSActivateMainStatusResponse.SUCCESS) {
-      return (T) new SMSActivateMainResponse(SMSActivateMainStatusResponse.SUCCESS);
+      return new SMSActivateMainResponse(SMSActivateMainStatusResponse.SUCCESS);
     } else {
-      return (T) getMainResponseByStatusNameOrThrowException(responseMap.get("message"));
+      return getMainResponseByStatusNameOrThrowException(responseMap.get("message"));
     }
   }
 
@@ -879,7 +878,7 @@ public class SMSActivateApi {
     String status = String.valueOf(responseMap.get("status"));
 
     if (!status.equalsIgnoreCase("success")) {
-      return (T) getMainResponseByStatusNameOrThrowException(String.valueOf(responseMap.get("message")));
+      return getMainResponseByStatusNameOrThrowException(String.valueOf(responseMap.get("message")));
     }
 
     Map<String, Map<String, Object>> valuesMap = (Map<String, Map<String, Object>>) responseMap.get("values");
@@ -892,7 +891,7 @@ public class SMSActivateApi {
       smsActivateGetRentResponseList.add(new SMSActivateGetRentResponse(id, number));
     }
 
-    return (T) new SMSActivateGetRentListResponse(smsActivateGetRentResponseList);
+    return new SMSActivateGetRentListResponse(smsActivateGetRentResponseList);
   }
 
   /**
