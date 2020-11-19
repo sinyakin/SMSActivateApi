@@ -29,7 +29,7 @@ public enum SMSActivateAccessStatus {
    *
    * @param russianMessage message on russian.
    * @param englishMessage message on english.
-   * @param response response from server.
+   * @param response       response from server.
    */
   SMSActivateAccessStatus(@NotNull String response, @NotNull String russianMessage, @NotNull String englishMessage) {
     this.response = response;

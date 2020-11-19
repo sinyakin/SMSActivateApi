@@ -5,10 +5,14 @@ import com.sms_activate.arch.main_response.SMSActivateMainStatusResponse;
 import org.jetbrains.annotations.NotNull;
 
 public class SMSActivateActivation extends SMSActivateMainResponse {
-  private final int id;
-  private final boolean forward;
-  private final String number;
-  private final String serviceName;
+  private int id;
+  private boolean forward;
+  private String number = "";
+  private String serviceName = "";
+
+  public SMSActivateActivation() {
+    super(SMSActivateMainStatusResponse.SUCCESS);
+  }
 
   public SMSActivateActivation(
       int id,

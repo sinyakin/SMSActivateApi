@@ -83,7 +83,7 @@ public enum SMSActivateMainStatusResponse {
    */
   @NotNull
   public static SMSActivateMainStatusResponse getStatusByName(@NotNull String name) {
-    name = name.toLowerCase();
+    name = name.toUpperCase();
 
     for (SMSActivateMainStatusResponse status : values()) {
       if (status.response.equals(name)) {
