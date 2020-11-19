@@ -1,7 +1,7 @@
 package com.sms_activate;
 
-import com.sms_activate.old.error.common.SMSActivateBaseException;
-import com.sms_activate.old.error.common.WrongParameterException;
+import com.sms_activate.arch.error.SMSActivateBaseException;
+import com.sms_activate.arch.error.wrong_parameter.SMSActivateWrongParameterException;
 import org.jetbrains.annotations.NotNull;
 
 import java.io.*;
@@ -19,12 +19,12 @@ class SMSActivateWebClient {
    * @param url       target url.
    * @param validator data validator.
    * @return load data from url.
-   * @throws IOException              if an I/O exception occurs.
-   * @throws WrongParameterException  if one of parameters is incorrect.
-   * @throws SMSActivateBaseException if error happened on position SMSActivate.
+   * @throws IOException                        if an I/O exception occurs.
+   * @throws SMSActivateWrongParameterException if one of parameters is incorrect.
+   * @throws SMSActivateBaseException           if error happened on position SMSActivate.
    */
   @NotNull
-  public static String getOrThrowCommonException(@NotNull URL url, @NotNull Validator validator)
+  public static String getOrThrowCommonException(@NotNull URL url, @NotNull SMSActivateValidator validator)
       throws IOException, SMSActivateBaseException {
     String data = get(url);
     validator.throwCommonExceptionByName(data);

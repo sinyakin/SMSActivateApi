@@ -39,6 +39,7 @@ enum SMSActivateAction {
 
   /**
    * Returns the name action for send request to server.
+   *
    * @return name action for send request to server.
    */
   @NotNull

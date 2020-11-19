@@ -9,7 +9,7 @@ import java.util.Map;
 
 public class SMSActivateGetPricesResponse extends SMSActivateMainResponse {
   // key list is ID
-  // ket map is service name
+  // key map is service name
   private final List<Map<String, SMSActivateGetPriceResponse>> smsActivateGetPriceMapList;
 
 

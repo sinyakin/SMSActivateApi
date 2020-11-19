@@ -24,8 +24,7 @@ enum SMSActivateURLKey {
   START("start"),
   LENGTH("length"),
   ORDER("order"),
-  ORDER_BY("orderBy")
-  ;
+  ORDER_BY("orderBy");
 
   /**
    * Name parameter in URL.
@@ -34,6 +33,7 @@ enum SMSActivateURLKey {
 
   /**
    * Constructor URL-key with name in URL-address.
+   *
    * @param name name parameter in URL.
    */
   SMSActivateURLKey(@NotNull String name) {
@@ -42,6 +42,7 @@ enum SMSActivateURLKey {
 
   /**
    * Returns the name parameter in URL.
+   *
    * @return name parameter in URL.
    */
   @NotNull

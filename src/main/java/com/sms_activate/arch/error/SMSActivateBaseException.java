@@ -47,9 +47,9 @@ public class SMSActivateBaseException extends Exception {
   }
 
   /**
-   * Returns the concat messages.
+   * Returns the concatenation messages.
    *
-   * @return concat messages.
+   * @return concatenation messages.
    */
   @Override
   @NotNull

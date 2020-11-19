@@ -1,4 +1,4 @@
-package com.sms_activate.arch.error;
+package com.sms_activate.arch.error.wrong_parameter;
 
 import org.jetbrains.annotations.NotNull;
 
@@ -16,7 +16,10 @@ public enum SMSActivateWrongParameter {
   WRONG_ADDITIONAL_SERVICE("WRONG_ADDITIONAL_SERVICE", "Неверный дополнительный сервис (допустимы только сервисы для переадресации).", "Invalid additional service (only services for forwarding are allowed)."),
   REPEAT_ADDITIONAL_SERVICE("REPEAT_ADDITIONAL_SERVICE", "Ошибка возникает при попытке заказать купленный сервис еще раз.", "The error occurs when you try to order the purchased service again."),
   INCORECT_STATUS("INCORECT_STATUS", "Отсутствует или неправильно указан статус.", "Missing or incorrect status."),
-  UNKNOWN("UNKNOWN", "Неизвестная ошибка.", "Unknown error.");
+  NO_ID_RENT("NO_ID_RENT", "Не указан ID аренды.", "No rent Id."),
+  INVALID_PHONE("INVALID_PHONE", "Номер арендован не вами (неправильный id аренды).", "Number was not rented by you (incorrect id rent)."),
+  UNKNOWN("UNKNOWN", "Неизвестная ошибка.", "Unknown error."),
+  ;
 
   /**
    * Response from server.
@@ -24,21 +27,21 @@ public enum SMSActivateWrongParameter {
   private final String response;
 
   /**
-   * Message error on russian language.
+   * Description error on russian language.
    */
   private final String russianMessage;
 
   /**
-   * Message error on english language.
+   * Description error on english language.
    */
   private final String englishMessage;
 
   /**
    * Constructor WrongParameter with multilang.
    *
-   * @param russianMessage error message on russian.
-   * @param englishMessage error message on english.
-   * @param response response from server.
+   * @param russianMessage error Description on russian.
+   * @param englishMessage error Description on english.
+   * @param response       response from server.
    */
   SMSActivateWrongParameter(@NotNull String response, @NotNull String russianMessage, @NotNull String englishMessage) {
     this.russianMessage = russianMessage;
@@ -47,9 +50,9 @@ public enum SMSActivateWrongParameter {
   }
 
   /**
-   * Returns the error message on russian.
+   * Returns the error description on russian.
    *
-   * @return error message on russian.
+   * @return error description on russian.
    */
   @NotNull
   public String getRussianMessage() {
@@ -57,9 +60,9 @@ public enum SMSActivateWrongParameter {
   }
 
   /**
-   * Returns the error message on english.
+   * Returns the error description on english.
    *
-   * @return error message on english.
+   * @return error description on english.
    */
   @NotNull
   public String getEnglishMessage() {
@@ -67,9 +70,9 @@ public enum SMSActivateWrongParameter {
   }
 
   /**
-   * Returns the single concat messages.
+   * Returns the single concatenation description.
    *
-   * @return single concat messages.
+   * @return single concatenation description.
    */
   @NotNull
   public String getMessage() {
@@ -78,6 +81,7 @@ public enum SMSActivateWrongParameter {
 
   /**
    * Returns the wrongParameter by name.
+   *
    * @param name name wrong parameter.
    * @return wrongParameter if contains, else unknown.
    */
@@ -87,7 +91,7 @@ public enum SMSActivateWrongParameter {
 
     for (SMSActivateWrongParameter smsActivateWrongParameter : values()) {
       if (smsActivateWrongParameter.response.equals(name)) {
-       return smsActivateWrongParameter;
+        return smsActivateWrongParameter;
       }
     }
 
