@@ -3,13 +3,14 @@ package com.sms_activate.arch;
 import org.jetbrains.annotations.NotNull;
 
 public class SMSActivateMainResponse {
-  private final SMSActivateStatusResponse status;
+  private final SMSActivateMainStatusResponse status;
 
-  public SMSActivateMainResponse(@NotNull SMSActivateStatusResponse status) {
+  public SMSActivateMainResponse(@NotNull SMSActivateMainStatusResponse status) {
     this.status = status;
   }
 
-  public SMSActivateStatusResponse getStatus() {
+  @NotNull
+  public SMSActivateMainStatusResponse getStatus() {
     return status;
   }
 }

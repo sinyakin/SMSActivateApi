@@ -1,7 +1,7 @@
 package com.sms_activate.arch.activation.numbersstatus;
 
 import com.sms_activate.arch.SMSActivateMainResponse;
-import com.sms_activate.arch.SMSActivateStatusResponse;
+import com.sms_activate.arch.SMSActivateMainStatusResponse;
 import org.jetbrains.annotations.NotNull;
 
 public class SMSActivateGetNumberStatusResponse extends SMSActivateMainResponse {
@@ -14,7 +14,7 @@ public class SMSActivateGetNumberStatusResponse extends SMSActivateMainResponse 
       int countNumber,
       @NotNull String nameService
   ) {
-    super(SMSActivateStatusResponse.SUCCESS);
+    super(SMSActivateMainStatusResponse.SUCCESS);
     this.forward = forward;
     this.countNumber = countNumber;
     this.nameService = nameService;

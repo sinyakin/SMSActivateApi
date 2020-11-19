@@ -1,7 +1,7 @@
 package com.sms_activate.arch.activation.country;
 
 import com.sms_activate.arch.SMSActivateMainResponse;
-import com.sms_activate.arch.SMSActivateStatusResponse;
+import com.sms_activate.arch.SMSActivateMainStatusResponse;
 import org.jetbrains.annotations.NotNull;
 
 public class SMSActivateGetCountryResponse extends SMSActivateMainResponse {
@@ -26,7 +26,7 @@ public class SMSActivateGetCountryResponse extends SMSActivateMainResponse {
       boolean supportVisible,
       boolean supportMultiService
   ) {
-    super(SMSActivateStatusResponse.SUCCESS);
+    super(SMSActivateMainStatusResponse.SUCCESS);
     this.id = id;
     this.chineseMessage = chineseMessage;
     this.englishMessage = englishMessage;

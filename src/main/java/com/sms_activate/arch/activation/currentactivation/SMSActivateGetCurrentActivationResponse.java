@@ -1,7 +1,7 @@
 package com.sms_activate.arch.activation.currentactivation;
 
 import com.sms_activate.arch.SMSActivateMainResponse;
-import com.sms_activate.arch.SMSActivateStatusResponse;
+import com.sms_activate.arch.SMSActivateMainStatusResponse;
 import org.jetbrains.annotations.NotNull;
 
 public class SMSActivateGetCurrentActivationResponse extends SMSActivateMainResponse {
@@ -18,7 +18,7 @@ public class SMSActivateGetCurrentActivationResponse extends SMSActivateMainResp
       @NotNull String serviceName,
       @NotNull String countryName
   ) {
-    super(SMSActivateStatusResponse.SUCCESS);
+    super(SMSActivateMainStatusResponse.SUCCESS);
     this.id = id;
     this.forward = forward;
     this.number = number;

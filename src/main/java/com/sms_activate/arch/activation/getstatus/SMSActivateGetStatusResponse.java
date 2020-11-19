@@ -1,7 +1,7 @@
 package com.sms_activate.arch.activation.getstatus;
 
 import com.sms_activate.arch.SMSActivateMainResponse;
-import com.sms_activate.arch.SMSActivateStatusResponse;
+import com.sms_activate.arch.SMSActivateMainStatusResponse;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -14,7 +14,7 @@ public class SMSActivateGetStatusResponse extends SMSActivateMainResponse {
   private final String codeFromSMS;
 
   public SMSActivateGetStatusResponse(@NotNull SMSActivateGetStatus smsActivateGetStatus, @Nullable String codeFromSMS) {
-    super(SMSActivateStatusResponse.SUCCESS);
+    super(SMSActivateMainStatusResponse.SUCCESS);
     this.smsActivateGetStatus = smsActivateGetStatus;
     this.codeFromSMS = codeFromSMS;
   }

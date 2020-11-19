@@ -1,7 +1,7 @@
 package com.sms_activate.arch.activation.country;
 
 import com.sms_activate.arch.SMSActivateMainResponse;
-import com.sms_activate.arch.SMSActivateStatusResponse;
+import com.sms_activate.arch.SMSActivateMainStatusResponse;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.List;
@@ -10,7 +10,7 @@ public class SMSActivateGetCountriesResponse extends SMSActivateMainResponse {
   private final List<SMSActivateGetCountryResponse> smsActivateGetCountryResponseList;
 
   public SMSActivateGetCountriesResponse(@NotNull List<SMSActivateGetCountryResponse> smsActivateGetCountryResponseList) {
-    super(SMSActivateStatusResponse.SUCCESS);
+    super(SMSActivateMainStatusResponse.SUCCESS);
     this.smsActivateGetCountryResponseList = smsActivateGetCountryResponseList;
   }
 

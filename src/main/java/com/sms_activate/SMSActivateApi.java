@@ -2,7 +2,10 @@ package com.sms_activate;
 
 import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
+import com.sms_activate.arch.SMSActivateMainResponse;
+import com.sms_activate.arch.SMSActivateMainStatusResponse;
 import com.sms_activate.arch.activation.SMSActivateActivation;
+import com.sms_activate.arch.activation.SMSActivateGetFillSmsResponse;
 import com.sms_activate.arch.activation.SMSActivateGetMultiServiceNumberResponse;
 import com.sms_activate.arch.activation.balance.SMSActivateGetBalanceAndCashBackResponse;
 import com.sms_activate.arch.activation.balance.SMSActivateGetBalanceResponse;
@@ -474,7 +477,7 @@ public class SMSActivateApi {
    * @throws WrongResponseException  if server response is not correct.
    */
   @NotNull
-  public String getFullSms(@NotNull Phone phone)
+  public SMSActivateGetFillSmsResponse getFullSms(@NotNull Phone phone)
       throws IOException, SMSActivateBaseException {
     SMSActivateURLBuilder smsActivateURLBuilder = new SMSActivateURLBuilder(apiKey, SMSActivateAction.GET_FULL_SMS);
     smsActivateURLBuilder.append(SMSActivateURLKey.ID, String.valueOf(phone.getId()));
@@ -482,14 +485,15 @@ public class SMSActivateApi {
     String data = SMSActivateWebClient.getOrThrowCommonException(smsActivateURLBuilder.build(), validator);
 
     if (data.contains("FULL")) {
-      return data.split(":")[1];
+      return new SMSActivateGetFillSmsResponse(data.split(":")[1]);
     } else {
-      StateActivationResponse stateActivationResponse = StateActivationResponse.getStateByName(data);
+      SMSActivateMainStatusResponse smsActivateMainStatusResponse = SMSActivateMainStatusResponse.getStatusByName(data);
 
-      throw new WrongResponseException(
-          stateActivationResponse.getEnglishMessage(),
-          stateActivationResponse.getRussianMessage()
-      );
+      if (smsActivateMainStatusResponse == SMSActivateMainStatusResponse.UNKNOWN) {
+        ;
+      }
+
+      return (SMSActivateGetFillSmsResponse) new SMSActivateMainResponse(smsActivateMainStatusResponse);
     }
   }
 

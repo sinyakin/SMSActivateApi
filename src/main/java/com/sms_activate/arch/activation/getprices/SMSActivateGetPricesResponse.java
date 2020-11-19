@@ -1,7 +1,7 @@
 package com.sms_activate.arch.activation.getprices;
 
 import com.sms_activate.arch.SMSActivateMainResponse;
-import com.sms_activate.arch.SMSActivateStatusResponse;
+import com.sms_activate.arch.SMSActivateMainStatusResponse;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.List;
@@ -14,7 +14,7 @@ public class SMSActivateGetPricesResponse extends SMSActivateMainResponse {
 
 
   public SMSActivateGetPricesResponse(@NotNull List<Map<String, SMSActivateGetPriceResponse>> smsActivateGetPriceMapList) {
-    super(SMSActivateStatusResponse.SUCCESS);
+    super(SMSActivateMainStatusResponse.SUCCESS);
     this.smsActivateGetPriceMapList = smsActivateGetPriceMapList;
   }
 

@@ -1,7 +1,7 @@
 package com.sms_activate.arch.activation.currentactivation;
 
 import com.sms_activate.arch.SMSActivateMainResponse;
-import com.sms_activate.arch.SMSActivateStatusResponse;
+import com.sms_activate.arch.SMSActivateMainStatusResponse;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -14,7 +14,7 @@ public class SMSActivateGetCurrentActivationsResponse extends SMSActivateMainRes
 
   // key is ID
   public SMSActivateGetCurrentActivationsResponse(@NotNull Map<Integer, SMSActivateGetCurrentActivationResponse> smsActivateGetCurrentActivationResponseMap) {
-    super(SMSActivateStatusResponse.SUCCESS);
+    super(SMSActivateMainStatusResponse.SUCCESS);
     this.smsActivateGetCurrentActivationResponseMap = smsActivateGetCurrentActivationResponseMap;
   }
 

@@ -2,7 +2,7 @@ package com.sms_activate.arch;
 
 import org.jetbrains.annotations.NotNull;
 
-public enum SMSActivateStatusResponse {
+public enum SMSActivateMainStatusResponse {
   UNKNOWN("", "", ""),
   SUCCESS("", "", ""),
   NO_BALANCE("", "", ""),
@@ -16,7 +16,7 @@ public enum SMSActivateStatusResponse {
   private final String russianMessage;
   private final String response;
 
-  SMSActivateStatusResponse(@NotNull String englishMessage, @NotNull String russianMessage, @NotNull String response) {
+  SMSActivateMainStatusResponse(@NotNull String englishMessage, @NotNull String russianMessage, @NotNull String response) {
     this.englishMessage = englishMessage;
     this.russianMessage = russianMessage;
     this.response = response;
@@ -38,10 +38,10 @@ public enum SMSActivateStatusResponse {
   }
 
   @NotNull
-  public static SMSActivateStatusResponse getStatusByName(@NotNull String name) {
+  public static SMSActivateMainStatusResponse getStatusByName(@NotNull String name) {
     name = name.toLowerCase();
 
-    for (SMSActivateStatusResponse status : values()) {
+    for (SMSActivateMainStatusResponse status : values()) {
       if (status.response.equals(name)) {
         return status;
       }

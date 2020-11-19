@@ -1,7 +1,7 @@
 package com.sms_activate.arch.activation.numbersstatus;
 
 import com.sms_activate.arch.SMSActivateMainResponse;
-import com.sms_activate.arch.SMSActivateStatusResponse;
+import com.sms_activate.arch.SMSActivateMainStatusResponse;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.ArrayList;
@@ -12,7 +12,7 @@ public class SMSActivateGetNumbersStatusResponse extends SMSActivateMainResponse
   private final Map<String, SMSActivateGetNumberStatusResponse> smsActivateGetNumberStatusResponseMap;
 
   public SMSActivateGetNumbersStatusResponse(@NotNull Map<String, SMSActivateGetNumberStatusResponse> smsActivateGetNumberStatusResponseMap) {
-    super(SMSActivateStatusResponse.SUCCESS);
+    super(SMSActivateMainStatusResponse.SUCCESS);
     this.smsActivateGetNumberStatusResponseMap = smsActivateGetNumberStatusResponseMap;
   }
 
