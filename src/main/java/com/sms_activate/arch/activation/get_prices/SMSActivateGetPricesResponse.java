@@ -1,4 +1,4 @@
-package com.sms_activate.arch.activation.getprices;
+package com.sms_activate.arch.activation.get_prices;
 
 import com.sms_activate.arch.SMSActivateMainResponse;
 import com.sms_activate.arch.SMSActivateMainStatusResponse;

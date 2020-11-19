@@ -1,9 +1,6 @@
-package com.sms_activate.arch.activation.setstatus;
+package com.sms_activate.arch.activation.set_status;
 
-import com.sms_activate.old.activation.AccessStatusActivation;
 import org.jetbrains.annotations.NotNull;
-
-import java.util.Locale;
 
 public enum SMSActivateAccessStatus {
   READY("ACCESS_READY", "Готовность номера подтверждена.", "Number readiness confirmed."),

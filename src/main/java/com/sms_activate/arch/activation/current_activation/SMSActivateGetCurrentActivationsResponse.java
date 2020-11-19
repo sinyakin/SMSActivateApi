@@ -1,4 +1,4 @@
-package com.sms_activate.arch.activation.currentactivation;
+package com.sms_activate.arch.activation.current_activation;
 
 import com.sms_activate.arch.SMSActivateMainResponse;
 import com.sms_activate.arch.SMSActivateMainStatusResponse;

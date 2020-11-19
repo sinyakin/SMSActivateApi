@@ -1,4 +1,4 @@
-package com.sms_activate.arch.activation.setstatus;
+package com.sms_activate.arch.activation.set_status;
 
 import com.sms_activate.arch.SMSActivateMainResponse;
 import com.sms_activate.arch.SMSActivateMainStatusResponse;

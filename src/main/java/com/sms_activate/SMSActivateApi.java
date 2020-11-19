@@ -11,19 +11,20 @@ import com.sms_activate.arch.activation.balance.SMSActivateGetBalanceAndCashBack
 import com.sms_activate.arch.activation.balance.SMSActivateGetBalanceResponse;
 import com.sms_activate.arch.activation.country.SMSActivateGetCountriesResponse;
 import com.sms_activate.arch.activation.country.SMSActivateGetCountryResponse;
-import com.sms_activate.arch.activation.currentactivation.SMSActivateGetCurrentActivationResponse;
-import com.sms_activate.arch.activation.currentactivation.SMSActivateGetCurrentActivationsResponse;
-import com.sms_activate.arch.activation.getprices.SMSActivateGetPriceResponse;
-import com.sms_activate.arch.activation.getprices.SMSActivateGetPricesResponse;
-import com.sms_activate.arch.activation.getstatus.SMSActivateGetStatus;
-import com.sms_activate.arch.activation.getstatus.SMSActivateGetStatusResponse;
-import com.sms_activate.arch.activation.numbersstatus.SMSActivateGetNumberStatusResponse;
-import com.sms_activate.arch.activation.numbersstatus.SMSActivateGetNumbersStatusResponse;
-import com.sms_activate.arch.activation.setstatus.SMSActivateAccessStatus;
-import com.sms_activate.arch.activation.setstatus.SMSActivateSetStatusResponse;
+import com.sms_activate.arch.activation.current_activation.SMSActivateGetCurrentActivationResponse;
+import com.sms_activate.arch.activation.current_activation.SMSActivateGetCurrentActivationsResponse;
+import com.sms_activate.arch.activation.get_prices.SMSActivateGetPriceResponse;
+import com.sms_activate.arch.activation.get_prices.SMSActivateGetPricesResponse;
+import com.sms_activate.arch.activation.get_status.SMSActivateGetStatus;
+import com.sms_activate.arch.activation.get_status.SMSActivateGetStatusResponse;
+import com.sms_activate.arch.activation.numbers_status.SMSActivateGetNumberStatusResponse;
+import com.sms_activate.arch.activation.numbers_status.SMSActivateGetNumbersStatusResponse;
+import com.sms_activate.arch.activation.set_status.SMSActivateAccessStatus;
+import com.sms_activate.arch.activation.set_status.SMSActivateSetStatusResponse;
 import com.sms_activate.arch.qiwi.SMSActivateGetQiwiRequisitesResponse;
+import com.sms_activate.arch.rent.get_rent_services_and_countries.SMSActivateGetRentServicesAndCountriesResponse;
+import com.sms_activate.arch.rent.get_rent_services_and_countries.SMSActivateRentService;
 import com.sms_activate.old.Sms;
-import com.sms_activate.old.activation.StateActivationResponse;
 import com.sms_activate.old.activation.StatusActivationRequest;
 import com.sms_activate.old.country.Country;
 import com.sms_activate.old.country.ServiceByCountry;
@@ -602,8 +603,7 @@ public class SMSActivateApi {
   public SMSActivateGetQiwiRequisitesResponse getQiwiRequisites() throws IOException, SMSActivateBaseException {
     SMSActivateURLBuilder smsActivateURLBuilder = new SMSActivateURLBuilder(apiKey, SMSActivateAction.GET_QIWI_REQUISITES);
     String data = SMSActivateWebClient.getOrThrowCommonException(smsActivateURLBuilder.build(), validator);
-    return gson.fromJson(data, new TypeToken<SMSActivateGetQiwiRequisitesResponse>() {
-    }.getType());
+    return gson.fromJson(data, new TypeToken<SMSActivateGetQiwiRequisitesResponse>() {}.getType());
   }
 
   /**
@@ -663,8 +663,7 @@ public class SMSActivateApi {
 
     String data = SMSActivateWebClient.getOrThrowCommonException(smsActivateURLBuilder.build(), validator);
 
-    Map<String, Object> responseMap = gson.fromJson(data, new TypeToken<Map<String, Object>>() {
-    }.getType());
+    Map<String, Object> responseMap = gson.fromJson(data, new TypeToken<Map<String, Object>>() {}.getType());
 
     if (responseMap.get("status").toString().equalsIgnoreCase("fail")) {
       return new SMSActivateGetCurrentActivationsResponse(new HashMap<>());
@@ -696,7 +695,7 @@ public class SMSActivateApi {
    * @throws WrongParameterException if one of parameters is incorrect.
    */
   @NotNull
-  public Rent getRentServicesAndCountries()
+  public SMSActivateGetRentServicesAndCountriesResponse getRentServicesAndCountries()
       throws IOException, SMSActivateBaseException {
     return getRentServicesAndCountries(0, null, 1);
   }
@@ -713,12 +712,11 @@ public class SMSActivateApi {
    * @throws WrongParameterException if one of parameters is incorrect.
    */
   @NotNull
-  public Rent getRentServicesAndCountries(int countryId, @Nullable String operator, int time)
+  public SMSActivateGetRentServicesAndCountriesResponse getRentServicesAndCountries(int countryId, @Nullable String operator, int time)
       throws IOException, SMSActivateBaseException {
     if (time <= 0) {
       throw new WrongParameterException("Time can't be negative or equals 0.", "Время не может быть меньше или равно 0");
-    }
-    if (countryId < 0) {
+    } if (countryId < 0) {
       throw new WrongParameterException("Wrong ID country.", "Неверный ID страны.");
     }
 
@@ -739,7 +737,7 @@ public class SMSActivateApi {
 
     List<String> operatorNameList = new ArrayList<>();
     List<Integer> countryIdList = new ArrayList<>();
-    List<ServiceWithCost> serviceWithCostList = new ArrayList<>();
+    Map<String, SMSActivateRentService> smsActivateRentServiceMap = new HashMap<>();
 
     for (Object countryCode : countryMap.values())
       countryIdList.add(new BigDecimal(countryCode.toString()).intValue());
@@ -752,16 +750,18 @@ public class SMSActivateApi {
       Map<String, Object> serviceMap = (Map<String, Object>) service;
       int countNumber = new BigDecimal(serviceMap.get("quant").toString()).intValue();
 
-      serviceWithCostList.add(new ServiceWithCost(
+      smsActivateRentServiceMap.put(shortName, new SMSActivateRentService(
           shortName,
-          countNumber,
-          new BigDecimal(serviceMap.get("cost").toString()))
-      );
+          new BigDecimal(serviceMap.get("cost").toString()),
+          countNumber
+      ));
     });
 
     Country country = new Country(countryId);
 
-    return new Rent(operatorNameList, new ServiceByCountry(country, serviceWithCostList), countryIdList);
+    return new SMSActivateGetRentServicesAndCountriesResponse(
+        operatorNameList, countryIdList, smsActivateRentServiceMap
+    );
   }
 
   /**

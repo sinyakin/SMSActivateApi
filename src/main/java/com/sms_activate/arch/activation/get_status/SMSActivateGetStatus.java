@@ -1,8 +1,6 @@
-package com.sms_activate.arch.activation.getstatus;
+package com.sms_activate.arch.activation.get_status;
 
-import com.sms_activate.old.activation.StateActivationResponse;
 import org.jetbrains.annotations.NotNull;
-import org.jetbrains.annotations.Nullable;
 
 public enum SMSActivateGetStatus {
   WAIT_CODE("STATUS_WAIT_CODE", "Ожидание смс.", "Waiting sms."),
