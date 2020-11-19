@@ -7,6 +7,7 @@ import java.io.IOException;
 import java.net.URL;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Set;
 import java.util.stream.Collectors;
 
 /**
@@ -65,12 +66,7 @@ class SMSActivateURLBuilder {
     String urlParameters = this.parameterMap.entrySet().stream().map(x -> {
       String value = x.getValue();
       SMSActivateURLKey key = x.getKey();
-
-      if (value != null) {
-        return String.join("=", key.getName(), value);
-      }
-
-      return "";
+      return String.join("=", key.getName(), value);
     }).collect(Collectors.joining("&"));
 
     return new URL(BASE_URL + urlParameters);
