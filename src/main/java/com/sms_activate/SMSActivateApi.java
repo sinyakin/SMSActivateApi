@@ -30,14 +30,8 @@ import com.sms_activate.arch.rent.get_rent_services_and_countries.SMSActivateGet
 import com.sms_activate.arch.rent.get_rent_services_and_countries.SMSActivateRentService;
 import com.sms_activate.arch.rent.get_rent_sms.SMSActivateGetRentStatusResponse;
 import com.sms_activate.arch.rent.get_rent_sms.SMSActivateSMS;
-import com.sms_activate.old.error.BannedException;
-import com.sms_activate.old.error.NoBalanceException;
-import com.sms_activate.old.error.NoNumberException;
-import com.sms_activate.old.error.WrongResponseException;
-import com.sms_activate.old.error.common.SMSActivateBaseException;
-import com.sms_activate.old.error.common.WrongParameterException;
-import com.sms_activate.old.error.rent.RentException;
-import com.sms_activate.old.service.Service;
+import com.sms_activate.arch.error.SMSActivateWrongParameterException;
+import com.sms_activate.arch.error.SMSActivateBaseException;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -60,9 +54,9 @@ import java.util.*;
  * API capabilities allow you to work with the service through your software.
  * Before starting work, you must have an API key and a referral link to use all the API capabilities.</p>
  *
- * <p>All methods and constructor for this class throw WrongParameterException</p>
+ * <p>All methods and constructor for this class throw SMSActivateWrongParameterException</p>
  *
- * @see WrongParameterException
+ * @see SMSActivateWrongParameterException
  */
 public class SMSActivateApi {
   /**
@@ -89,11 +83,11 @@ public class SMSActivateApi {
    * Constructor API sms-activate with API key and ref.
    *
    * @param apiKey API key (not be null).
-   * @throws WrongParameterException if api-key is incorrect.
+   * @throws SMSActivateWrongParameterException if api-key is incorrect.
    */
-  public SMSActivateApi(@NotNull String apiKey) throws WrongParameterException {
+  public SMSActivateApi(@NotNull String apiKey) throws SMSActivateWrongParameterException {
     if (apiKey.isEmpty()) {
-      throw new WrongParameterException("API-key can't be empty.", "API ключ не может быть пустым.");
+      throw new SMSActivateWrongParameterException("API-key can't be empty.", "API ключ не может быть пустым.");
     }
 
     this.apiKey = apiKey;
@@ -133,7 +127,7 @@ public class SMSActivateApi {
    *
    * @return current account balance.
    * @throws IOException             if an I/O exception occurs.
-   * @throws WrongParameterException if one of parameters is incorrect.
+   * @throws SMSActivateWrongParameterException if one of parameters is incorrect.
    */
   @NotNull
   public SMSActivateGetBalanceResponse getBalance() throws IOException, SMSActivateBaseException {
@@ -146,7 +140,7 @@ public class SMSActivateApi {
    *
    * @return current account balance plus cashBack.
    * @throws IOException             if an I/O exception occurs.
-   * @throws WrongParameterException if one of parameters is incorrect.
+   * @throws SMSActivateWrongParameterException if one of parameters is incorrect.
    */
   @NotNull
   public SMSActivateGetBalanceAndCashBackResponse getBalanceAndCashBack()
@@ -162,7 +156,7 @@ public class SMSActivateApi {
    *
    * @return list counts of available services.
    * @throws IOException             if an I/O exception occurs.
-   * @throws WrongParameterException if one of parameters is incorrect.
+   * @throws SMSActivateWrongParameterException if one of parameters is incorrect.
    */
   @NotNull
   public SMSActivateGetNumbersStatusResponse getNumbersStatus()
@@ -177,13 +171,13 @@ public class SMSActivateApi {
    * @param operator  name operator mobile network (not be null).
    * @return list counts of available services by county and operator (not be null).
    * @throws IOException             if an I/O exception occurs.
-   * @throws WrongParameterException if one of parameters is incorrect.
+   * @throws SMSActivateWrongParameterException if one of parameters is incorrect.
    */
   @NotNull
   public SMSActivateGetNumbersStatusResponse getNumbersStatus(@Nullable Integer countryId, @Nullable String operator)
       throws IOException, SMSActivateBaseException {
     if (countryId != null && countryId < 0) {
-      throw new WrongParameterException("Wrong ID country.", "Неверный ID страны.");
+      throw new SMSActivateWrongParameterException("Wrong ID country.", "Неверный ID страны.");
     }
 
     SMSActivateURLBuilder smsActivateURLBuilder = new SMSActivateURLBuilder(apiKey, SMSActivateAction.GET_NUMBERS_STATUS);
@@ -216,7 +210,7 @@ public class SMSActivateApi {
    * @param countryId id country.
    * @return id activation for activation.
    * @throws IOException             if an I/O exception occurs.
-   * @throws WrongParameterException if one of parameters is incorrect.
+   * @throws SMSActivateWrongParameterException if one of parameters is incorrect.
    * @throws BannedException         if account has been banned.
    * @throws NoBalanceException      if no numbers.
    * @throws NoNumberException       if in account balance is zero.
@@ -237,7 +231,7 @@ public class SMSActivateApi {
    * @param forward        is it necessary to request a number with forwarding.
    * @return id activation for activation.
    * @throws IOException             if an I/O exception occurs.
-   * @throws WrongParameterException if one of parameters is incorrect.
+   * @throws SMSActivateWrongParameterException if one of parameters is incorrect.
    * @throws NoBalanceException      if no numbers.
    * @throws NoNumberException       if in account balance is zero.
    * @throws BannedException         if account has been banned.
@@ -251,7 +245,7 @@ public class SMSActivateApi {
       boolean forward
   ) throws IOException, SMSActivateBaseException {
     if (countryId < 0) {
-      throw new WrongParameterException("Wrong ID country.", "Неверный ID страны.");
+      throw new SMSActivateWrongParameterException("Wrong ID country.", "Неверный ID страны.");
     }
 
     SMSActivateURLBuilder smsActivateURLBuilder = new SMSActivateURLBuilder(apiKey, SMSActivateAction.GET_NUMBER);
@@ -287,7 +281,7 @@ public class SMSActivateApi {
    * @param countryId    id country.
    * @return list id.
    * @throws IOException             if an I/O exception occurs.
-   * @throws WrongParameterException if one of parameters is incorrect.
+   * @throws SMSActivateWrongParameterException if one of parameters is incorrect.
    * @throws BannedException         if account has been banned.
    * @throws NoBalanceException      if no numbers.
    * @throws NoNumberException       if in account balance is zero.
@@ -309,7 +303,7 @@ public class SMSActivateApi {
    * @param operator     mobile operator.
    * @return list id.
    * @throws IOException             if an I/O exception occurs.
-   * @throws WrongParameterException if one of parameters is incorrect.
+   * @throws SMSActivateWrongParameterException if one of parameters is incorrect.
    * @throws BannedException         if account has been banned.
    * @throws NoBalanceException      if no numbers.
    * @throws NoNumberException       if in account balance is zero.
@@ -331,7 +325,7 @@ public class SMSActivateApi {
     }
 
     if (countryId < 0) {
-      throw new WrongParameterException("Wrong ID country.", "Неверный ID страны.");
+      throw new SMSActivateWrongParameterException("Wrong ID country.", "Неверный ID страны.");
     }
 
     SMSActivateURLBuilder smsActivateURLBuilder = new SMSActivateURLBuilder(apiKey, SMSActivateAction.GET_MULTI_SERVICE_NUMBER);
@@ -397,7 +391,7 @@ public class SMSActivateApi {
    * @param status value to establish (not be null).
    * @return access activation.
    * @throws IOException             if an I/O exception occurs.
-   * @throws WrongParameterException if one of parameters is incorrect.
+   * @throws SMSActivateWrongParameterException if one of parameters is incorrect.
    */
   @NotNull
   public SMSActivateSetStatusResponse setStatus(int id, @NotNull SMSActivateSetStatusRequest status)
@@ -413,7 +407,7 @@ public class SMSActivateApi {
    * @param forward number is forwarding.
    * @return access activation.
    * @throws IOException             if an I/O exception occurs.
-   * @throws WrongParameterException if one of parameters is incorrect.
+   * @throws SMSActivateWrongParameterException if one of parameters is incorrect.
    */
   @NotNull
   public SMSActivateSetStatusResponse setStatus(
@@ -437,7 +431,7 @@ public class SMSActivateApi {
    * @param id id id to get activation state (not be null).
    * @return state activation.
    * @throws IOException             if an I/O exception occurs.
-   * @throws WrongParameterException if one of parameters is incorrect.
+   * @throws SMSActivateWrongParameterException if one of parameters is incorrect.
    */
   @NotNull
   public SMSActivateGetStatusResponse getStatus(int id)
@@ -466,7 +460,7 @@ public class SMSActivateApi {
    * @param id id activation.
    * @return full text sms.
    * @throws IOException             if an I/O exception occurs.
-   * @throws WrongParameterException if one of parameters is incorrect.
+   * @throws SMSActivateWrongParameterException if one of parameters is incorrect.
    * @throws WrongResponseException  if server response is not correct.
    */
   @NotNull
@@ -495,7 +489,7 @@ public class SMSActivateApi {
    *
    * @return price list country.
    * @throws IOException             if an I/O exception occurs.
-   * @throws WrongParameterException if one of parameters is incorrect.
+   * @throws SMSActivateWrongParameterException if one of parameters is incorrect.
    */
   @NotNull
   public SMSActivateGetPricesResponse getPrices() throws IOException, SMSActivateBaseException {
@@ -510,13 +504,13 @@ public class SMSActivateApi {
    * @param countryId id number (default null).
    * @return price list country.
    * @throws IOException             if an I/O exception occurs.
-   * @throws WrongParameterException if one of parameters is incorrect.
+   * @throws SMSActivateWrongParameterException if one of parameters is incorrect.
    */
   @NotNull
   public SMSActivateGetPricesResponse getPrices(@Nullable Service service, @Nullable Integer countryId)
       throws IOException, SMSActivateBaseException {
     if (countryId != null && countryId < 0) {
-      throw new WrongParameterException("Wrong ID country.", "Неверный ID страны.");
+      throw new SMSActivateWrongParameterException("Wrong ID country.", "Неверный ID страны.");
     }
 
     String shortNameService = (service == null) ? null : service.getShortName();
@@ -550,7 +544,7 @@ public class SMSActivateApi {
    *
    * @return country information.
    * @throws IOException             if an I/O exception occurs.
-   * @throws WrongParameterException if one of parameters is incorrect.
+   * @throws SMSActivateWrongParameterException if one of parameters is incorrect.
    */
   @NotNull
   public SMSActivateGetCountriesResponse getCountries() throws IOException, SMSActivateBaseException {
@@ -584,7 +578,7 @@ public class SMSActivateApi {
    *
    * @return qiwi response with data on wallet
    * @throws IOException             if an I/O exception occurs.
-   * @throws WrongParameterException if one of parameters is incorrect.
+   * @throws SMSActivateWrongParameterException if one of parameters is incorrect.
    */
   @NotNull
   public SMSActivateGetQiwiRequisitesResponse getQiwiRequisites() throws IOException, SMSActivateBaseException {
@@ -599,7 +593,7 @@ public class SMSActivateApi {
    * @param id id activation.
    * @return id activation for additional service by forwarding
    * @throws IOException             if an I/O exception occurs.
-   * @throws WrongParameterException if one of parameters is incorrect.
+   * @throws SMSActivateWrongParameterException if one of parameters is incorrect.
    */
   @NotNull
   public SMSActivateActivation getAdditionalService(int id, @NotNull String serviceName)
@@ -622,7 +616,7 @@ public class SMSActivateApi {
    *
    * @return list with first 10 activation.
    * @throws IOException             if an I/O exception occurs.
-   * @throws WrongParameterException if one of parameters is incorrect.
+   * @throws SMSActivateWrongParameterException if one of parameters is incorrect.
    */
   @NotNull
   public SMSActivateGetCurrentActivationsResponse getCurrentActivations()
@@ -637,7 +631,7 @@ public class SMSActivateApi {
    * @param length (default 10).
    * @return returns the list activation.
    * @throws IOException             if an I/O exception occurs.
-   * @throws WrongParameterException if one of parameters is incorrect.
+   * @throws SMSActivateWrongParameterException if one of parameters is incorrect.
    */
   @NotNull
   public SMSActivateGetCurrentActivationsResponse getCurrentActivations(int start, int length)
@@ -680,7 +674,7 @@ public class SMSActivateApi {
    *
    * @return rent object with countries supported rent and accessed services by country.
    * @throws IOException             if an I/O exception occurs.
-   * @throws WrongParameterException if one of parameters is incorrect.
+   * @throws SMSActivateWrongParameterException if one of parameters is incorrect.
    */
   @NotNull
   public SMSActivateGetRentServicesAndCountriesResponse getRentServicesAndCountries()
@@ -697,16 +691,16 @@ public class SMSActivateApi {
    *                  time >= 1
    * @return the rent object with countries supported rent and accessed services by country.
    * @throws IOException             if an I/O exception occurs.
-   * @throws WrongParameterException if one of parameters is incorrect.
+   * @throws SMSActivateWrongParameterException if one of parameters is incorrect.
    */
   @NotNull
   public SMSActivateGetRentServicesAndCountriesResponse getRentServicesAndCountries(int countryId, @Nullable String operator, int time)
       throws IOException, SMSActivateBaseException {
     if (time <= 0) {
-      throw new WrongParameterException("Time can't be negative or equals 0.", "Время не может быть меньше или равно 0");
+      throw new SMSActivateWrongParameterException("Time can't be negative or equals 0.", "Время не может быть меньше или равно 0");
     }
     if (countryId < 0) {
-      throw new WrongParameterException("Wrong ID country.", "Неверный ID страны.");
+      throw new SMSActivateWrongParameterException("Wrong ID country.", "Неверный ID страны.");
     }
 
     SMSActivateURLBuilder smsActivateURLBuilder = new SMSActivateURLBuilder(apiKey, SMSActivateAction.GET_RENT_SERVICES_AND_COUNTRIES);
@@ -756,7 +750,7 @@ public class SMSActivateApi {
    * @return rent id.
    * @throws IOException             if an I/O exception occurs.
    * @throws RentException           if rent is cancel or finish.
-   * @throws WrongParameterException if one of parameters is incorrect.
+   * @throws SMSActivateWrongParameterException if one of parameters is incorrect.
    * @throws NoBalanceException      if no numbers.
    * @throws NoNumberException       if in account balance is zero.
    */
@@ -777,7 +771,7 @@ public class SMSActivateApi {
    * @return rent id.
    * @throws IOException             if an I/O exception occurs.
    * @throws RentException           if rent is cancel or finish.
-   * @throws WrongParameterException if one of parameters is incorrect.
+   * @throws SMSActivateWrongParameterException if one of parameters is incorrect.
    * @throws NoBalanceException      if no numbers.
    * @throws NoNumberException       if in account balance is zero.
    */
@@ -790,7 +784,7 @@ public class SMSActivateApi {
       @Nullable String urlWebhook
   ) throws IOException, SMSActivateBaseException, RentException, NoBalanceException, NoNumberException {
     if (countryId < 0) {
-      throw new WrongParameterException("Wrong ID country.", "Неверный ID страны.");
+      throw new SMSActivateWrongParameterException("Wrong ID country.", "Неверный ID страны.");
     }
 
     SMSActivateURLBuilder smsActivateURLBuilder = new SMSActivateURLBuilder(apiKey, SMSActivateAction.GET_RENT_NUMBER);
@@ -816,7 +810,7 @@ public class SMSActivateApi {
    * @param id id received in response when ordering a number.
    * @return list sms.
    * @throws IOException             if an I/O exception occurs.
-   * @throws WrongParameterException if one of parameters is incorrect.
+   * @throws SMSActivateWrongParameterException if one of parameters is incorrect.
    * @throws NoBalanceException      if no numbers.
    * @throws NoNumberException       if in account balance is zero.
    */
@@ -851,7 +845,7 @@ public class SMSActivateApi {
    * @return state rent.
    * @throws IOException             if an I/O exception occurs.
    * @throws RentException           if rent is cancel or finish.
-   * @throws WrongParameterException if one of parameters is incorrect.
+   * @throws SMSActivateWrongParameterException if one of parameters is incorrect.
    */
   @NotNull
   public SMSActivateMainResponse setRentStatus(int id, @NotNull SMSActivateSetStatusRequest status)
@@ -873,7 +867,7 @@ public class SMSActivateApi {
    *
    * @return list rent ids
    * @throws IOException             if an I/O exception occurs.
-   * @throws WrongParameterException if one of parameters is incorrect.
+   * @throws SMSActivateWrongParameterException if one of parameters is incorrect.
    * @throws NoBalanceException      if no numbers.
    * @throws NoNumberException       if in account balance is zero.
    */
@@ -903,7 +897,7 @@ public class SMSActivateApi {
    * @param url address to load data.
    * @return data in map after checking for errors.
    * @throws IOException             if an I/O exception occurs.
-   * @throws WrongParameterException if one of parameters is incorrect.
+   * @throws SMSActivateWrongParameterException if one of parameters is incorrect.
    * @throws NoBalanceException      if no numbers.
    * @throws NoNumberException       if in account balance is zero.
    */
@@ -929,7 +923,7 @@ public class SMSActivateApi {
    * @param smsActivateAction name specific action.
    * @return current account balance.
    * @throws IOException             if an I/O exception occurs.
-   * @throws WrongParameterException if one of parameters is incorrect.
+   * @throws SMSActivateWrongParameterException if one of parameters is incorrect.
    */
   @NotNull
   private BigDecimal getBalance(@NotNull SMSActivateAction smsActivateAction)
