@@ -9,12 +9,11 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
-public class SMSActivateGetCurrentActivationsResponse extends SMSActivateMainResponse {
+public class SMSActivateGetCurrentActivationsResponse {
   private final Map<Integer, SMSActivateGetCurrentActivationResponse> smsActivateGetCurrentActivationResponseMap;
 
   // key is ID
   public SMSActivateGetCurrentActivationsResponse(@NotNull Map<Integer, SMSActivateGetCurrentActivationResponse> smsActivateGetCurrentActivationResponseMap) {
-    super(SMSActivateMainStatusResponse.SUCCESS);
     this.smsActivateGetCurrentActivationResponseMap = smsActivateGetCurrentActivationResponseMap;
   }
 

@@ -4,7 +4,7 @@ import com.sms_activate.main_response.SMSActivateMainResponse;
 import com.sms_activate.main_response.SMSActivateMainStatusResponse;
 import org.jetbrains.annotations.NotNull;
 
-public class SMSActivateGetNumberStatusResponse extends SMSActivateMainResponse {
+public class SMSActivateGetNumberStatusResponse {
   private final boolean forward;
   private final int countNumber;
   private final String nameService;
@@ -14,7 +14,6 @@ public class SMSActivateGetNumberStatusResponse extends SMSActivateMainResponse 
       int countNumber,
       @NotNull String nameService
   ) {
-    super(SMSActivateMainStatusResponse.SUCCESS);
     this.forward = forward;
     this.countNumber = countNumber;
     this.nameService = nameService;

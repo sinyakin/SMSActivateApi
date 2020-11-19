@@ -7,14 +7,13 @@ import org.jetbrains.annotations.NotNull;
 import java.util.List;
 import java.util.Map;
 
-public class SMSActivateGetPricesResponse extends SMSActivateMainResponse {
+public class SMSActivateGetPricesResponse {
   // key list is ID
   // key map is service name
   private final List<Map<String, SMSActivateGetPriceResponse>> smsActivateGetPriceMapList;
 
 
   public SMSActivateGetPricesResponse(@NotNull List<Map<String, SMSActivateGetPriceResponse>> smsActivateGetPriceMapList) {
-    super(SMSActivateMainStatusResponse.SUCCESS);
     this.smsActivateGetPriceMapList = smsActivateGetPriceMapList;
   }
 

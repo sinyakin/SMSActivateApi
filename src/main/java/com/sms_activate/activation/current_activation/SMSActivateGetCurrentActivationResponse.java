@@ -4,7 +4,7 @@ import com.sms_activate.main_response.SMSActivateMainResponse;
 import com.sms_activate.main_response.SMSActivateMainStatusResponse;
 import org.jetbrains.annotations.NotNull;
 
-public class SMSActivateGetCurrentActivationResponse extends SMSActivateMainResponse {
+public class SMSActivateGetCurrentActivationResponse {
   private final int id;
   private final boolean forward;
   private final String number;
@@ -18,7 +18,6 @@ public class SMSActivateGetCurrentActivationResponse extends SMSActivateMainResp
       @NotNull String serviceName,
       @NotNull String countryName
   ) {
-    super(SMSActivateMainStatusResponse.SUCCESS);
     this.id = id;
     this.forward = forward;
     this.number = number;

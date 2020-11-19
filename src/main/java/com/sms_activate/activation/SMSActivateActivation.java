@@ -1,18 +1,12 @@
 package com.sms_activate.activation;
 
-import com.sms_activate.main_response.SMSActivateMainResponse;
-import com.sms_activate.main_response.SMSActivateMainStatusResponse;
 import org.jetbrains.annotations.NotNull;
 
-public class SMSActivateActivation extends SMSActivateMainResponse {
-  private int id;
-  private boolean forward;
-  private String number = "";
-  private String serviceName = "";
-
-  public SMSActivateActivation() {
-    super(SMSActivateMainStatusResponse.SUCCESS);
-  }
+public class SMSActivateActivation {
+  private final int id;
+  private final boolean forward;
+  private final String number;
+  private final String serviceName;
 
   public SMSActivateActivation(
       int id,
@@ -20,7 +14,6 @@ public class SMSActivateActivation extends SMSActivateMainResponse {
       @NotNull String serviceName,
       boolean forward
   ) {
-    super(SMSActivateMainStatusResponse.SUCCESS);
     this.id = id;
     this.number = number;
     this.serviceName = serviceName;
@@ -36,10 +29,12 @@ public class SMSActivateActivation extends SMSActivateMainResponse {
     return forward;
   }
 
+  @NotNull
   public String getNumber() {
     return number;
   }
 
+  @NotNull
   public String getServiceName() {
     return serviceName;
   }

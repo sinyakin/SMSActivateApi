@@ -6,11 +6,10 @@ import org.jetbrains.annotations.NotNull;
 
 import java.util.List;
 
-public class SMSActivateGetCountriesResponse extends SMSActivateMainResponse {
+public class SMSActivateGetCountriesResponse {
   private final List<SMSActivateGetCountryResponse> smsActivateGetCountryResponseList;
 
   public SMSActivateGetCountriesResponse(@NotNull List<SMSActivateGetCountryResponse> smsActivateGetCountryResponseList) {
-    super(SMSActivateMainStatusResponse.SUCCESS);
     this.smsActivateGetCountryResponseList = smsActivateGetCountryResponseList;
   }
 

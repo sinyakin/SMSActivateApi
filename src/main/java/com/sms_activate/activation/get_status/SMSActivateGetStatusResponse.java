@@ -5,7 +5,7 @@ import com.sms_activate.main_response.SMSActivateMainStatusResponse;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
-public class SMSActivateGetStatusResponse extends SMSActivateMainResponse {
+public class SMSActivateGetStatusResponse {
   private final SMSActivateGetStatus smsActivateGetStatus;
 
   /**
@@ -14,7 +14,6 @@ public class SMSActivateGetStatusResponse extends SMSActivateMainResponse {
   private final String codeFromSMS;
 
   public SMSActivateGetStatusResponse(@NotNull SMSActivateGetStatus smsActivateGetStatus, @Nullable String codeFromSMS) {
-    super(SMSActivateMainStatusResponse.SUCCESS);
     this.smsActivateGetStatus = smsActivateGetStatus;
     this.codeFromSMS = codeFromSMS;
   }

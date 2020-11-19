@@ -4,11 +4,10 @@ import com.sms_activate.main_response.SMSActivateMainResponse;
 import com.sms_activate.main_response.SMSActivateMainStatusResponse;
 import org.jetbrains.annotations.NotNull;
 
-public class SMSActivateSetStatusResponse extends SMSActivateMainResponse {
+public class SMSActivateSetStatusResponse {
   private final SMSActivateAccessStatus smsActivateAccessStatus;
 
   public SMSActivateSetStatusResponse(@NotNull SMSActivateAccessStatus smsActivateAccessStatus) {
-    super(SMSActivateMainStatusResponse.SUCCESS);
     this.smsActivateAccessStatus = smsActivateAccessStatus;
   }
 

@@ -8,11 +8,10 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
-public class SMSActivateGetNumbersStatusResponse extends SMSActivateMainResponse {
+public class SMSActivateGetNumbersStatusResponse {
   private final Map<String, SMSActivateGetNumberStatusResponse> smsActivateGetNumberStatusResponseMap;
 
   public SMSActivateGetNumbersStatusResponse(@NotNull Map<String, SMSActivateGetNumberStatusResponse> smsActivateGetNumberStatusResponseMap) {
-    super(SMSActivateMainStatusResponse.SUCCESS);
     this.smsActivateGetNumberStatusResponseMap = smsActivateGetNumberStatusResponseMap;
   }
 
