@@ -1,9 +1,9 @@
 package com.sms_activate;
 
-import com.sms_activate.arch.error.SMSActivateBannedException;
-import com.sms_activate.arch.error.SMSActivateBaseException;
-import com.sms_activate.arch.error.wrong_parameter.SMSActivateWrongParameter;
-import com.sms_activate.arch.error.wrong_parameter.SMSActivateWrongParameterException;
+import com.sms_activate.error.SMSActivateBannedException;
+import com.sms_activate.error.SMSActivateBaseException;
+import com.sms_activate.error.wrong_parameter.SMSActivateWrongParameter;
+import com.sms_activate.error.wrong_parameter.SMSActivateWrongParameterException;
 import org.jetbrains.annotations.NotNull;
 
 class SMSActivateValidator {
