@@ -7,6 +7,9 @@
 
 **/Main.java
 
+**/.PVS-Studio/**
+
+
 # User-specific stuff
 **/.idea/
 .idea/**/workspace.xml
