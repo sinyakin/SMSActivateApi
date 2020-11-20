@@ -16,9 +16,9 @@ public class SMSActivateGetCountryResponse {
 
   public SMSActivateGetCountryResponse(
       int id,
-      @NotNull String chineseName,
-      @NotNull String englishName,
       @NotNull String russianName,
+      @NotNull String englishName,
+      @NotNull String chineseName,
       boolean supportRent,
       boolean supportRetry,
       boolean supportVisible,
