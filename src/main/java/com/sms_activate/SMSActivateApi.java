@@ -25,6 +25,7 @@ import com.sms_activate.activation.set_status.SMSActivateSetStatusResponse;
 import com.sms_activate.error.SMSActivateBannedException;
 import com.sms_activate.error.SMSActivateUnknownException;
 import com.sms_activate.error.base.SMSActivateBaseException;
+import com.sms_activate.error.wrong_parameter.SMSActivateWrongParameter;
 import com.sms_activate.error.wrong_parameter.SMSActivateWrongParameterException;
 import com.sms_activate.qiwi.SMSActivateGetQiwiRequisitesResponse;
 import com.sms_activate.qiwi.SMSActivateQiwiStatus;
@@ -84,7 +85,7 @@ public class SMSActivateApi {
    */
   public SMSActivateApi(@NotNull String apiKey) throws SMSActivateWrongParameterException {
     if (apiKey.isEmpty()) {
-      throw new SMSActivateWrongParameterException("API-key can't be empty.", "API ключ не может быть пустым.");
+      throw new SMSActivateWrongParameterException(SMSActivateWrongParameter.EMPTY_KEY);
     }
 
     this.apiKey = apiKey;
@@ -687,7 +688,7 @@ public class SMSActivateApi {
     SMSActivateGetFullTypeResponse smsActivateGetFullTypeResponse = SMSActivateGetFullTypeResponse.getStatusByName(data);
 
     if(smsActivateGetFullTypeResponse != SMSActivateGetFullTypeResponse.UNKNOWN) {
-      if (smsActivateGetFullTypeResponse != SMSActivateGetFullTypeResponse.FULL_SMS) {
+      if (smsActivateGetFullTypeResponse == SMSActivateGetFullTypeResponse.FULL_SMS) {
         return new SMSActivateGetFullSmsResponse(data.split(":")[1], smsActivateGetFullTypeResponse);
       } else {
         return new SMSActivateGetFullSmsResponse("", smsActivateGetFullTypeResponse);
@@ -811,8 +812,7 @@ public class SMSActivateApi {
     SMSActivateURLBuilder smsActivateURLBuilder = new SMSActivateURLBuilder(apiKey, SMSActivateAction.GET_COUNTRIES);
     String data = SMSActivateWebClient.getOrThrowCommonException(smsActivateURLBuilder, validator);
 
-    Map<String, Map<String, Object>> countryInformationMap = tryParseJson(data, new TypeToken<Map<String, Map<String, Object>>>() {
-    }.getType());
+    Map<String, Map<String, Object>> countryInformationMap = tryParseJson(data, new TypeToken<Map<String, Map<String, Object>>>() {}.getType());
     List<SMSActivateGetCountryResponse> countryList = new ArrayList<>();
 
     for (Map<String, Object> countryMap : countryInformationMap.values()) {
