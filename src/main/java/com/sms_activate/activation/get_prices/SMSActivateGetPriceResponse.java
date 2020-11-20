@@ -5,19 +5,19 @@ import org.jetbrains.annotations.NotNull;
 import java.math.BigDecimal;
 
 public class SMSActivateGetPriceResponse {
-  private final String name;
+  private final String nameService;
   private final BigDecimal cost;
   private final int count;
 
   public SMSActivateGetPriceResponse(@NotNull String name, @NotNull BigDecimal cost, int count) {
-    this.name = name;
+    this.nameService = name;
     this.cost = cost;
     this.count = count;
   }
 
   @NotNull
   public String getName() {
-    return name;
+    return nameService;
   }
 
   @NotNull
