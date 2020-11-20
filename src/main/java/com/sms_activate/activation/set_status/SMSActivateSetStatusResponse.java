@@ -1,7 +1,5 @@
 package com.sms_activate.activation.set_status;
 
-import com.sms_activate.main_response.SMSActivateMainResponse;
-import com.sms_activate.main_response.SMSActivateMainStatusResponse;
 import org.jetbrains.annotations.NotNull;
 
 public class SMSActivateSetStatusResponse {

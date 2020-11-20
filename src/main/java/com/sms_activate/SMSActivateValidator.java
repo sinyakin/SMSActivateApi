@@ -1,7 +1,9 @@
 package com.sms_activate;
 
 import com.sms_activate.error.SMSActivateBannedException;
+import com.sms_activate.error.SMSActivateUnknownException;
 import com.sms_activate.error.base.SMSActivateBaseException;
+import com.sms_activate.error.base.SMSActivateBaseTypeError;
 import com.sms_activate.error.wrong_parameter.SMSActivateWrongParameter;
 import com.sms_activate.error.wrong_parameter.SMSActivateWrongParameterException;
 import org.jetbrains.annotations.NotNull;
@@ -50,7 +52,17 @@ class SMSActivateValidator {
     throwCommonExceptionByName(name);
 
     if (name.contains("BANNED")) {
-      throw new SMSActivateBannedException("", "", name.split(":")[1]);
+      throw new SMSActivateBannedException("Your account has been banned", "Ваш акаунт был забанен", name.split(":")[1]);
+    }
+  }
+
+  public SMSActivateBaseException getBaseExceptionByErrorNameOrUnknown(@NotNull String errorName) {
+    SMSActivateBaseTypeError error = SMSActivateBaseTypeError.getErrorByName(errorName);
+
+    if (error != SMSActivateBaseTypeError.UNKNOWN) {
+      return new SMSActivateBaseException(error);
+    } else {
+      return new SMSActivateUnknownException(errorName);
     }
   }
 }

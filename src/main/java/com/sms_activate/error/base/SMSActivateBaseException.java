@@ -3,7 +3,10 @@ package com.sms_activate.error.base;
 import org.jetbrains.annotations.NotNull;
 
 public class SMSActivateBaseException extends Exception {
-  private SMSActivateBaseTypeError type;
+  /**
+   * Error type by server response.
+   */
+  private SMSActivateBaseTypeError type = SMSActivateBaseTypeError.UNKNOWN;
 
   /**
    * Message on english language.
@@ -28,6 +31,11 @@ public class SMSActivateBaseException extends Exception {
     this.russianMessage = russianMessage;
   }
 
+  public SMSActivateBaseException(@NotNull SMSActivateBaseTypeError error) {
+    this(error.getEnglishMessage(), error.getRussianMessage());
+    this.type = error;
+  }
+
   /**
    * Returns the message on english language.
    *
@@ -46,6 +54,16 @@ public class SMSActivateBaseException extends Exception {
   @NotNull
   public String getRussianMessage() {
     return russianMessage;
+  }
+
+  /**
+   * Returns the type error response from server.
+   *
+   * @return type error response from server.
+   */
+  @NotNull
+  public SMSActivateBaseTypeError getTypeError() {
+    return type;
   }
 
   /**

@@ -1,15 +1,15 @@
-package com.sms_activate.qiwi;
+package com.sms_activate.rent.set_rent_status;
 
 import org.jetbrains.annotations.NotNull;
 
-public enum SMSActivateQiwiStatus {
-  UNKNOWN("UNKNOWN", "", ""),
-  SUCCESS("SUCCESS", "Оплату можно проводить.", "Payment can be made."),
-  FALSE("FALSE", "Прием платежей киви невозможен.", "Acceptance of qiwi payments is not possible."),
+public enum SMSActivateRentStatus {
+  UNKNOWN("", "", ""),
+  SUCCESS("SUCCESS", "Завершить активацию.", "Finish the activation."),
+  ERROR("ERROR", "Сообщить о том, что номер использован и отменить активацию", "Report that the number has been used and cancel activation."),
   ;
 
   /**
-   * Response status from server.
+   * Type response from server
    */
   private final String response;
 
@@ -24,12 +24,13 @@ public enum SMSActivateQiwiStatus {
   private final String englishMessage;
 
   /**
-   * Constructor QiwiStatus.
+   * Constructor status activation.
    *
-   * @param russianMessage message on russian language.
-   * @param englishMessage message on english language.
+   * @param response             special id status.
+   * @param russianMessage description status on russian language.
+   * @param englishMessage description status on english language.
    */
-  SMSActivateQiwiStatus(@NotNull String response, @NotNull String russianMessage, @NotNull String englishMessage) {
+  SMSActivateRentStatus(@NotNull String response, @NotNull String russianMessage, @NotNull String englishMessage) {
     this.response = response;
     this.russianMessage = russianMessage;
     this.englishMessage = englishMessage;
@@ -38,7 +39,7 @@ public enum SMSActivateQiwiStatus {
   /**
    * Returns the message on russian.
    *
-   * @return on russian.
+   * @return message on russian.
    */
   @NotNull
   public String getRussianMessage() {
@@ -65,16 +66,11 @@ public enum SMSActivateQiwiStatus {
     return String.join("/", englishMessage, russianMessage);
   }
 
-  /**
-   * Returns status by name or unknown if not contains.
-   * @param name status name.
-   * @return status or unknown if not contains.
-   */
   @NotNull
-  public static SMSActivateQiwiStatus getStatusByName(@NotNull String name) {
+  public static SMSActivateRentStatus getStatusByName(@NotNull String name) {
     name = name.toUpperCase();
 
-    for (SMSActivateQiwiStatus status : values()) {
+    for (SMSActivateRentStatus status : values()) {
       if (status.response.equals(name)) {
         return status;
       }

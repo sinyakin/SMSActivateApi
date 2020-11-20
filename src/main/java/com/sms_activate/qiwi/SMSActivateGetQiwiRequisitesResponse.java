@@ -1,6 +1,7 @@
 package com.sms_activate.qiwi;
 
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
 public class SMSActivateGetQiwiRequisitesResponse {
   private final SMSActivateQiwiStatus status;
@@ -10,9 +11,9 @@ public class SMSActivateGetQiwiRequisitesResponse {
 
   public SMSActivateGetQiwiRequisitesResponse(
       @NotNull SMSActivateQiwiStatus status,
-      @NotNull String comment,
-      @NotNull String wallet,
-      @NotNull String upToDate
+      @Nullable String comment,
+      @Nullable String wallet,
+      @Nullable String upToDate
   ) {
     this.status = status;
     this.comment = comment;
@@ -20,18 +21,22 @@ public class SMSActivateGetQiwiRequisitesResponse {
     this.upToDate = upToDate;
   }
 
+  @Nullable
   public SMSActivateQiwiStatus getStatus() {
     return status;
   }
 
+  @Nullable
   public String getComment() {
     return comment;
   }
 
+  @Nullable
   public String getWallet() {
     return wallet;
   }
 
+  @Nullable
   public String getUpToDate() {
     return upToDate;
   }

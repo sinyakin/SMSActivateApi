@@ -3,27 +3,43 @@ package com.sms_activate;
 import com.google.gson.Gson;
 import com.google.gson.JsonSyntaxException;
 import com.google.gson.reflect.TypeToken;
-import com.sms_activate.activation.*;
-import com.sms_activate.activation.balance.*;
-import com.sms_activate.activation.country.*;
-import com.sms_activate.activation.current_activation.*;
+import com.sms_activate.activation.SMSActivateActivation;
+import com.sms_activate.activation.SMSActivateGetFullSmsResponse;
+import com.sms_activate.activation.SMSActivateGetMultiServiceNumberResponse;
+import com.sms_activate.activation.balance.SMSActivateGetBalanceAndCashBackResponse;
+import com.sms_activate.activation.balance.SMSActivateGetBalanceResponse;
+import com.sms_activate.activation.country.SMSActivateGetCountriesResponse;
+import com.sms_activate.activation.country.SMSActivateGetCountryResponse;
+import com.sms_activate.activation.current_activation.SMSActivateGetCurrentActivationResponse;
+import com.sms_activate.activation.current_activation.SMSActivateGetCurrentActivationsResponse;
 import com.sms_activate.activation.get_prices.SMSActivateGetPriceResponse;
 import com.sms_activate.activation.get_prices.SMSActivateGetPricesResponse;
-import com.sms_activate.activation.get_status.*;
-import com.sms_activate.activation.numbers_status.*;
-import com.sms_activate.activation.set_status.*;
-import com.sms_activate.error.*;
+import com.sms_activate.activation.get_status.SMSActivateGetStatus;
+import com.sms_activate.activation.get_status.SMSActivateGetStatusResponse;
+import com.sms_activate.activation.numbers_status.SMSActivateGetNumberStatusResponse;
+import com.sms_activate.activation.numbers_status.SMSActivateGetNumbersStatusResponse;
+import com.sms_activate.activation.set_status.SMSActivateAccessStatus;
+import com.sms_activate.activation.set_status.SMSActivateSetStatusRequest;
+import com.sms_activate.activation.set_status.SMSActivateSetStatusResponse;
+import com.sms_activate.error.SMSActivateUnknownException;
 import com.sms_activate.error.base.SMSActivateBaseException;
-import com.sms_activate.error.wrong_parameter.*;
-import com.sms_activate.qiwi.*;
-import com.sms_activate.rent.*;
-import com.sms_activate.rent.get_rent_list.*;
-import com.sms_activate.rent.get_rent_services_and_countries.*;
-import com.sms_activate.rent.get_rent_sms.*;
+import com.sms_activate.error.wrong_parameter.SMSActivateWrongParameterException;
+import com.sms_activate.qiwi.SMSActivateGetQiwiRequisitesResponse;
+import com.sms_activate.qiwi.SMSActivateQiwiStatus;
+import com.sms_activate.rent.SMSActivateGetRentNumberResponse;
+import com.sms_activate.rent.get_rent_list.SMSActivateGetRentListResponse;
+import com.sms_activate.rent.get_rent_list.SMSActivateGetRentResponse;
+import com.sms_activate.rent.get_rent_services_and_countries.SMSActivateGetRentServicesAndCountriesResponse;
+import com.sms_activate.rent.get_rent_services_and_countries.SMSActivateRentService;
+import com.sms_activate.rent.get_rent_status.SMSActivateGetRentStatusResponse;
+import com.sms_activate.rent.get_rent_status.SMSActivateSMS;
+import com.sms_activate.rent.set_rent_status.SMSActivateRentStatus;
+import com.sms_activate.rent.set_rent_status.SMSActivateSetRentStatusRequest;
+import com.sms_activate.rent.set_rent_status.SMSActivateSetRentStatusResponse;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
-import java.io.IOException;
+import java.lang.reflect.Type;
 import java.math.BigDecimal;
 import java.util.*;
 import java.util.stream.Collectors;
@@ -105,11 +121,10 @@ public class SMSActivateApi {
    * Returns the current account balance.
    *
    * @return current account balance.
-   * @throws IOException                        if an I/O exception occurs.
    * @throws SMSActivateWrongParameterException if one of parameters is incorrect.
    */
   @NotNull
-  public SMSActivateGetBalanceResponse getBalance() throws IOException, SMSActivateBaseException {
+  public SMSActivateGetBalanceResponse getBalance() throws SMSActivateBaseException {
     BigDecimal balance = getBalance(SMSActivateAction.GET_BALANCE);
     return new SMSActivateGetBalanceResponse(balance);
   }
@@ -118,12 +133,11 @@ public class SMSActivateApi {
    * Returns the current account balance plus cashBack.
    *
    * @return current account balance with cashBack.
-   * @throws IOException                        if an I/O exception occurs.
    * @throws SMSActivateWrongParameterException if one of parameters is incorrect.
    */
   @NotNull
   public SMSActivateGetBalanceAndCashBackResponse getBalanceAndCashBack()
-      throws IOException, SMSActivateBaseException {
+      throws SMSActivateBaseException {
     BigDecimal balance = getBalance().getBalance();
     BigDecimal balanceAndCashBack = getBalance(SMSActivateAction.GET_BALANCE_AND_CASHBACK);
 
@@ -134,12 +148,11 @@ public class SMSActivateApi {
    * Returns a list counts of available services.
    *
    * @return list counts of available services.
-   * @throws IOException                        if an I/O exception occurs.
    * @throws SMSActivateWrongParameterException if one of parameters is incorrect.
    */
   @NotNull
   public SMSActivateGetNumbersStatusResponse getNumbersStatus()
-      throws IOException, SMSActivateBaseException {
+      throws SMSActivateBaseException {
     return getNumbersStatus(null, null);
   }
 
@@ -149,12 +162,11 @@ public class SMSActivateApi {
    * @param countryId id country.
    * @param operator  name operator mobile network (not be null).
    * @return list counts of available services by county and operator (not be null).
-   * @throws IOException                        if an I/O exception occurs.
    * @throws SMSActivateWrongParameterException if one of parameters is incorrect.
    */
   @NotNull
   public SMSActivateGetNumbersStatusResponse getNumbersStatus(@Nullable Integer countryId, @Nullable String operator)
-      throws IOException, SMSActivateBaseException {
+      throws SMSActivateBaseException {
     if (countryId != null && countryId < 0) {
       throw new SMSActivateWrongParameterException("Wrong ID country.", "Неверный ID страны.");
     }
@@ -163,9 +175,10 @@ public class SMSActivateApi {
     smsActivateURLBuilder.append(SMSActivateURLKey.COUNTRY, (countryId == null) ? null : String.valueOf(countryId))
         .append(SMSActivateURLKey.OPERATOR, operator);
 
-    String data = SMSActivateWebClient.getOrThrowCommonException(smsActivateURLBuilder.build(), validator);
+    String data = SMSActivateWebClient.getOrThrowCommonException(smsActivateURLBuilder, validator);
 
-    Map<String, String> serviceMap = gson.fromJson(data, new TypeToken<Map<String, String>>() {}.getType());
+
+    Map<String, String> serviceMap = tryParseJson(data, new TypeToken<Map<String, String>>() {}.getType());
     Map<String, SMSActivateGetNumberStatusResponse> smsActivateGetNumbersStatusResponseMap = new HashMap<>();
 
     serviceMap.forEach((key, value) -> {
@@ -187,12 +200,11 @@ public class SMSActivateApi {
    * @param service   service name for activation.
    * @param countryId id country.
    * @return id activation for activation.
-   * @throws IOException                        if an I/O exception occurs.
    * @throws SMSActivateWrongParameterException if one of parameters is incorrect.
    * @throws SMSActivateUnknownException        if error not documented.
    */
   @NotNull
-  public  getNumber(@NotNull String service, int countryId) throws IOException, SMSActivateBaseException {
+  public SMSActivateActivation getNumber(@NotNull String service, int countryId) throws SMSActivateBaseException {
     return getNumber(service, countryId, null, null, false);
   }
 
@@ -206,7 +218,6 @@ public class SMSActivateApi {
    * @param operator       mobile operator. May be specify separated by commas.
    * @param forward        is it necessary to request a number with forwarding.
    * @return id activation for activation.
-   * @throws IOException                        if an I/O exception occurs.
    * @throws SMSActivateWrongParameterException if one of parameters is incorrect.
    * @throws SMSActivateUnknownException        if error not documented.
    */
@@ -217,7 +228,7 @@ public class SMSActivateApi {
       @Nullable String phoneException,
       @Nullable String operator,
       boolean forward
-  ) throws IOException, SMSActivateBaseException {
+  ) throws SMSActivateBaseException {
     if (countryId < 0) {
       throw new SMSActivateWrongParameterException("Wrong ID country.", "Неверный ID страны.");
     }
@@ -230,19 +241,11 @@ public class SMSActivateApi {
         .append(SMSActivateURLKey.OPERATOR, operator)
         .append(SMSActivateURLKey.FORWARD, forward ? "1" : "0");
 
-    String data = SMSActivateWebClient.get(smsActivateURLBuilder.build());
+    String data = SMSActivateWebClient.getOrThrowCommonException(smsActivateURLBuilder, validator);
     validator.throwExceptionWithBan(data);
 
-
-    // TODO: throw exception
     if (!data.contains("ACCESS")) {
-      SMSActivateMainStatusResponse smsActivateMainStatusResponse = SMSActivateMainStatusResponse.getStatusByName(data);
-
-      if (smsActivateMainStatusResponse != SMSActivateMainStatusResponse.UNKNOWN) {
-        return  new SMSActivateMainResponse(smsActivateMainStatusResponse);
-      } else {
-        throw new SMSActivateUnknownException(data);
-      }
+      throw validator.getBaseExceptionByErrorNameOrUnknown(data);
     }
 
     String[] parts = data.split(":");
@@ -261,12 +264,11 @@ public class SMSActivateApi {
    * @param multiService services for ordering (not be null).
    * @param countryId    id country.
    * @return list id.
-   * @throws IOException                        if an I/O exception occurs.
    * @throws SMSActivateWrongParameterException if one of parameters is incorrect.
    */
   @NotNull
   public SMSActivateGetMultiServiceNumberResponse getMultiServiceNumber(@NotNull Set<String> multiService, int countryId)
-      throws IOException, SMSActivateBaseException {
+      throws SMSActivateBaseException {
     return getMultiServiceNumber(multiService, countryId, null, null);
   }
 
@@ -274,12 +276,11 @@ public class SMSActivateApi {
    * Returns the list id by countryId, multiService, ref.<br/>
    * Separator for multiService, multiForward and operator is commas. <br/>
    *
-   * @param multiService services for ordering (not be null).
-   * @param countryId    id country.
-   * @param multiForward is it necessary to request a number with forwarding.
-   * @param operator     mobile operator.
+   * @param multiServiceSet  services for ordering (not be null).
+   * @param countryId        id country.
+   * @param multiForwardList is it necessary to request a number with forwarding.
+   * @param operatorSet      mobile operator.
    * @return list id.
-   * @throws IOException                        if an I/O exception occurs.
    * @throws SMSActivateWrongParameterException if one of parameters is incorrect.
    */
   @NotNull
@@ -288,7 +289,7 @@ public class SMSActivateApi {
       int countryId,
       @Nullable List<Boolean> multiForwardList,
       @Nullable Set<String> operatorSet
-  ) throws IOException, SMSActivateBaseException {
+  ) throws SMSActivateBaseException {
     multiServiceSet.removeIf(x -> x == null || x.isEmpty());
 
     String strMultiService = String.join(",", multiServiceSet);
@@ -298,7 +299,8 @@ public class SMSActivateApi {
     if (multiForwardList != null && multiForwardList.size() != 0) {
       multiForwardList.removeIf(Objects::isNull);
       strMultiForward = multiForwardList.stream().map(x -> x ? "1" : "0").collect(Collectors.joining(","));
-    } if (operatorSet != null && operatorSet.size() != 0) {
+    }
+    if (operatorSet != null && operatorSet.size() != 0) {
       operatorSet.removeIf(x -> x == null || x.isEmpty());
       strOperators = String.join(",", operatorSet);
     }
@@ -314,35 +316,63 @@ public class SMSActivateApi {
         .append(SMSActivateURLKey.MULTI_FORWARD, strMultiForward)
         .append(SMSActivateURLKey.OPERATOR, strOperators);
 
-    String data = SMSActivateWebClient.getOrThrowCommonException(smsActivateURLBuilder.build(), validator);
+    String data = SMSActivateWebClient.getOrThrowCommonException(smsActivateURLBuilder, validator);
+
     validator.throwExceptionWithBan(data);
 
-    try {
-      List<Map<String, Object>> activationMapList = gson.fromJson(data, new TypeToken<List<Map<String, Object>>>() {}.getType());
-      List<SMSActivateActivation> phoneList = new ArrayList<>();
+    List<Map<String, Object>> activationMapList = tryParseJson(data, new TypeToken<List<Map<String, Object>>>() {}.getType());
+    List<SMSActivateActivation> phoneList = new ArrayList<>();
 
-      int indexForwardPhoneNumber = (multiForwardList == null) ? -1 : multiForwardList.indexOf(true); //index id where need forwarding
+    int indexForwardPhoneNumber = (multiForwardList == null) ? -1 : multiForwardList.indexOf(true); //index id where need forwarding
 
-      for (int i = 0; i < activationMapList.size(); i++) {
-        Map<String, Object> activationMap = activationMapList.get(i);
+    for (int i = 0; i < activationMapList.size(); i++) {
+      Map<String, Object> activationMap = activationMapList.get(i);
 
-        int id = new BigDecimal(String.valueOf(activationMap.get("activation"))).intValue();
-        String number = String.valueOf(activationMap.get("phone"));
-        String serviceName = String.valueOf(activationMap.get("service"));
+      int id = new BigDecimal(String.valueOf(activationMap.get("activation"))).intValue();
+      String number = String.valueOf(activationMap.get("phone"));
+      String serviceName = String.valueOf(activationMap.get("service"));
 
-        phoneList.add(new SMSActivateActivation(
-            id,
-            number,
-            serviceName,
-            i == indexForwardPhoneNumber
-        ));
-      }
-
-      return new SMSActivateGetMultiServiceNumberResponse(phoneList);
-    } catch (JsonSyntaxException ignored) {
-      // TODO: throw exceptions;
-      //return getMainResponseByStatusNameOrThrowException(data);
+      phoneList.add(new SMSActivateActivation(
+          id,
+          number,
+          serviceName,
+          i == indexForwardPhoneNumber
+      ));
     }
+
+    return new SMSActivateGetMultiServiceNumberResponse(phoneList);
+  }
+
+  /**
+   * Sets the status activation.
+   *
+   * @param id     id to set activation status (not be null).
+   * @param status value to establish (not be null).
+   *               <p>
+   *               Get number using getNumber method after that the following actions are available:<br/>
+   *               <em>CANCEL</em> - Cancel activation (if the number did not suit you)<br/>
+   *               <em>SEND_READY_NUMBER</em> - Report that SMS has been sent (optional)
+   *               </p>
+   *               <p>
+   *               To activate with status READY:<br/>
+   *               <em>CANCEL</em> - Cancel activation
+   *               </p>
+   *               <p>
+   *               Immediately after receiving the code:<br/>
+   *               <em>REQUEST_ONE_MORE_CODE</em> - Request another SMS<br/>
+   *               <em>FINISH</em> - Confirm SMS code and complete activation
+   *               </p>
+   *               <p>
+   *               To activate with status RETRY_GET:<br/>
+   *               <em>FINISH</em> - Confirm SMS code and complete activation
+   *               </p>
+   * @return access activation.
+   * @throws SMSActivateWrongParameterException if one of parameters is incorrect.
+   */
+  @NotNull
+  public SMSActivateSetStatusResponse setStatus(int id, @NotNull SMSActivateSetStatusRequest status)
+      throws SMSActivateBaseException {
+    return setStatus(id, status, false);
   }
 
   /**
@@ -350,62 +380,47 @@ public class SMSActivateApi {
    * <p>
    * Get number using getNumber method after that the following actions are available:<br/>
    * <em>CANCEL</em> - Cancel activation (if the number did not suit you)<br/>
-   * <em>NUMBER READINESS CONFIRMED</em> - Report that SMS has been sent (optional)
+   * <em>SEND_READY_NUMBER</em> - Report that SMS has been sent (optional)
    * </p>
    * <p>
-   * To activate with status 1:<br/>
+   * To activate with status READY:<br/>
    * <em>CANCEL</em> - Cancel activation
    * </p>
    * <p>
    * Immediately after receiving the code:<br/>
-   * <em>REQUEST ONE MORE SMS</em> - Request another SMS<br/>
+   * <em>REQUEST_ONE_MORE_CODE</em> - Request another SMS<br/>
    * <em>FINISH</em> - Confirm SMS code and complete activation
    * </p>
    * <p>
-   * To activate with status 3:<br/>
+   * To activate with status RETRY_GET:<br/>
    * <em>FINISH</em> - Confirm SMS code and complete activation
    * </p>
-   *
-   * @param id     id to set activation status (not be null).
-   * @param status value to establish (not be null).
-   * @return access activation.
-   * @throws IOException                        if an I/O exception occurs.
-   * @throws SMSActivateWrongParameterException if one of parameters is incorrect.
-   */
-  @NotNull
-  public  setStatus(int id, @NotNull SMSActivateSetStatusRequest status)
-      throws IOException, SMSActivateBaseException {
-    return setStatus(id, status, false);
-  }
-
-  /**
-   * Sets the status activation.
    *
    * @param id      id to set activation status (not be null).
    * @param status  value to establish (not be null).
    * @param forward number is forwarding.
    * @return access activation.
-   * @throws IOException                        if an I/O exception occurs.
    * @throws SMSActivateWrongParameterException if one of parameters is incorrect.
    */
   @NotNull
-  public  setStatus(
+  public SMSActivateSetStatusResponse setStatus(
       int id,
       @NotNull SMSActivateSetStatusRequest status,
       boolean forward
-  ) throws IOException, SMSActivateBaseException {
+  ) throws SMSActivateBaseException {
     SMSActivateURLBuilder smsActivateURLBuilder = new SMSActivateURLBuilder(apiKey, SMSActivateAction.SET_STATUS);
     smsActivateURLBuilder.append(SMSActivateURLKey.STATUS, String.valueOf(status.getId()))
         .append(SMSActivateURLKey.ID, String.valueOf(id))
         .append(SMSActivateURLKey.FORWARD, forward ? "1" : "0");
 
-    String data = SMSActivateWebClient.getOrThrowCommonException(smsActivateURLBuilder.build(), validator);
+    String data = SMSActivateWebClient.getOrThrowCommonException(smsActivateURLBuilder, validator);
+
     SMSActivateAccessStatus smsActivateAccessStatus = SMSActivateAccessStatus.getStatusByName(data);
 
     if (smsActivateAccessStatus != SMSActivateAccessStatus.UNKNOWN) {
       return new SMSActivateSetStatusResponse(smsActivateAccessStatus);
     } else {
-      return getMainResponseByStatusNameOrThrowException(data);
+      throw validator.getBaseExceptionByErrorNameOrUnknown(data);
     }
   }
 
@@ -414,17 +429,17 @@ public class SMSActivateApi {
    *
    * @param id id id to get activation state (not be null).
    * @return state activation.
-   * @throws IOException                        if an I/O exception occurs.
    * @throws SMSActivateWrongParameterException if one of parameters is incorrect.
    */
   @NotNull
-  public  getStatus(int id)
-      throws IOException, SMSActivateBaseException {
+  public SMSActivateGetStatusResponse getStatus(int id)
+      throws SMSActivateBaseException {
     SMSActivateURLBuilder smsActivateURLBuilder = new SMSActivateURLBuilder(apiKey, SMSActivateAction.GET_STATUS);
     smsActivateURLBuilder.append(SMSActivateURLKey.ID, String.valueOf(id));
 
     String code = null;
-    String data = SMSActivateWebClient.getOrThrowCommonException(smsActivateURLBuilder.build(), validator);
+    String data = SMSActivateWebClient.getOrThrowCommonException(smsActivateURLBuilder, validator);
+
 
     if (data.contains(":")) {
       String[] parts = data.split(":");
@@ -438,7 +453,7 @@ public class SMSActivateApi {
     if (status != SMSActivateGetStatus.UNKNOWN) {
       return new SMSActivateGetStatusResponse(status, code);
     } else {
-      return getMainResponseByStatusNameOrThrowException(data);
+      throw validator.getBaseExceptionByErrorNameOrUnknown(data);
     }
   }
 
@@ -447,21 +462,21 @@ public class SMSActivateApi {
    *
    * @param id id activation.
    * @return full text sms.
-   * @throws IOException                        if an I/O exception occurs.
    * @throws SMSActivateWrongParameterException if one of parameters is incorrect.
    */
   @NotNull
-  public  getFullSms(int id)
-      throws IOException, SMSActivateBaseException {
+  public SMSActivateGetFullSmsResponse getFullSms(int id)
+      throws SMSActivateBaseException {
     SMSActivateURLBuilder smsActivateURLBuilder = new SMSActivateURLBuilder(apiKey, SMSActivateAction.GET_FULL_SMS);
     smsActivateURLBuilder.append(SMSActivateURLKey.ID, String.valueOf(id));
 
-    String data = SMSActivateWebClient.getOrThrowCommonException(smsActivateURLBuilder.build(), validator);
+    String data = SMSActivateWebClient.getOrThrowCommonException(smsActivateURLBuilder, validator);
+
 
     if (data.contains("FULL")) {
-      return new SMSActivateGetFillSmsResponse(data.split(":")[1]);
+      return new SMSActivateGetFullSmsResponse(data.split(":")[1]);
     } else {
-      return getMainResponseByStatusNameOrThrowException(data);
+      throw validator.getBaseExceptionByErrorNameOrUnknown(data);
     }
   }
 
@@ -469,11 +484,10 @@ public class SMSActivateApi {
    * Returns the all actual prices by country.
    *
    * @return price list country.
-   * @throws IOException                        if an I/O exception occurs.
    * @throws SMSActivateWrongParameterException if one of parameters is incorrect.
    */
   @NotNull
-  public  getPrices() throws IOException, SMSActivateBaseException {
+  public SMSActivateGetPricesResponse getPrices() throws SMSActivateBaseException {
     return getPrices(null, null);
   }
 
@@ -484,12 +498,11 @@ public class SMSActivateApi {
    *                  <pre>{@code null, null -> all service and all country.}</pre>
    * @param countryId id number (default null).
    * @return price list country.
-   * @throws IOException                        if an I/O exception occurs.
    * @throws SMSActivateWrongParameterException if one of parameters is incorrect.
    */
   @NotNull
-  public  getPrices(@Nullable String service, @Nullable Integer countryId)
-      throws IOException, SMSActivateBaseException {
+  public SMSActivateGetPricesResponse getPrices(@Nullable String service, @Nullable Integer countryId)
+      throws SMSActivateBaseException {
     if (countryId != null && countryId < 0) {
       throw new SMSActivateWrongParameterException("Wrong ID country.", "Неверный ID страны.");
     }
@@ -498,9 +511,10 @@ public class SMSActivateApi {
     smsActivateURLBuilder.append(SMSActivateURLKey.SERVICE, service)
         .append(SMSActivateURLKey.COUNTRY, (countryId == null) ? null : String.valueOf(countryId));
 
-    String data = SMSActivateWebClient.getOrThrowCommonException(smsActivateURLBuilder.build(), validator);
+    String data = SMSActivateWebClient.getOrThrowCommonException(smsActivateURLBuilder, validator);
 
-    Map<String, Map<String, Map<String, Double>>> countryMap = gson.fromJson(data,
+
+    Map<String, Map<String, Map<String, Double>>> countryMap = tryParseJson(data,
         new TypeToken<Map<String, Map<String, Map<String, Double>>>>() {}.getType());
     List<Map<String, SMSActivateGetPriceResponse>> smsActivateGetPriceMapList = new ArrayList<>();
 
@@ -523,15 +537,14 @@ public class SMSActivateApi {
    * Returns the country information.
    *
    * @return country information.
-   * @throws IOException                        if an I/O exception occurs.
    * @throws SMSActivateWrongParameterException if one of parameters is incorrect.
    */
   @NotNull
-  public  getCountries() throws IOException, SMSActivateBaseException {
+  public SMSActivateGetCountriesResponse getCountries() throws SMSActivateBaseException {
     SMSActivateURLBuilder smsActivateURLBuilder = new SMSActivateURLBuilder(apiKey, SMSActivateAction.GET_COUNTRIES);
-    String data = SMSActivateWebClient.getOrThrowCommonException(smsActivateURLBuilder.build(), validator);
-    Map<String, Map<String, Object>> countryInformationMap = gson.fromJson(data, new TypeToken<Map<String, Map<String, Object>>>() {}.getType());
+    String data = SMSActivateWebClient.getOrThrowCommonException(smsActivateURLBuilder, validator);
 
+    Map<String, Map<String, Object>> countryInformationMap = tryParseJson(data, new TypeToken<Map<String, Map<String, Object>>>() {}.getType());
     List<SMSActivateGetCountryResponse> countryList = new ArrayList<>();
 
     for (Map<String, Object> countryMap : countryInformationMap.values()) {
@@ -557,14 +570,24 @@ public class SMSActivateApi {
    * Returns the qiwi response with data on wallet.
    *
    * @return qiwi response with data on wallet
-   * @throws IOException                        if an I/O exception occurs.
    * @throws SMSActivateWrongParameterException if one of parameters is incorrect.
    */
   @NotNull
-  public  getQiwiRequisites() throws IOException, SMSActivateBaseException {
+  public SMSActivateGetQiwiRequisitesResponse getQiwiRequisites() throws SMSActivateBaseException {
     SMSActivateURLBuilder smsActivateURLBuilder = new SMSActivateURLBuilder(apiKey, SMSActivateAction.GET_QIWI_REQUISITES);
-    String data = SMSActivateWebClient.getOrThrowCommonException(smsActivateURLBuilder.build(), validator);
-    return gson.fromJson(data, new TypeToken<SMSActivateGetQiwiRequisitesResponse>() {}.getType());
+    String data = SMSActivateWebClient.getOrThrowCommonException(smsActivateURLBuilder, validator);
+
+    Map<String, String> response = tryParseJson(data, new TypeToken<Map<String, String>>() {}.getType());
+
+    SMSActivateQiwiStatus status = SMSActivateQiwiStatus.getStatusByName(response.get("status"));
+
+    if (status == SMSActivateQiwiStatus.UNKNOWN) {
+      throw validator.getBaseExceptionByErrorNameOrUnknown(response.get("status"));
+    }
+
+    return new SMSActivateGetQiwiRequisitesResponse(
+        status, response.get("comment"), response.get("wallet"), response.get("upToDate")
+    );
   }
 
   /**
@@ -572,17 +595,17 @@ public class SMSActivateApi {
    *
    * @param id id activation.
    * @return id activation for additional service by forwarding
-   * @throws IOException                        if an I/O exception occurs.
    * @throws SMSActivateWrongParameterException if one of parameters is incorrect.
    */
   @NotNull
-  public  getAdditionalService(int id, @NotNull String serviceName)
-      throws IOException, SMSActivateBaseException {
+  public SMSActivateActivation getAdditionalService(int id, @NotNull String serviceName)
+      throws SMSActivateBaseException {
     SMSActivateURLBuilder smsActivateURLBuilder = new SMSActivateURLBuilder(apiKey, SMSActivateAction.GET_ADDITIONAL_SERVICE);
     smsActivateURLBuilder.append(SMSActivateURLKey.ID, String.valueOf(id))
         .append(SMSActivateURLKey.SERVICE, serviceName);
 
-    String data = SMSActivateWebClient.getOrThrowCommonException(smsActivateURLBuilder.build(), validator);
+    String data = SMSActivateWebClient.getOrThrowCommonException(smsActivateURLBuilder, validator);
+
 
     if (data.contains("ADDITIONAL")) {
       String[] parts = data.split(":");
@@ -591,7 +614,7 @@ public class SMSActivateApi {
 
       return new SMSActivateActivation(id, number, serviceName, false);
     } else {
-      return getMainResponseByStatusNameOrThrowException(data);
+      throw validator.getBaseExceptionByErrorNameOrUnknown(data);
     }
   }
 
@@ -599,12 +622,11 @@ public class SMSActivateApi {
    * Returns the list current activation.
    *
    * @return list with first 10 activation.
-   * @throws IOException                        if an I/O exception occurs.
    * @throws SMSActivateWrongParameterException if one of parameters is incorrect.
    */
   @NotNull
   public SMSActivateGetCurrentActivationsResponse getCurrentActivations()
-      throws IOException, SMSActivateBaseException {
+      throws SMSActivateBaseException {
     return getCurrentActivations(0, 10);
   }
 
@@ -614,21 +636,19 @@ public class SMSActivateApi {
    * @param start  (default 0).
    * @param length (default 10).
    * @return returns the list activation.
-   * @throws IOException                        if an I/O exception occurs.
    * @throws SMSActivateWrongParameterException if one of parameters is incorrect.
    */
   @NotNull
-  public  getCurrentActivations(int start, int length)
-      throws IOException, SMSActivateBaseException {
+  public SMSActivateGetCurrentActivationsResponse getCurrentActivations(int start, int length)
+      throws SMSActivateBaseException {
     SMSActivateURLBuilder smsActivateURLBuilder = new SMSActivateURLBuilder(apiKey, SMSActivateAction.GET_CURRENT_ACTIVATION);
     smsActivateURLBuilder.append(SMSActivateURLKey.START, String.valueOf(start))
         .append(SMSActivateURLKey.LENGTH, String.valueOf(length))
         .append(SMSActivateURLKey.ORDER, SMSActivateURLKey.ID.getName())
         .append(SMSActivateURLKey.ORDER_BY, "asc");
 
-    String data = SMSActivateWebClient.getOrThrowCommonException(smsActivateURLBuilder.build(), validator);
-
-    Map<String, Object> responseMap = gson.fromJson(data, new TypeToken<Map<String, Object>>() {}.getType());
+    String data = SMSActivateWebClient.getOrThrowCommonException(smsActivateURLBuilder, validator);
+    Map<String, Object> responseMap = tryParseJson(data, new TypeToken<Map<String, Object>>() {}.getType());
 
     if (responseMap.get("status").toString().equalsIgnoreCase("fail")) {
       return new SMSActivateGetCurrentActivationsResponse(new HashMap<>());
@@ -656,13 +676,12 @@ public class SMSActivateApi {
    * Returns the rent object with countries supported rent and accessed services by country.
    *
    * @return rent object with countries supported rent and accessed services by country.
-   * @throws IOException                        if an I/O exception occurs.
    * @throws SMSActivateWrongParameterException if one of parameters is incorrect.
    */
   @NotNull
-  public  getRentServicesAndCountries()
-      throws IOException, SMSActivateBaseException {
-    return getRentServicesAndCountries(0, null, 1);
+  public SMSActivateGetRentServicesAndCountriesResponse getRentServicesAndCountries()
+      throws SMSActivateBaseException {
+    return getRentServicesAndCountries(0, null, 4);
   }
 
   /**
@@ -673,13 +692,12 @@ public class SMSActivateApi {
    * @param time      time rent in hours (default 1).
    *                  time >= 1
    * @return the rent object with countries supported rent and accessed services by country.
-   * @throws IOException                        if an I/O exception occurs.
    * @throws SMSActivateWrongParameterException if one of parameters is incorrect.
    */
   @NotNull
-  public  getRentServicesAndCountries(int countryId, @Nullable String operator, int time)
-      throws IOException, SMSActivateBaseException {
-    if (time <= 0) {
+  public SMSActivateGetRentServicesAndCountriesResponse getRentServicesAndCountries(int countryId, @Nullable String operator, int time)
+      throws SMSActivateBaseException {
+    if (time < 4) {
       throw new SMSActivateWrongParameterException("Time can't be negative or equals 0.", "Время не может быть меньше или равно 0");
     }
     if (countryId < 0) {
@@ -689,26 +707,29 @@ public class SMSActivateApi {
     SMSActivateURLBuilder smsActivateURLBuilder = new SMSActivateURLBuilder(apiKey, SMSActivateAction.GET_RENT_SERVICES_AND_COUNTRIES);
     smsActivateURLBuilder.append(SMSActivateURLKey.COUNTRY, String.valueOf(countryId))
         .append(SMSActivateURLKey.OPERATOR, operator)
-        .append(SMSActivateURLKey.TIME, String.valueOf(time));
+        .append(SMSActivateURLKey.RENT_TIME, String.valueOf(time));
 
-    String data = SMSActivateWebClient.getOrThrowCommonException(smsActivateURLBuilder.build(), validator);
+    String data = SMSActivateWebClient.getOrThrowCommonException(smsActivateURLBuilder, validator);
+    Map<String, Object> rentCountriesServices = tryParseJson(data, new TypeToken<Map<String, Object>>() {}.getType());
 
-    Map<String, Map<String, Object>> rentCountriesServices = gson.fromJson(data, new TypeToken<Map<String, Map<String, Object>>>() {}.getType());
+    if (rentCountriesServices.containsKey("message")) {
+      throw validator.getBaseExceptionByErrorNameOrUnknown(rentCountriesServices.get("message").toString());
+    }
 
-    Map<String, Object> countryMap = rentCountriesServices.get("countries");
-    Map<String, Object> operatorMap = rentCountriesServices.get("operators");
-    Map<String, Object> servicesMap = rentCountriesServices.get("services");
+    Map<String, Object> countryMap = (Map<String, Object>) rentCountriesServices.get("countries");
+    Map<String, Object> operatorMap = (Map<String, Object>) rentCountriesServices.get("operators");
+    Map<String, Object> servicesMap = (Map<String, Object>) rentCountriesServices.get("services");
 
-    List<String> operatorNameList = new ArrayList<>();
-    List<Integer> countryIdList = new ArrayList<>();
+    Set<String> operatorNameSet = new HashSet<>();
+    Set<Integer> countryIdSet = new HashSet<>();
     Map<String, SMSActivateRentService> smsActivateRentServiceMap = new HashMap<>();
 
     for (Object countryCode : countryMap.values()) {
-      countryIdList.add(new BigDecimal(countryCode.toString()).intValue());
+      countryIdSet.add(new BigDecimal(countryCode.toString()).intValue());
     }
 
     for (Object name : operatorMap.values()) {
-      operatorNameList.add(name.toString());
+      operatorNameSet.add(name.toString());
     }
 
     servicesMap.forEach((shortName, service) -> {
@@ -723,49 +744,47 @@ public class SMSActivateApi {
     });
 
     return new SMSActivateGetRentServicesAndCountriesResponse(
-        operatorNameList, countryIdList, smsActivateRentServiceMap
+        operatorNameSet, countryIdSet, smsActivateRentServiceMap
     );
   }
 
   /**
-   * Returns the rent id.
+   * Returns the object rent.
    *
    * @param service service to which you need to get a number.
-   * @return rent id.
-   * @throws IOException                        if an I/O exception occurs.
+   * @return object rent.
    * @throws SMSActivateWrongParameterException if one of parameters is incorrect.
    */
   @NotNull
-  public  getRentNumber(@NotNull String service)
-      throws IOException, SMSActivateBaseException {
-    return getRentNumber(service, 0, null, 1, null);
+  public SMSActivateGetRentNumberResponse getRentNumber(@NotNull String service)
+      throws SMSActivateBaseException {
+    return getRentNumber(service, 0, null, 4, null);
   }
 
   /**
-   * Returns the rent id.
+   * Returns the object rent.
    *
    * @param service    service to which you need to get a number.
    * @param countryId  id country (default 0 - Russia).
    * @param operator   mobile operator.
    * @param time       time rent (default 4 hour).
    * @param urlWebhook url for webhook.
-   * @return rent id.
-   * @throws IOException                        if an I/O exception occurs.
+   * @return object rent.
    * @throws SMSActivateWrongParameterException if one of parameters is incorrect.
    */
   @NotNull
-  public  getRentNumber(
+  public SMSActivateGetRentNumberResponse getRentNumber(
       @NotNull String service,
       int countryId,
       @Nullable String operator,
       int time,
       @Nullable String urlWebhook
-  ) throws IOException, SMSActivateBaseException {
+  ) throws SMSActivateBaseException {
     if (countryId < 0) {
       throw new SMSActivateWrongParameterException("Wrong ID country.", "Неверный ID страны.");
     }
-    if (time <= 0) {
-      throw new SMSActivateWrongParameterException("The rental time cannot be less than 1.", "Время аренды не может быть меньше чем 1.");
+    if (time < 4) {
+      throw new SMSActivateWrongParameterException("The rental time cannot be less than 4.", "Время аренды не может быть меньше чем 4.");
     }
 
     SMSActivateURLBuilder smsActivateURLBuilder = new SMSActivateURLBuilder(apiKey, SMSActivateAction.GET_RENT_NUMBER);
@@ -776,13 +795,14 @@ public class SMSActivateApi {
         .append(SMSActivateURLKey.SERVICE, service);
 
 
-    String data = SMSActivateWebClient.getOrThrowCommonException(smsActivateURLBuilder.build(), validator);
-    Map<String, Object> responseMap = gson.fromJson(data, new TypeToken<Map<String, Object>>() {}.getType());
+    String data = SMSActivateWebClient.getOrThrowCommonException(smsActivateURLBuilder, validator);
+
+    Map<String, Object> responseMap = tryParseJson(data, new TypeToken<Map<String, Object>>() {}.getType());
 
     String status = String.valueOf(responseMap.get("status"));
 
     if (!status.equalsIgnoreCase("success")) {
-      return getMainResponseByStatusNameOrThrowException(String.valueOf(responseMap.get("message")));
+      throw validator.getBaseExceptionByErrorNameOrUnknown(String.valueOf(responseMap.get("message")));
     }
 
     Map<String, Object> phoneMap = (Map<String, Object>) responseMap.get("phone");
@@ -799,22 +819,22 @@ public class SMSActivateApi {
    *
    * @param id id received in response when ordering a number.
    * @return list sms.
-   * @throws IOException                        if an I/O exception occurs.
    * @throws SMSActivateWrongParameterException if one of parameters is incorrect.
    */
   @NotNull
-  public  getRentStatus(int id)
-      throws IOException, SMSActivateBaseException {
+  public SMSActivateGetRentStatusResponse getRentStatus(int id)
+      throws SMSActivateBaseException {
     SMSActivateURLBuilder smsActivateURLBuilder = new SMSActivateURLBuilder(apiKey, SMSActivateAction.GET_RENT_STATUS);
     smsActivateURLBuilder.append(SMSActivateURLKey.ID, String.valueOf(id));
 
-    String data = SMSActivateWebClient.getOrThrowCommonException(smsActivateURLBuilder.build(), validator);
-    Map<String, Object> responseMap = gson.fromJson(data, new TypeToken<Map<String, Object>>() {}.getType());
+    String data = SMSActivateWebClient.getOrThrowCommonException(smsActivateURLBuilder, validator);
+
+    Map<String, Object> responseMap = tryParseJson(data, new TypeToken<Map<String, Object>>() {}.getType());
 
     String status = String.valueOf(responseMap.get("status"));
 
     if (!status.equalsIgnoreCase("success")) {
-      return getMainResponseByStatusNameOrThrowException(String.valueOf(responseMap.get("message")));
+      throw validator.getBaseExceptionByErrorNameOrUnknown(String.valueOf(responseMap.get("message")));
     }
 
     Map<String, Map<String, Object>> valuesMap = (Map<String, Map<String, Object>>) responseMap.get("values");
@@ -838,25 +858,23 @@ public class SMSActivateApi {
    * @param id     id activation for set status rent.
    * @param status status rent.
    * @return state rent.
-   * @throws IOException                        if an I/O exception occurs.
    * @throws SMSActivateWrongParameterException if one of parameters is incorrect.
    */
   @NotNull
-  public  setRentStatus(int id, @NotNull SMSActivateSetStatusRequest status)
-      throws IOException, SMSActivateBaseException {
+  public SMSActivateSetRentStatusResponse setRentStatus(int id, @NotNull SMSActivateSetRentStatusRequest status)
+      throws SMSActivateBaseException {
     SMSActivateURLBuilder smsActivateURLBuilder = new SMSActivateURLBuilder(apiKey, SMSActivateAction.SET_RENT_STATUS);
     smsActivateURLBuilder.append(SMSActivateURLKey.ID, String.valueOf(id))
         .append(SMSActivateURLKey.STATUS, String.valueOf(status.getId()));
 
-    String data = SMSActivateWebClient.getOrThrowCommonException(smsActivateURLBuilder.build(), validator);
+    String data = SMSActivateWebClient.getOrThrowCommonException(smsActivateURLBuilder, validator);
+    Map<String, String> responseMap = tryParseJson(data, new TypeToken<Map<String, String>>() {}.getType());
+    SMSActivateRentStatus smsActivateRentStatus = SMSActivateRentStatus.getStatusByName(responseMap.get("status"));
 
-    Map<String, String> responseMap = gson.fromJson(data, new TypeToken<Map<String, String>>() {}.getType());
-    SMSActivateMainStatusResponse smsActivateMainStatusResponse = SMSActivateMainStatusResponse.getStatusByName(responseMap.get("status"));
-
-    if (smsActivateMainStatusResponse != SMSActivateMainStatusResponse.SUCCESS) {
-      return new SMSActivateMainResponse(SMSActivateMainStatusResponse.SUCCESS);
+    if (smsActivateRentStatus == SMSActivateRentStatus.SUCCESS) {
+      return new SMSActivateSetRentStatusResponse(smsActivateRentStatus);
     } else {
-      return getMainResponseByStatusNameOrThrowException(responseMap.get("message"));
+      throw validator.getBaseExceptionByErrorNameOrUnknown(responseMap.get("message"));
     }
   }
 
@@ -864,21 +882,20 @@ public class SMSActivateApi {
    * Returns the list rent numbers.
    *
    * @return list rent ids numbers.
-   * @throws IOException                        if an I/O exception occurs.
    * @throws SMSActivateWrongParameterException if one of parameters is incorrect.l
    */
   @NotNull
-  public  getRentList()
-      throws IOException, SMSActivateBaseException {
+  public SMSActivateGetRentListResponse getRentList()
+      throws SMSActivateBaseException {
     SMSActivateURLBuilder smsActivateURLBuilder = new SMSActivateURLBuilder(apiKey, SMSActivateAction.GET_RENT_LIST);
 
-    String data = SMSActivateWebClient.getOrThrowCommonException(smsActivateURLBuilder.build(), validator);
-    Map<String, Object> responseMap = gson.fromJson(data, new TypeToken<Map<String, Object>>() {}.getType());
+    String data = SMSActivateWebClient.getOrThrowCommonException(smsActivateURLBuilder, validator);
+    Map<String, Object> responseMap = tryParseJson(data, new TypeToken<Map<String, Object>>() {}.getType());
 
     String status = String.valueOf(responseMap.get("status"));
 
     if (!status.equalsIgnoreCase("success")) {
-      return getMainResponseByStatusNameOrThrowException(String.valueOf(responseMap.get("message")));
+      throw validator.getBaseExceptionByErrorNameOrUnknown(String.valueOf(responseMap.get("message")));
     }
 
     Map<String, Map<String, Object>> valuesMap = (Map<String, Map<String, Object>>) responseMap.get("values");
@@ -899,35 +916,32 @@ public class SMSActivateApi {
    *
    * @param smsActivateAction name specific action.
    * @return current account balance.
-   * @throws IOException                        if an I/O exception occurs.
    * @throws SMSActivateWrongParameterException if one of parameters is incorrect.
    */
   @NotNull
   private BigDecimal getBalance(@NotNull SMSActivateAction smsActivateAction)
-      throws SMSActivateBaseException, IOException {
-    SMSActivateURLBuilder SMSActivateURLBuilder = new SMSActivateURLBuilder(apiKey, smsActivateAction);
-    String data = SMSActivateWebClient.getOrThrowCommonException(SMSActivateURLBuilder.build(), validator);
-
+      throws SMSActivateBaseException {
+    SMSActivateURLBuilder smsActivateURLBuilder = new SMSActivateURLBuilder(apiKey, smsActivateAction);
+    String data = SMSActivateWebClient.getOrThrowCommonException(smsActivateURLBuilder, validator);
     String[] parts = data.split(":");
     return new BigDecimal(parts[1]);
   }
 
   /**
-   * Returns the main response if status name exists in enum else throw UnknownException.
+   * Try parsing string to json and cast to type.
    *
-   * @param statusName name status from server.
-   * @return main response if status name exists in enum else throw UnknownException.
-   * @throws SMSActivateUnknownException if error not documented.
+   * @param data   data in string.
+   * @param typeOf type to cast after parse.
+   * @param <T>    type to return.
+   * @return Object from string.
+   * @throws SMSActivateBaseException if response from server not equals success.
    */
   @NotNull
-  private SMSActivateMainResponse getMainResponseByStatusNameOrThrowException(@NotNull String statusName)
-      throws SMSActivateUnknownException {
-    SMSActivateMainStatusResponse smsActivateMainStatusResponse = SMSActivateMainStatusResponse.getStatusByName(statusName);
-
-    if (smsActivateMainStatusResponse != SMSActivateMainStatusResponse.UNKNOWN) {
-      return new SMSActivateMainResponse(smsActivateMainStatusResponse);
-    } else {
-      throw new SMSActivateUnknownException(statusName);
+  private <T> T tryParseJson(@NotNull String data, @NotNull Type typeOf) throws SMSActivateBaseException {
+    try {
+      return gson.fromJson(data, typeOf);
+    } catch (JsonSyntaxException ignored) {
+      throw validator.getBaseExceptionByErrorNameOrUnknown(data);
     }
   }
 }

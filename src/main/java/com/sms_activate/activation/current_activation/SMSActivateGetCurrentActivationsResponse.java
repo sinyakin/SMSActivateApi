@@ -1,13 +1,9 @@
 package com.sms_activate.activation.current_activation;
 
-import com.sms_activate.main_response.SMSActivateMainResponse;
-import com.sms_activate.main_response.SMSActivateMainStatusResponse;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 public class SMSActivateGetCurrentActivationsResponse {
   private final Map<Integer, SMSActivateGetCurrentActivationResponse> smsActivateGetCurrentActivationResponseMap;
@@ -23,7 +19,12 @@ public class SMSActivateGetCurrentActivationsResponse {
   }
 
   @NotNull
-  public List<SMSActivateGetCurrentActivationResponse> getSMSActivateGetCurrentActivationResponseList() {
-    return new ArrayList<>(smsActivateGetCurrentActivationResponseMap.values());
+  public Set<Integer> getIdSet() {
+    return smsActivateGetCurrentActivationResponseMap.keySet();
+  }
+
+  @NotNull
+  public Set<SMSActivateGetCurrentActivationResponse> getSMSActivateGetCurrentActivationResponseSet() {
+    return new HashSet<>(smsActivateGetCurrentActivationResponseMap.values());
   }
 }

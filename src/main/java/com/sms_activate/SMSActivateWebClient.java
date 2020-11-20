@@ -16,19 +16,22 @@ class SMSActivateWebClient {
   /**
    * Get data or throw common exception if error is happened.
    *
-   * @param url       target url.
-   * @param validator data validator.
+   * @param smsActivateURLBuilder url builder.
+   * @param validator             data validator.
    * @return load data from url.
-   * @throws IOException                        if an I/O exception occurs.
    * @throws SMSActivateWrongParameterException if one of parameters is incorrect.
    * @throws SMSActivateBaseException           if error happened on position SMSActivate.
    */
   @NotNull
-  public static String getOrThrowCommonException(@NotNull URL url, @NotNull SMSActivateValidator validator)
-      throws IOException, SMSActivateBaseException {
-    String data = get(url);
-    validator.throwCommonExceptionByName(data);
-    return data;
+  public static String getOrThrowCommonException(@NotNull SMSActivateURLBuilder smsActivateURLBuilder, @NotNull SMSActivateValidator validator)
+      throws SMSActivateBaseException {
+    try {
+      String data = get(smsActivateURLBuilder.build());
+      validator.throwCommonExceptionByName(data);
+      return data;
+    } catch (IOException ignored) {
+      throw new SMSActivateBaseException("Problem with network connection.", "Проблемы с сетевым подключением.");
+    }
   }
 
   /**

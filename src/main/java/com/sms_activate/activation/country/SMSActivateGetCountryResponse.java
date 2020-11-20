@@ -1,15 +1,13 @@
 package com.sms_activate.activation.country;
 
-import com.sms_activate.main_response.SMSActivateMainResponse;
-import com.sms_activate.main_response.SMSActivateMainStatusResponse;
 import org.jetbrains.annotations.NotNull;
 
 public class SMSActivateGetCountryResponse {
   private final int id;
 
-  private final String chineseMessage;
-  private final String englishMessage;
-  private final String russianMessage;
+  private final String chineseName;
+  private final String englishName;
+  private final String russianName;
 
   private final boolean supportRent;
   private final boolean supportRetry;
@@ -18,18 +16,18 @@ public class SMSActivateGetCountryResponse {
 
   public SMSActivateGetCountryResponse(
       int id,
-      @NotNull String chineseMessage,
-      @NotNull String englishMessage,
-      @NotNull String russianMessage,
+      @NotNull String chineseName,
+      @NotNull String englishName,
+      @NotNull String russianName,
       boolean supportRent,
       boolean supportRetry,
       boolean supportVisible,
       boolean supportMultiService
   ) {
     this.id = id;
-    this.chineseMessage = chineseMessage;
-    this.englishMessage = englishMessage;
-    this.russianMessage = russianMessage;
+    this.chineseName = chineseName;
+    this.englishName = englishName;
+    this.russianName = russianName;
 
     this.supportRent = supportRent;
     this.supportRetry = supportRetry;
@@ -42,18 +40,18 @@ public class SMSActivateGetCountryResponse {
   }
 
   @NotNull
-  public String getChineseMessage() {
-    return chineseMessage;
+  public String getChineseName() {
+    return chineseName;
   }
 
   @NotNull
-  public String getEnglishMessage() {
-    return englishMessage;
+  public String getEnglishName() {
+    return englishName;
   }
 
   @NotNull
-  public String getRussianMessage() {
-    return russianMessage;
+  public String getRussianName() {
+    return russianName;
   }
 
   public boolean isSupportRent() {

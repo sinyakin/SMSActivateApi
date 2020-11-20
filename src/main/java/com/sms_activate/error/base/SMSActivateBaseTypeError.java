@@ -1,6 +1,5 @@
 package com.sms_activate.error.base;
 
-import com.sms_activate.main_response.SMSActivateMainStatusResponse;
 import org.jetbrains.annotations.NotNull;
 
 public enum SMSActivateBaseTypeError {
@@ -11,8 +10,8 @@ public enum SMSActivateBaseTypeError {
   ALREADY_FINISH("ALREADY_FINISH", "Аренда уже заверщена.", "Rent has already been finished."),
   ALREADY_CANCEL("ALREADY_CANCEL", "Аренда уже отменена.", "Rent has already been canceled."),
   WAIT_CODE("STATUS_WAIT_CODE", "Ожидание первой смс", "Waiting for the first SMS."),
-  CANCEL("STATUS_CANCEL", "Аренда отменена с возвратом денег.", "Rent canceled with a refund."),
-  FINISH("STATUS_FINISH", "Аренда оплачена и завершенна.", "Rent has been paid and finished"),
+  RENT_CANCEL("STATUS_CANCEL", "Аренда отменена с возвратом денег.", "Rent canceled with a refund."),
+  RENT_FINISH("STATUS_FINISH", "Аренда оплачена и завершенна.", "Rent has been paid and finished"),
   ;
 
   /**
@@ -81,7 +80,7 @@ public enum SMSActivateBaseTypeError {
    * @return status.
    */
   @NotNull
-  public static SMSActivateBaseTypeError getStatusByName(@NotNull String name) {
+  public static SMSActivateBaseTypeError getErrorByName(@NotNull String name) {
     name = name.toUpperCase();
 
     for (SMSActivateBaseTypeError status : values()) {

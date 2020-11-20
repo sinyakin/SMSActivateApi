@@ -1,4 +1,4 @@
-package com.sms_activate.rent.get_rent_sms;
+package com.sms_activate.rent.get_rent_status;
 
 import org.jetbrains.annotations.NotNull;
 
