@@ -8,14 +8,14 @@ import java.util.*;
 public class SMSActivateGetCurrentActivationsResponse {
   private final Map<Integer, SMSActivateGetCurrentActivationResponse> smsActivateGetCurrentActivationResponseMap;
 
-  // key is ID
+  // key is ID activation
   public SMSActivateGetCurrentActivationsResponse(@NotNull Map<Integer, SMSActivateGetCurrentActivationResponse> smsActivateGetCurrentActivationResponseMap) {
     this.smsActivateGetCurrentActivationResponseMap = smsActivateGetCurrentActivationResponseMap;
   }
 
   @Nullable
-  public SMSActivateGetCurrentActivationResponse get(int id) {
-    return smsActivateGetCurrentActivationResponseMap.get(id);
+  public SMSActivateGetCurrentActivationResponse get(int idActivation) {
+    return smsActivateGetCurrentActivationResponseMap.get(idActivation);
   }
 
   @NotNull
@@ -26,5 +26,9 @@ public class SMSActivateGetCurrentActivationsResponse {
   @NotNull
   public Set<SMSActivateGetCurrentActivationResponse> getSMSActivateGetCurrentActivationResponseSet() {
     return new HashSet<>(smsActivateGetCurrentActivationResponseMap.values());
+  }
+
+  public boolean haveActivation() {
+    return this.smsActivateGetCurrentActivationResponseMap.isEmpty();
   }
 }

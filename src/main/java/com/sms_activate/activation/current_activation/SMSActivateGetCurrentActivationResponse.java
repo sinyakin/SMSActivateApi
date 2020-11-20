@@ -7,20 +7,20 @@ public class SMSActivateGetCurrentActivationResponse {
   private final boolean forward;
   private final String number;
   private final String serviceName;
-  private final String countryName;
+  private final int countryId;
 
   public SMSActivateGetCurrentActivationResponse(
       int id,
       boolean forward,
       @NotNull String number,
-      @NotNull String serviceName,
-      @NotNull String countryName
+      int countryId,
+      @NotNull String serviceName
   ) {
     this.id = id;
     this.forward = forward;
     this.number = number;
     this.serviceName = serviceName;
-    this.countryName = countryName;
+    this.countryId = countryId;
   }
 
   public int getId() {
@@ -41,8 +41,7 @@ public class SMSActivateGetCurrentActivationResponse {
     return serviceName;
   }
 
-  @NotNull
-  public String getCountryName() {
-    return countryName;
+  public int getCountryId() {
+    return countryId;
   }
 }
