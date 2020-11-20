@@ -18,6 +18,7 @@ public enum SMSActivateWrongParameter {
   INCORECT_STATUS("INCORECT_STATUS", "Отсутствует или неправильно указан статус.", "Missing or incorrect status."),
   NO_ID_RENT("NO_ID_RENT", "Не указан ID аренды.", "No rent Id."),
   INVALID_PHONE("INVALID_PHONE", "Номер арендован не вами (неправильный id аренды).", "Number was not rented by you (incorrect id rent)."),
+  EMPTY_KEY("EMPTY_KEY", "API ключ не может быть пустым.", "API-key can't be empty."),
   UNKNOWN("UNKNOWN", "Неизвестная ошибка.", "Unknown error."),
   ;
 
