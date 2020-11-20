@@ -7,6 +7,8 @@ import org.jetbrains.annotations.NotNull;
  * This exception occurs if one or more parameters that were passed are invalid or do not exist.
  */
 public class SMSActivateWrongParameterException extends SMSActivateBaseException {
+  private SMSActivateWrongParameter wrongParameter = SMSActivateWrongParameter.UNKNOWN;
+
   /**
    * Constructor wrong parameter exception with multilang.
    *
@@ -14,6 +16,7 @@ public class SMSActivateWrongParameterException extends SMSActivateBaseException
    */
   public SMSActivateWrongParameterException(@NotNull SMSActivateWrongParameter smsActivateWrongParameter) {
     super(smsActivateWrongParameter.getEnglishMessage(), smsActivateWrongParameter.getRussianMessage());
+    this.wrongParameter = smsActivateWrongParameter;
   }
 
   /**
@@ -24,5 +27,15 @@ public class SMSActivateWrongParameterException extends SMSActivateBaseException
    */
   public SMSActivateWrongParameterException(@NotNull String englishMessage, @NotNull String russianMessage) {
     super(englishMessage, russianMessage);
+  }
+
+  /**
+   * Returns the parameter who is incorrect.
+   *
+   * @return parameter.
+   */
+  @NotNull
+  public SMSActivateWrongParameter getWrongParameter() {
+    return this.wrongParameter;
   }
 }
