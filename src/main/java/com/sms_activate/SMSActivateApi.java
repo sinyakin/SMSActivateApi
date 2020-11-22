@@ -55,6 +55,9 @@ import java.util.stream.Collectors;
  * <p>All methods and constructor for this class throw SMSActivateWrongParameterException</p>
  *
  * @see SMSActivateWrongParameterException
+ * @see SMSActivateBaseException
+ * @see SMSActivateWrongParameter
+ * @see com.sms_activate.error.base.SMSActivateBaseTypeError
  */
 public class SMSActivateApi {
   /**
