@@ -14,7 +14,7 @@ public class SMSActivateGetCurrentActivationsResponse {
   private final Map<Integer, SMSActivateGetCurrentActivationResponse> smsActivateGetCurrentActivationResponseMap;
 
   /**
-   * Constructor response getCurrentActivation with data from server.
+   * Constructor response getCurrentActivation with data..
    *
    * @param smsActivateGetCurrentActivationResponseMap map currect activation where key is idActivation.
    */

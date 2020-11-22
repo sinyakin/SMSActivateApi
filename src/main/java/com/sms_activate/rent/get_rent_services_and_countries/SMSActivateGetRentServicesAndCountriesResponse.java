@@ -1,14 +1,36 @@
 package com.sms_activate.rent.get_rent_services_and_countries;
 
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
 
 public class SMSActivateGetRentServicesAndCountriesResponse {
+  /**
+   * Set with name operators.
+   */
   private final Set<String> operatorNameSet;
-  private final Set<Integer> countryIdSet;
-  private final Map<String, SMSActivateRentService> smsActivateRentServiceMap; // key is name service
 
+  /**
+   * Set with id countries.
+   */
+  private final Set<Integer> countryIdSet;
+
+  /**
+   * Map rent services where key is short name service.
+   */
+  private final Map<String, SMSActivateRentService> smsActivateRentServiceMap;
+
+  /**
+   * Constructor response getRentServiceAndCountries with data.
+   *
+   * @param operatorNameSet           set with name operators.
+   * @param countryIdSet              set with id countries.
+   * @param smsActivateRentServiceMap map rent services where key is short name service.
+   */
   public SMSActivateGetRentServicesAndCountriesResponse(
       @NotNull Set<String> operatorNameSet,
       @NotNull Set<Integer> countryIdSet,
@@ -19,21 +41,42 @@ public class SMSActivateGetRentServicesAndCountriesResponse {
     this.smsActivateRentServiceMap = smsActivateRentServiceMap;
   }
 
-  @NotNull
+  /**
+   * Returns the service rent by name.
+   *
+   * @param name short service name.
+   * @return service rent.
+   */
+  @Nullable
   public SMSActivateRentService getService(@NotNull String name) {
     return smsActivateRentServiceMap.get(name);
   }
 
+  /**
+   * Returns the list rent services.
+   *
+   * @return list rent services.
+   */
   @NotNull
   public List<SMSActivateRentService> getAllServices() {
     return new ArrayList<>(smsActivateRentServiceMap.values());
   }
 
+  /**
+   * Returns the set countries supported rent.
+   *
+   * @return set countries supported rent.
+   */
   @NotNull
   public Set<Integer> getCountryIdSet() {
     return countryIdSet;
   }
 
+  /**
+   * Returns the set operators supported rent.
+   *
+   * @return set operators supported rent.
+   */
   @NotNull
   public Set<String> getOperatorNameSet() {
     return operatorNameSet;

@@ -19,7 +19,7 @@ public class SMSActivateGetNumberStatusResponse {
   private final String nameService;
 
   /**
-   * Constructor response getNumbersStatus with data from server.
+   * Constructor response getNumbersStatus with data..
    *
    * @param forward     service support forward.
    * @param countNumber count of service numbers.

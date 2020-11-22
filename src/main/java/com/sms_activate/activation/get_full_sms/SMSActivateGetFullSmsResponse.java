@@ -14,7 +14,7 @@ public class SMSActivateGetFullSmsResponse {
   private final SMSActivateGetFullTypeResponse smsActivateGetFullTypeResponse;
 
   /**
-   * Constructor response getFullSMS with data from server.
+   * Constructor response getFullSMS with data..
    *
    * @param text                           text sms.
    * @param smsActivateGetFullTypeResponse status activation.

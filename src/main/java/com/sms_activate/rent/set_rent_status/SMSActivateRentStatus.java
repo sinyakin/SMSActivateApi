@@ -4,7 +4,7 @@ import org.jetbrains.annotations.NotNull;
 
 public enum SMSActivateRentStatus {
   UNKNOWN("", "", ""),
-  SUCCESS("SUCCESS", "Завершить активацию.", "Finish the activation."),
+  SUCCESS("SUCCESS", "Все успешно.", "Successfully."),
   ERROR("ERROR", "Сообщить о том, что номер использован и отменить активацию", "Report that the number has been used and cancel activation."),
   ;
 
@@ -26,7 +26,7 @@ public enum SMSActivateRentStatus {
   /**
    * Constructor status activation.
    *
-   * @param response             special id status.
+   * @param response       special id status.
    * @param russianMessage description status on russian language.
    * @param englishMessage description status on english language.
    */

@@ -1,6 +1,9 @@
 package com.sms_activate.activation.get_prices;
 
+import com.sms_activate.error.wrong_parameter.SMSActivateWrongParameter;
+import com.sms_activate.error.wrong_parameter.SMSActivateWrongParameterException;
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
 import java.util.Map;
 
@@ -12,7 +15,7 @@ public class SMSActivateGetPricesResponse {
 
 
   /**
-   * Constructor response getPrices with data from server.
+   * Constructor response getPrices with data..
    *
    * @param smsActivateGetPriceMap map where first key is countryId, second key is service short name.
    */

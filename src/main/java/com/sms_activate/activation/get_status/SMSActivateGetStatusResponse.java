@@ -15,7 +15,7 @@ public class SMSActivateGetStatusResponse {
   private final String codeFromSMS;
 
   /**
-   * Constructor response getStatus with data from server.
+   * Constructor response getStatus with data..
    *
    * @param smsActivateGetStatus status activation.
    * @param codeFromSMS          code sms.
