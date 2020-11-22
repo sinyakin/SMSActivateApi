@@ -1,14 +1,12 @@
 package com.sms_activate.activation.get_full_sms;
 
-import com.sms_activate.activation.get_status.SMSActivateGetStatus;
 import org.jetbrains.annotations.NotNull;
 
 public enum SMSActivateGetFullTypeResponse {
   WAIT_CODE("STATUS_WAIT_CODE", "Ожидание смс.", "Waiting sms."),
   CANCEL("STATUS_CANCEL", "Активация отменена.", "Activation canceled."),
   FULL_SMS("FULL_SMS", "Полный текст смс.", "Full text sms."),
-  UNKNOWN("UNKNOWN",  "Неизвестный статус активации.", "Unknown status activation.")
-  ;
+  UNKNOWN("UNKNOWN", "Неизвестный статус активации.", "Unknown status activation.");
 
   /**
    * Response from server.

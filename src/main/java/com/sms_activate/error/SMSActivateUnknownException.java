@@ -5,7 +5,7 @@ import org.jetbrains.annotations.NotNull;
 
 public class SMSActivateUnknownException extends SMSActivateBaseException {
   /**
-   * Constructor base sms activate exception with multilang.
+   * Constructor unknown sms activate exception with multilang.
    *
    * @param error name not documented error.
    */

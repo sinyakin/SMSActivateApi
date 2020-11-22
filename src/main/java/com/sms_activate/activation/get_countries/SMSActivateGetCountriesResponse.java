@@ -1,4 +1,4 @@
-package com.sms_activate.activation.country;
+package com.sms_activate.activation.get_countries;
 
 import org.jetbrains.annotations.NotNull;
 
@@ -12,6 +12,7 @@ public class SMSActivateGetCountriesResponse {
 
   /**
    * Constructor getCountries response.
+   *
    * @param smsActivateGetCountryResponseList list countries in sms-activate DB.
    */
   public SMSActivateGetCountriesResponse(@NotNull List<SMSActivateGetCountryResponse> smsActivateGetCountryResponseList) {
@@ -20,6 +21,7 @@ public class SMSActivateGetCountriesResponse {
 
   /**
    * Returns the country info by id.
+   *
    * @param id country id.
    * @return country info.
    */
@@ -30,6 +32,7 @@ public class SMSActivateGetCountriesResponse {
 
   /**
    * Returns the countries list.
+   *
    * @return countries list.
    */
   @NotNull

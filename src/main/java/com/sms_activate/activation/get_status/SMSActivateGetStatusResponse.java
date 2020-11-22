@@ -4,6 +4,9 @@ import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 public class SMSActivateGetStatusResponse {
+  /**
+   * Status activation.
+   */
   private final SMSActivateGetStatus smsActivateGetStatus;
 
   /**
@@ -11,11 +14,22 @@ public class SMSActivateGetStatusResponse {
    */
   private final String codeFromSMS;
 
+  /**
+   * Constructor response getStatus with data from server.
+   *
+   * @param smsActivateGetStatus status activation.
+   * @param codeFromSMS          code sms.
+   */
   public SMSActivateGetStatusResponse(@NotNull SMSActivateGetStatus smsActivateGetStatus, @Nullable String codeFromSMS) {
     this.smsActivateGetStatus = smsActivateGetStatus;
     this.codeFromSMS = codeFromSMS;
   }
 
+  /**
+   * Returns the description about status.
+   *
+   * @return description about status.
+   */
   @NotNull
   public String getMessage() {
     return smsActivateGetStatus.getMessage();
@@ -31,6 +45,11 @@ public class SMSActivateGetStatusResponse {
     return codeFromSMS;
   }
 
+  /**
+   * Returns the status activation.
+   *
+   * @return status activation.
+   */
   @NotNull
   public SMSActivateGetStatus getSMSActivateGetStatus() {
     return smsActivateGetStatus;

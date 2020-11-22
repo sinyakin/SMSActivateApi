@@ -1,8 +1,8 @@
 package example.api.activation;
 
 import com.sms_activate.SMSActivateApi;
-import com.sms_activate.activation.country.SMSActivateGetCountriesResponse;
-import com.sms_activate.activation.country.SMSActivateGetCountryResponse;
+import com.sms_activate.activation.get_countries.SMSActivateGetCountriesResponse;
+import com.sms_activate.activation.get_countries.SMSActivateGetCountryResponse;
 import com.sms_activate.error.base.SMSActivateBaseException;
 import com.sms_activate.error.wrong_parameter.SMSActivateWrongParameterException;
 import org.jetbrains.annotations.NotNull;

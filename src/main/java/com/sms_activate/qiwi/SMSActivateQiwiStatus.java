@@ -67,6 +67,7 @@ public enum SMSActivateQiwiStatus {
 
   /**
    * Returns status by name or unknown if not contains.
+   *
    * @param name status name.
    * @return status or unknown if not contains.
    */

@@ -8,8 +8,7 @@ public enum SMSActivateGetStatus {
   WAIT_RESEND("STATUS_WAIT_RESEND", "Ожидание повторной отправки смс.", "Waiting for re-sending SMS."),
   CANCEL("STATUS_CANCEL", "Активация отменена.", "Activation canceled."),
   OK("STATUS_OK", "Код получен.", "Code received."),
-  UNKNOWN("UNKNOWN",  "Неизвестный статус активации.", "Unknown status activation.")
-  ;
+  UNKNOWN("UNKNOWN", "Неизвестный статус активации.", "Unknown status activation.");
 
   /**
    * Response from server.

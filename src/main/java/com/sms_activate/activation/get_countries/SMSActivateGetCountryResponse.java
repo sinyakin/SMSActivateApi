@@ -1,4 +1,4 @@
-package com.sms_activate.activation.country;
+package com.sms_activate.activation.get_countries;
 
 import org.jetbrains.annotations.NotNull;
 
@@ -45,13 +45,14 @@ public class SMSActivateGetCountryResponse {
 
   /**
    * Constructor sms-activate country.
-   * @param id country id.
-   * @param russianName name on chinese.
-   * @param englishName name on english.
-   * @param chineseName name on russian.
-   * @param supportRent support rent.
-   * @param supportRetry support retry sms.
-   * @param visible in site.
+   *
+   * @param id                  country id.
+   * @param russianName         name on chinese.
+   * @param englishName         name on english.
+   * @param chineseName         name on russian.
+   * @param supportRent         support rent.
+   * @param supportRetry        support retry sms.
+   * @param visible             in site.
    * @param supportMultiService support multi service.
    */
   public SMSActivateGetCountryResponse(
@@ -77,6 +78,7 @@ public class SMSActivateGetCountryResponse {
 
   /**
    * Returns the country id.
+   *
    * @return country id.
    */
   public int getId() {
@@ -85,6 +87,7 @@ public class SMSActivateGetCountryResponse {
 
   /**
    * Returns the name on chinese.
+   *
    * @return name on chinese.
    */
   @NotNull
@@ -94,6 +97,7 @@ public class SMSActivateGetCountryResponse {
 
   /**
    * Returns the name on english.
+   *
    * @return name on english.
    */
   @NotNull
@@ -103,6 +107,7 @@ public class SMSActivateGetCountryResponse {
 
   /**
    * Returns the name on russian.
+   *
    * @return name on russian.
    */
   @NotNull
@@ -112,6 +117,7 @@ public class SMSActivateGetCountryResponse {
 
   /**
    * Returns the support rent.
+   *
    * @return support rent.
    */
   public boolean isSupportRent() {
@@ -120,6 +126,7 @@ public class SMSActivateGetCountryResponse {
 
   /**
    * Returns the support retry sms.
+   *
    * @return support retry sms.
    */
   public boolean isSupportRetry() {
@@ -128,6 +135,7 @@ public class SMSActivateGetCountryResponse {
 
   /**
    * Returns the visible in site.
+   *
    * @return visible in site.
    */
   public boolean isVisible() {
@@ -136,6 +144,7 @@ public class SMSActivateGetCountryResponse {
 
   /**
    * Returns the support multi service.
+   *
    * @return support multi service.
    */
   public boolean isSupportMultiService() {

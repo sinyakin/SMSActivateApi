@@ -12,7 +12,8 @@ public class SMSActivateGetBalanceAndCashBackResponse extends SMSActivateGetBala
 
   /**
    * Constructor getBalanceAndCashBack response with data.
-   * @param balance balance in account.
+   *
+   * @param balance  balance in account.
    * @param cashBack cashback in account.
    */
   public SMSActivateGetBalanceAndCashBackResponse(@NotNull BigDecimal balance, @NotNull BigDecimal cashBack) {
@@ -22,6 +23,7 @@ public class SMSActivateGetBalanceAndCashBackResponse extends SMSActivateGetBala
 
   /**
    * Returns the cashback in account.
+   *
    * @return cashback in account
    */
   @NotNull
@@ -31,6 +33,7 @@ public class SMSActivateGetBalanceAndCashBackResponse extends SMSActivateGetBala
 
   /**
    * Returns the sum with balance and cashback.
+   *
    * @return sum with balance and cashback.
    */
   @NotNull

@@ -4,11 +4,34 @@ import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 public class SMSActivateGetQiwiRequisitesResponse {
+  /**
+   * Status qiwi wallet.
+   */
   private final SMSActivateQiwiStatus status;
+
+  /**
+   * Comment specified in payment.
+   */
   private final String comment;
+
+  /**
+   * Number qiwi wallet.
+   */
   private final String wallet;
+
+  /**
+   * Date by which the details are relevant.
+   */
   private final String upToDate;
 
+  /**
+   * Constructor the qiwi response with status, walletNumber.
+   *
+   * @param qiwiStatus   status qiwi wallet (not be null).
+   * @param walletNumber number qiwi wallet.
+   * @param comment      comment specified in payment.
+   * @param upToDate     Date by which the details are relevant.
+   */
   public SMSActivateGetQiwiRequisitesResponse(
       @NotNull SMSActivateQiwiStatus status,
       @Nullable String comment,
@@ -21,21 +44,41 @@ public class SMSActivateGetQiwiRequisitesResponse {
     this.upToDate = upToDate;
   }
 
-  @Nullable
+  /**
+   * Returns the status qiwi wallet.
+   *
+   * @return staus qiwi wallet.
+   */
+  @NotNull
   public SMSActivateQiwiStatus getStatus() {
     return status;
   }
 
+  /**
+   * Returns the comment specified payment.
+   *
+   * @return comment specified payment
+   */
   @Nullable
   public String getComment() {
     return comment;
   }
 
+  /**
+   * Returns the wallet number.
+   *
+   * @return wallet number.
+   */
   @Nullable
   public String getWallet() {
     return wallet;
   }
 
+  /**
+   * Returns the date by which the details are relevant.
+   *
+   * @return date by which the details are relevant.
+   */
   @Nullable
   public String getUpToDate() {
     return upToDate;

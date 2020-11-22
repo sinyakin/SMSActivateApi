@@ -12,6 +12,7 @@ public class SMSActivateGetBalanceResponse {
 
   /**
    * Constructor get balance response.
+   *
    * @param balance balance in account.
    */
   public SMSActivateGetBalanceResponse(@NotNull BigDecimal balance) {
@@ -20,6 +21,7 @@ public class SMSActivateGetBalanceResponse {
 
   /**
    * Returns the balance in account.
+   *
    * @return balance in account
    */
   @NotNull
