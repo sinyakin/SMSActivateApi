@@ -25,6 +25,7 @@ import com.sms_activate.activation.set_status.SMSActivateSetStatusResponse;
 import com.sms_activate.error.SMSActivateBannedException;
 import com.sms_activate.error.SMSActivateUnknownException;
 import com.sms_activate.error.base.SMSActivateBaseException;
+import com.sms_activate.error.base.SMSActivateBaseTypeError;
 import com.sms_activate.error.wrong_parameter.SMSActivateWrongParameter;
 import com.sms_activate.error.wrong_parameter.SMSActivateWrongParameterException;
 import com.sms_activate.qiwi.SMSActivateGetQiwiRequisitesResponse;
@@ -57,7 +58,7 @@ import java.util.stream.Collectors;
  * @see SMSActivateWrongParameterException
  * @see SMSActivateBaseException
  * @see SMSActivateWrongParameter
- * @see com.sms_activate.error.base.SMSActivateBaseTypeError
+ * @see SMSActivateBaseTypeError
  */
 public class SMSActivateApi {
   /**
@@ -66,17 +67,17 @@ public class SMSActivateApi {
   private static final Gson gson = new Gson();
 
   /**
-   * Validator data.
+   * Special validator for server responses.
    */
   private static final SMSActivateValidator validator = new SMSActivateValidator();
 
   /**
-   * Api key from personal
+   * Api key from site.
    */
   private final String apiKey;
 
   /**
-   * Personal referral link.
+   * Personal referral link (it's a numbers).
    */
   private String ref = null;
 
@@ -1433,7 +1434,7 @@ public class SMSActivateApi {
   /**
    * Returns the current account balance by specific action.
    *
-   * @param smsActivateAction name specific action.
+   * @param smsActivateAction name specific action to get balance.
    * @return current account balance.
    * @throws SMSActivateWrongParameterException if one of parameters is incorrect.
    */
