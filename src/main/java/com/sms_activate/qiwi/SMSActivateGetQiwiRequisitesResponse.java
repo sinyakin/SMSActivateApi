@@ -27,10 +27,10 @@ public class SMSActivateGetQiwiRequisitesResponse {
   /**
    * Constructor the qiwi response with status, walletNumber.
    *
-   * @param qiwiStatus   status qiwi wallet (not be null).
-   * @param walletNumber number qiwi wallet.
-   * @param comment      comment specified in payment.
-   * @param upToDate     Date by which the details are relevant.
+   * @param status   status qiwi wallet (not be null).
+   * @param wallet   number qiwi wallet.
+   * @param comment  comment specified in payment.
+   * @param upToDate Date by which the details are relevant.
    */
   public SMSActivateGetQiwiRequisitesResponse(
       @NotNull SMSActivateQiwiStatus status,

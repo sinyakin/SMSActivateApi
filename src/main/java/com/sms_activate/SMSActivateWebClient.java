@@ -3,6 +3,7 @@ package com.sms_activate;
 import com.sms_activate.error.base.SMSActivateBaseException;
 import com.sms_activate.error.wrong_parameter.SMSActivateWrongParameterException;
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
 import java.io.*;
 import java.net.HttpURLConnection;
@@ -26,7 +27,7 @@ class SMSActivateWebClient {
   public static String getOrThrowCommonException(@NotNull SMSActivateURLBuilder smsActivateURLBuilder, @NotNull SMSActivateValidator validator)
       throws SMSActivateBaseException {
     try {
-      String data = get(smsActivateURLBuilder.build());
+      String data = get(smsActivateURLBuilder.build(), "gzip, json");
       validator.throwCommonExceptionByName(data);
       return data;
     } catch (IOException ignored) {
@@ -42,10 +43,13 @@ class SMSActivateWebClient {
    * @throws IOException if an I/O exception occurs.
    */
   @NotNull
-  public static String get(@NotNull URL url) throws IOException {
+  public static String get(@NotNull URL url, @Nullable String acceptEncoding) throws IOException {
     HttpURLConnection urlConnection = (HttpURLConnection) url.openConnection();
     urlConnection.setRequestMethod("GET");
-    urlConnection.setRequestProperty("accept-Encoding", "gzip, deflate, json");
+
+    if (acceptEncoding != null) {
+      urlConnection.setRequestProperty("accept-Encoding", acceptEncoding);
+    }
 
     return load(urlConnection);
   }
@@ -59,12 +63,15 @@ class SMSActivateWebClient {
    * @throws IOException if an I/O exception occurs.
    */
   @NotNull
-  public static String post(@NotNull URL url, @NotNull List<String> dataList) throws IOException {
+  public static String post(@NotNull URL url, @NotNull List<String> dataList, @Nullable String acceptEncoding) throws IOException {
     HttpURLConnection urlConnection = (HttpURLConnection) url.openConnection();
 
     urlConnection.setRequestMethod("POST");
-    urlConnection.setRequestProperty("accept-Encoding", "gzip,deflate");
     urlConnection.setDoOutput(true);
+
+    if (acceptEncoding != null) {
+      urlConnection.setRequestProperty("accept-Encoding", acceptEncoding);
+    }
 
     try (BufferedWriter writer = new BufferedWriter(
         new OutputStreamWriter(new GZIPOutputStream(urlConnection.getOutputStream())))) {
@@ -89,16 +96,28 @@ class SMSActivateWebClient {
    */
   @NotNull
   private static String load(@NotNull URLConnection urlConnection) throws IOException {
-    try (BufferedReader reader = new BufferedReader(
-        new InputStreamReader(new GZIPInputStream(urlConnection.getInputStream())))) {
-      String data;
-      StringBuilder builder = new StringBuilder();
-
-      while ((data = reader.readLine()) != null) {
-        builder.append(data);
+    if (urlConnection.getContentEncoding().contains("gzip")) {
+      try (BufferedReader reader = new BufferedReader(
+          new InputStreamReader(new GZIPInputStream(urlConnection.getInputStream())))) {
+        return read(reader);
       }
-
-      return builder.toString();
+    } else {
+      try (BufferedReader reader = new BufferedReader(
+          new InputStreamReader(urlConnection.getInputStream()))) {
+        return read(reader);
+      }
     }
+  }
+
+  @NotNull
+  private static String read(@NotNull BufferedReader reader) throws IOException {
+    String data;
+    StringBuilder builder = new StringBuilder();
+
+    while ((data = reader.readLine()) != null) {
+      builder.append(data);
+    }
+
+    return builder.toString();
   }
 }

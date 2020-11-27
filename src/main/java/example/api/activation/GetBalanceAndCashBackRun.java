@@ -8,7 +8,7 @@ import com.sms_activate.error.base.SMSActivateBaseException;
 public class GetBalanceAndCashBackRun {
   public static void main(String[] args) {
     try {
-      SMSActivateApi smsActivateApi = new SMSActivateApi("API_KEY");
+      SMSActivateApi smsActivateApi = new SMSActivateApi("9A34fbf73d52752607e37ebA26f6f0bf");
       System.out.println("Your api-key: " + smsActivateApi.getApiKey());
 
       SMSActivateGetBalanceResponse getBalanceResponse = smsActivateApi.getBalance();
