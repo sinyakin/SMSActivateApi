@@ -3,7 +3,7 @@ package com.sms_activate.error.base;
 import org.jetbrains.annotations.NotNull;
 
 public enum SMSActivateBaseTypeError {
-  UNKNOWN("", "", ""),
+  UNKNOWN("", "Неизвестный тип ошибки.", "Unknown type error."),
   NO_BALANCE("NO_BALANCE", "Нет денег на счету.", "There is no money in the account."),
   NO_NUMBERS("NO_NUMBERS", "На данный момент номеров нет.", "There are currently no numbers."),
   CANT_CANCEL("CANT_CANCEL", "Невозможно отменить аренду (более 20 мин.).", "It is impossible to cancel the rent(more than 20 min.)."),

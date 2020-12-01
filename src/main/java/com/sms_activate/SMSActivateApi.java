@@ -83,6 +83,11 @@ public class SMSActivateApi {
   private static final String SUCCESS_NAME_STATUS = "success";
 
   /**
+   * Interval output activation.
+   */
+  private static final int INTERVAL = 10;
+
+  /**
    * Numbers reg expression.
    */
   private static final Pattern patternDigit = Pattern.compile("\\d+(?:[\\.,]\\d+)?");
@@ -98,7 +103,7 @@ public class SMSActivateApi {
   private String ref = null;
 
   /**
-   * Constructor API sms-activate with API key and ref.
+   * Constructor API sms-activate with API key.
    *
    * @param apiKey API key (not be null).
    * @throws SMSActivateWrongParameterException if api-key is incorrect.
@@ -190,8 +195,7 @@ public class SMSActivateApi {
    *                                            </p>
    */
   @NotNull
-  public SMSActivateGetBalanceAndCashBackResponse getBalanceAndCashBack()
-    throws SMSActivateBaseException {
+  public SMSActivateGetBalanceAndCashBackResponse getBalanceAndCashBack() throws SMSActivateBaseException {
     BigDecimal balance = getBalance();
     BigDecimal balanceAndCashBack = getBalanceByAction(SMSActivateAction.GET_BALANCE_AND_CASHBACK);
 
@@ -221,8 +225,7 @@ public class SMSActivateApi {
    *                                            </p>
    */
   @NotNull
-  public SMSActivateGetNumbersStatusResponse getNumbersStatus()
-    throws SMSActivateBaseException {
+  public SMSActivateGetNumbersStatusResponse getNumbersStatus() throws SMSActivateBaseException {
     return getNumbersStatus(null, null);
   }
 
@@ -290,7 +293,7 @@ public class SMSActivateApi {
   }
 
   /**
-   * Returns the activation by service, ref, countryId.
+   * Returns the activation by service, countryId.
    *
    * @param countryId id country.
    * @param service   service name for activation.
@@ -323,7 +326,7 @@ public class SMSActivateApi {
   }
 
   /**
-   * Returns the activation by service, ref, countryId, phoneException, operator, forward
+   * Returns the activation by service, countryId, phoneException, operator, forward
    *
    * @param countryId         id country.
    * @param service           service name for activation.
@@ -403,7 +406,7 @@ public class SMSActivateApi {
   }
 
   /**
-   * Returns the specified object id by countryId, multiService, ref.<br/>
+   * Returns the specified object id by countryId, multiService.<br/>
    * Separator for multiService is commas. <br/>
    *
    * @param countryId       id country.
@@ -439,7 +442,7 @@ public class SMSActivateApi {
   }
 
   /**
-   * Returns the specified object with activations id by countryId, multiService, ref.<br/>
+   * Returns the specified object with activations id by countryId, multiService.<br/>
    * Separator for multiService, multiForward and operator is commas. <br/>
    *
    * @param countryId        id country.
@@ -573,8 +576,7 @@ public class SMSActivateApi {
    *                                            </p>
    */
   @NotNull
-  public SMSActivateSetStatusResponse setStatus(int id, @NotNull SMSActivateSetStatusRequest status)
-    throws SMSActivateBaseException {
+  public SMSActivateSetStatusResponse setStatus(int id, @NotNull SMSActivateSetStatusRequest status) throws SMSActivateBaseException {
     return setStatus(id, status, false);
   }
 
@@ -664,8 +666,7 @@ public class SMSActivateApi {
    *                                            </p>
    */
   @NotNull
-  public SMSActivateGetStatusResponse getStatus(int id)
-    throws SMSActivateBaseException {
+  public SMSActivateGetStatusResponse getStatus(int id) throws SMSActivateBaseException {
     SMSActivateURLBuilder smsActivateURLBuilder = new SMSActivateURLBuilder(apiKey, SMSActivateAction.GET_STATUS);
     smsActivateURLBuilder.append(SMSActivateURLKey.ID, String.valueOf(id));
 
@@ -721,8 +722,7 @@ public class SMSActivateApi {
    *                                            </p>
    */
   @NotNull
-  public SMSActivateGetFullSmsResponse getFullSms(int id)
-    throws SMSActivateBaseException {
+  public SMSActivateGetFullSmsResponse getFullSms(int id) throws SMSActivateBaseException {
     SMSActivateURLBuilder smsActivateURLBuilder = new SMSActivateURLBuilder(apiKey, SMSActivateAction.GET_FULL_SMS);
     smsActivateURLBuilder.append(SMSActivateURLKey.ID, String.valueOf(id));
 
@@ -796,8 +796,7 @@ public class SMSActivateApi {
    *                                            </p>
    */
   @NotNull
-  public SMSActivateGetPricesResponse getPrices(int countryId, @Nullable String service)
-    throws SMSActivateBaseException {
+  public SMSActivateGetPricesResponse getPrices(int countryId, @Nullable String service) throws SMSActivateBaseException {
     if (countryId < 0) {
       throw new SMSActivateWrongParameterException("Wrong ID country.", "Неверный ID страны.");
     }
@@ -956,8 +955,7 @@ public class SMSActivateApi {
    *                                            </p>
    */
   @NotNull
-  public SMSActivateActivation getAdditionalService(int id, @NotNull String service)
-    throws SMSActivateBaseException {
+  public SMSActivateActivation getAdditionalService(int id, @NotNull String service) throws SMSActivateBaseException {
     SMSActivateURLBuilder smsActivateURLBuilder = new SMSActivateURLBuilder(apiKey, SMSActivateAction.GET_ADDITIONAL_SERVICE);
     smsActivateURLBuilder.append(SMSActivateURLKey.ID, String.valueOf(id))
       .append(SMSActivateURLKey.SERVICE, service);
@@ -998,8 +996,7 @@ public class SMSActivateApi {
    *                                            </p>
    */
   @NotNull
-  public SMSActivateGetCurrentActivationsResponse getCurrentActivations()
-    throws SMSActivateBaseException {
+  public SMSActivateGetCurrentActivationsResponse getCurrentActivations() throws SMSActivateBaseException {
     return getCurrentActivations(1, SMSActivateOrderBy.ASC);
   }
 
@@ -1033,9 +1030,9 @@ public class SMSActivateApi {
       throw new SMSActivateWrongParameterException("Number page can be positive.", "Номер страницы должен быть позитивным.");
     }
 
-    int len = page * 10;
+    int len = page * INTERVAL;
     SMSActivateURLBuilder smsActivateURLBuilder = new SMSActivateURLBuilder(apiKey, SMSActivateAction.GET_CURRENT_ACTIVATION);
-    smsActivateURLBuilder.append(SMSActivateURLKey.START, String.valueOf(page * 10 - 10))
+    smsActivateURLBuilder.append(SMSActivateURLKey.START, String.valueOf(len - INTERVAL))
       .append(SMSActivateURLKey.LENGTH, String.valueOf(len))
       .append(SMSActivateURLKey.ORDER, SMSActivateURLKey.ID.getName())
       .append(SMSActivateURLKey.ORDER_BY, SMSActivateOrderBy.getSortType());
@@ -1090,8 +1087,7 @@ public class SMSActivateApi {
    *                                            </p>
    */
   @NotNull
-  public SMSActivateGetRentServicesAndCountriesResponse getRentServicesAndCountries()
-    throws SMSActivateBaseException {
+  public SMSActivateGetRentServicesAndCountriesResponse getRentServicesAndCountries() throws SMSActivateBaseException {
     return getRentServicesAndCountries(0, null, MINIMAL_RENT_TIME);
   }
 
@@ -1126,7 +1122,10 @@ public class SMSActivateApi {
   public SMSActivateGetRentServicesAndCountriesResponse getRentServicesAndCountries(int countryId, @Nullable Set<String> operatorSet, int time)
     throws SMSActivateBaseException {
     if (time < MINIMAL_RENT_TIME) {
-      throw new SMSActivateWrongParameterException("Time can't be negative or equals 0.", "Время не может быть меньше или равно 0");
+      throw new SMSActivateWrongParameterException(
+        "Time rent can't be negative or equals " + MINIMAL_RENT_TIME,
+        "Время аренды не может быть меньше или равно " + MINIMAL_RENT_TIME
+      );
     }
     if (countryId < 0) {
       throw new SMSActivateWrongParameterException("Wrong ID country.", "Неверный ID страны.");
@@ -1212,8 +1211,7 @@ public class SMSActivateApi {
    *                                            </p>
    */
   @NotNull
-  public SMSActivateGetRentNumberResponse getRentNumber(@NotNull String service)
-    throws SMSActivateBaseException {
+  public SMSActivateGetRentNumberResponse getRentNumber(@NotNull String service) throws SMSActivateBaseException {
     return getRentNumber(0, service, null, MINIMAL_RENT_TIME, null);
   }
 
@@ -1322,8 +1320,7 @@ public class SMSActivateApi {
    *                                            </p>
    */
   @NotNull
-  public SMSActivateGetRentStatusResponse getRentStatus(int id)
-    throws SMSActivateBaseException {
+  public SMSActivateGetRentStatusResponse getRentStatus(int id) throws SMSActivateBaseException {
     SMSActivateURLBuilder smsActivateURLBuilder = new SMSActivateURLBuilder(apiKey, SMSActivateAction.GET_RENT_STATUS);
     smsActivateURLBuilder.append(SMSActivateURLKey.ID, String.valueOf(id));
 
@@ -1427,8 +1424,7 @@ public class SMSActivateApi {
    *                                            </p>
    */
   @NotNull
-  public SMSActivateGetRentListResponse getRentList()
-    throws SMSActivateBaseException {
+  public SMSActivateGetRentListResponse getRentList() throws SMSActivateBaseException {
     SMSActivateURLBuilder smsActivateURLBuilder = new SMSActivateURLBuilder(apiKey, SMSActivateAction.GET_RENT_LIST);
 
     String data = SMSActivateWebClient.getOrThrowCommonException(smsActivateURLBuilder, validator);
@@ -1462,8 +1458,7 @@ public class SMSActivateApi {
    * @throws SMSActivateWrongParameterException if one of parameters is incorrect.
    */
   @NotNull
-  private BigDecimal getBalanceByAction(@NotNull SMSActivateAction smsActivateAction)
-    throws SMSActivateBaseException {
+  private BigDecimal getBalanceByAction(@NotNull SMSActivateAction smsActivateAction) throws SMSActivateBaseException {
     SMSActivateURLBuilder smsActivateURLBuilder = new SMSActivateURLBuilder(apiKey, smsActivateAction);
     String data = SMSActivateWebClient.getOrThrowCommonException(smsActivateURLBuilder, validator);
     Matcher matcher = patternDigit.matcher(data);

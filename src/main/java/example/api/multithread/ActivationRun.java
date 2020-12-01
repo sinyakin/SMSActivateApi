@@ -47,7 +47,7 @@ public class ActivationRun {
                 }
               }).start();
             }
-          }, 0, 100);
+          }, 10, 100);
 */
 
           smsActivateApi.setStatus(smsActivateGetNumberStatusResponse.getId(), SMSActivateSetStatusRequest.CANCEL);
