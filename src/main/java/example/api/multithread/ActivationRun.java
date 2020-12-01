@@ -15,7 +15,7 @@ public class ActivationRun {
 
     long start = System.currentTimeMillis();
     List<Thread> threadList = new ArrayList<>();
-    SMSActivateApi smsActivateApi = new SMSActivateApi("9A34fbf73d52752607e37ebA26f6f0bf");
+    SMSActivateApi smsActivateApi = new SMSActivateApi("API_KEY");
 
     for (int i = 0; i < COUNT_THREAD; i++) {
       threadList.add(new Thread(() -> {

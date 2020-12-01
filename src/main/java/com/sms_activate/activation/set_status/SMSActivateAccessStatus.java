@@ -68,6 +68,16 @@ public enum SMSActivateAccessStatus {
   }
 
   /**
+   * Returns the response from server.
+   *
+   * @return response from server.
+   */
+  @NotNull
+  public String getResponse() {
+    return response;
+  }
+
+  /**
    * Returns the state by name.
    *
    * @param name state name.
@@ -78,7 +88,7 @@ public enum SMSActivateAccessStatus {
     name = name.toUpperCase();
 
     for (SMSActivateAccessStatus accessStatusActivation : values()) {
-      if (accessStatusActivation.response.equals(name)) {
+      if (accessStatusActivation.getResponse().equals(name)) {
         return accessStatusActivation;
       }
     }

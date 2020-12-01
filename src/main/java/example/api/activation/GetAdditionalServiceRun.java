@@ -7,7 +7,7 @@ import com.sms_activate.error.base.SMSActivateBaseException;
 public class GetAdditionalServiceRun {
   public static void main(String[] args) {
     try {
-      SMSActivateApi smsActivateApi = new SMSActivateApi("9A34fbf73d52752607e37ebA26f6f0bf");
+      SMSActivateApi smsActivateApi = new SMSActivateApi("API_KEY");
       SMSActivateActivation parentActivation = smsActivateApi.getNumber(0, "av", null, null, true);
       System.out.println(parentActivation.getId());
       System.out.println(parentActivation.getNumber());

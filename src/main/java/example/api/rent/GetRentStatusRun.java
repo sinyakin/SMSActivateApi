@@ -9,7 +9,7 @@ import com.sms_activate.rent.get_rent_status.SMSActivateGetRentStatusResponse;
 public class GetRentStatusRun {
   public static void main(String[] args) {
     try {
-      SMSActivateApi smsActivateApi = new SMSActivateApi("9A34fbf73d52752607e37ebA26f6f0bf");
+      SMSActivateApi smsActivateApi = new SMSActivateApi("API_KEY");
       SMSActivateGetRentStatusResponse smsActivateGetRentStatusResponse = smsActivateApi.getRentStatus(417694);
       System.out.println("Count sms: " + smsActivateGetRentStatusResponse.getQuantity());
       smsActivateGetRentStatusResponse.getSmsActivateSMSList().forEach(x -> {

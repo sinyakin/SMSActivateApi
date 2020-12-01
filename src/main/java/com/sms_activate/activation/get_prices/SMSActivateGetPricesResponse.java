@@ -13,9 +13,8 @@ public class SMSActivateGetPricesResponse {
    */
   private final Map<Integer, Map<String, SMSActivateGetPriceResponse>> smsActivateGetPriceMap;
 
-
   /**
-   * Constructor response getPrices with data..
+   * Constructor response getPrices with data.
    *
    * @param smsActivateGetPriceMap map where first key is countryId, second key is service short name.
    */

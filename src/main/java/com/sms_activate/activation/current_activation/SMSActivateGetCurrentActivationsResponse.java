@@ -13,7 +13,10 @@ public class SMSActivateGetCurrentActivationsResponse {
    */
   private final Map<Integer, SMSActivateGetCurrentActivationResponse> smsActivateGetCurrentActivationResponseMap;
 
-  private boolean existNext;
+  /**
+   * True if count activation > 10 else false.
+   */
+  private final boolean existNext;
 
   /**
    * Constructor response getCurrentActivation with data..

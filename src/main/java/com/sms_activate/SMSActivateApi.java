@@ -78,6 +78,11 @@ public class SMSActivateApi {
   private static final SMSActivateValidator validator = new SMSActivateValidator();
 
   /**
+   * Success value status.
+   */
+  private static final String SUCCESS_NAME_STATUS = "success";
+
+  /**
    * Numbers reg expression.
    */
   private static final Pattern patternDigit = Pattern.compile("\\d+(?:[\\.,]\\d+)?");
@@ -159,13 +164,13 @@ public class SMSActivateApi {
    */
   @NotNull
   public BigDecimal getBalance() throws SMSActivateBaseException {
-    return getBalance(SMSActivateAction.GET_BALANCE);
+    return getBalanceByAction(SMSActivateAction.GET_BALANCE);
   }
 
   /**
-   * Returns the current account balance plus cashBack.
+   * Returns the current account balance and cashBack.
    *
-   * @return current account balance with cashBack.
+   * @return current account balance and cashBack.
    * @throws SMSActivateWrongParameterException if one of parameters is incorrect.
    * @throws SMSActivateUnknownException        if error type not documented.
    *                                            <p>
@@ -188,15 +193,15 @@ public class SMSActivateApi {
   public SMSActivateGetBalanceAndCashBackResponse getBalanceAndCashBack()
     throws SMSActivateBaseException {
     BigDecimal balance = getBalance();
-    BigDecimal balanceAndCashBack = getBalance(SMSActivateAction.GET_BALANCE_AND_CASHBACK);
+    BigDecimal balanceAndCashBack = getBalanceByAction(SMSActivateAction.GET_BALANCE_AND_CASHBACK);
 
     return new SMSActivateGetBalanceAndCashBackResponse(balance, balanceAndCashBack.subtract(balance));
   }
 
   /**
-   * Returns a list counts of available services.
+   * Returns the available services.
    *
-   * @return list counts of available services.
+   * @return the available services.
    * @throws SMSActivateWrongParameterException if one of parameters is incorrect.
    * @throws SMSActivateUnknownException        if error type not documented.
    *                                            <p>
@@ -222,11 +227,11 @@ public class SMSActivateApi {
   }
 
   /**
-   * Returns the list counts of available services by country and operator.
+   * Returns the available services by country and operator.
    *
    * @param countryId   id country.
    * @param operatorSet set names operators mobile network.
-   * @return list counts of available services by county and operator (not be null).
+   * @return available services by county and operator (not be null).
    * @throws SMSActivateWrongParameterException if one of parameters is incorrect.
    * @throws SMSActivateUnknownException        if error type not documented.
    *                                            <p>
@@ -285,11 +290,11 @@ public class SMSActivateApi {
   }
 
   /**
-   * Returns the id by service, ref, countryId.
+   * Returns the activation by service, ref, countryId.
    *
    * @param countryId id country.
    * @param service   service name for activation.
-   * @return id activation for activation.
+   * @return activation.
    * @throws SMSActivateWrongParameterException if one of parameters is incorrect.
    * @throws SMSActivateUnknownException        if error type not documented.
    * @throws SMSActivateBannedException         if your account has been banned.
@@ -318,14 +323,14 @@ public class SMSActivateApi {
   }
 
   /**
-   * Returns the id number by service, ref, countryId, phoneException, operator, forward
+   * Returns the activation by service, ref, countryId, phoneException, operator, forward
    *
    * @param countryId         id country.
    * @param service           service name for activation.
    * @param operatorSet       set mobile operators if operatorSet is null then .
    * @param phoneExceptionSet set excepted id numbers prefix if phoneExceptionSet is null then.
    * @param forward           is it necessary to request a number with forwarding.
-   * @return id activation for activation.
+   * @return activation.
    * @throws SMSActivateWrongParameterException if one of parameters is incorrect.
    * @throws SMSActivateUnknownException        if error type not documented.
    * @throws SMSActivateBannedException         if your account has been banned.
@@ -398,12 +403,12 @@ public class SMSActivateApi {
   }
 
   /**
-   * Returns the list id by countryId, multiService, ref.<br/>
+   * Returns the specified object id by countryId, multiService, ref.<br/>
    * Separator for multiService is commas. <br/>
    *
-   * @param multiServiceSet services for ordering (not be null).
    * @param countryId       id country.
-   * @return SMSActivateGetMultiServiceNumberResponse with .
+   * @param multiServiceSet services for ordering (not be null).
+   * @return SMSActivateGetMultiServiceNumberResponse object.
    * @throws SMSActivateWrongParameterException if one of parameters is incorrect.
    * @throws SMSActivateUnknownException        if error type not documented.
    * @throws SMSActivateBannedException         if your account has been banned.
@@ -428,20 +433,20 @@ public class SMSActivateApi {
    *                                            </p>
    */
   @NotNull
-  public SMSActivateGetMultiServiceNumberResponse getMultiServiceNumber(@NotNull Set<String> multiServiceSet, int countryId)
+  public SMSActivateGetMultiServiceNumberResponse getMultiServiceNumber(int countryId, @NotNull Set<String> multiServiceSet)
     throws SMSActivateBaseException {
-    return getMultiServiceNumber(multiServiceSet, countryId, null, null);
+    return getMultiServiceNumber(countryId, multiServiceSet, null, null);
   }
 
   /**
-   * Returns the list id by countryId, multiService, ref.<br/>
+   * Returns the specified object with activations id by countryId, multiService, ref.<br/>
    * Separator for multiService, multiForward and operator is commas. <br/>
    *
-   * @param multiServiceSet  services for ordering (not be null).
    * @param countryId        id country.
-   * @param multiForwardList is it necessary to request a number with forwarding.
+   * @param multiServiceSet  services for ordering (not be null).
    * @param operatorSet      mobile operator.
-   * @return list id.
+   * @param multiForwardList is it necessary to request a number with forwarding.
+   * @return specified object with activations.
    * @throws SMSActivateWrongParameterException if one of parameters is incorrect.
    * @throws SMSActivateUnknownException        if error type not documented.
    * @throws SMSActivateBannedException         if your account has been banned.
@@ -467,10 +472,10 @@ public class SMSActivateApi {
    */
   @NotNull
   public SMSActivateGetMultiServiceNumberResponse getMultiServiceNumber(
-    @NotNull Set<String> multiServiceSet,
     int countryId,
-    @Nullable List<Boolean> multiForwardList,
-    @Nullable Set<String> operatorSet
+    @NotNull Set<String> multiServiceSet,
+    @Nullable Set<String> operatorSet,
+    @Nullable List<Boolean> multiForwardList
   ) throws SMSActivateBaseException {
     multiServiceSet.removeIf(x -> x == null || x.isEmpty());
 
@@ -549,7 +554,7 @@ public class SMSActivateApi {
    *               To activate with status RETRY_GET:<br/>
    *               <em>FINISH</em> - Confirm SMS code and complete activation
    *               </p>
-   * @return access activation.
+   * @return access status activation.
    * @throws SMSActivateWrongParameterException if one of parameters is incorrect.
    * @throws SMSActivateUnknownException        if error type not documented.
    *                                            <p>
@@ -638,9 +643,9 @@ public class SMSActivateApi {
   }
 
   /**
-   * Returns the state id activation.
+   * Returns the state by id activation.
    *
-   * @param id id id to get activation state (not be null).
+   * @param id to get activation state.
    * @return state activation.
    * @throws SMSActivateWrongParameterException if one of parameters is incorrect.
    * @throws SMSActivateUnknownException        if error type not documented.
@@ -760,13 +765,13 @@ public class SMSActivateApi {
    */
   @NotNull
   public SMSActivateGetPricesResponse getPrices() throws SMSActivateBaseException {
-    return getPrices(null, null);
+    return getPrices(0, null);
   }
 
   /**
    * Returns the actual rent prices by country.
    *
-   * @param countryId id number (default null).
+   * @param countryId id number (default 0).
    * @param service   service for needed price list (default null).
    *                  <pre>{@code null, null -> all service and all country.}</pre>
    * @return price list country.
@@ -791,15 +796,15 @@ public class SMSActivateApi {
    *                                            </p>
    */
   @NotNull
-  public SMSActivateGetPricesResponse getPrices(@Nullable Integer countryId, @Nullable String service)
+  public SMSActivateGetPricesResponse getPrices(int countryId, @Nullable String service)
     throws SMSActivateBaseException {
-    if (countryId != null && countryId < 0) {
+    if (countryId < 0) {
       throw new SMSActivateWrongParameterException("Wrong ID country.", "Неверный ID страны.");
     }
 
     SMSActivateURLBuilder smsActivateURLBuilder = new SMSActivateURLBuilder(apiKey, SMSActivateAction.GET_PRICES);
     smsActivateURLBuilder.append(SMSActivateURLKey.SERVICE, service)
-      .append(SMSActivateURLKey.COUNTRY, (countryId == null) ? null : String.valueOf(countryId));
+      .append(SMSActivateURLKey.COUNTRY, String.valueOf(countryId));
 
     String data = SMSActivateWebClient.getOrThrowCommonException(smsActivateURLBuilder, validator);
 
@@ -825,9 +830,9 @@ public class SMSActivateApi {
   }
 
   /**
-   * Returns the country information.
+   * Returns the country with information.
    *
-   * @return country information.
+   * @return country with information.
    * @throws SMSActivateWrongParameterException if one of parameters is incorrect.
    * @throws SMSActivateUnknownException        if error type not documented.
    *                                            <p>
@@ -951,11 +956,11 @@ public class SMSActivateApi {
    *                                            </p>
    */
   @NotNull
-  public SMSActivateActivation getAdditionalService(int id, @NotNull String serviceName)
+  public SMSActivateActivation getAdditionalService(int id, @NotNull String service)
     throws SMSActivateBaseException {
     SMSActivateURLBuilder smsActivateURLBuilder = new SMSActivateURLBuilder(apiKey, SMSActivateAction.GET_ADDITIONAL_SERVICE);
     smsActivateURLBuilder.append(SMSActivateURLKey.ID, String.valueOf(id))
-      .append(SMSActivateURLKey.SERVICE, serviceName);
+      .append(SMSActivateURLKey.SERVICE, service);
 
     String data = SMSActivateWebClient.getOrThrowCommonException(smsActivateURLBuilder, validator);
 
@@ -964,7 +969,7 @@ public class SMSActivateApi {
       String number = parts[2];
       id = new BigDecimal(parts[1]).intValue();
 
-      return new SMSActivateActivation(id, number, serviceName, false);
+      return new SMSActivateActivation(id, number, service, false);
     } else {
       throw validator.getBaseExceptionByErrorNameOrUnknown(data);
     }
@@ -1039,7 +1044,7 @@ public class SMSActivateApi {
     Map<String, Object> responseMap = tryParseJson(data, new TypeToken<Map<String, Object>>() {
     }.getType());
 
-    if (responseMap.get(SMSActivateJsonKey.STATUS).toString().equalsIgnoreCase("fail")) {
+    if (!responseMap.get(SMSActivateJsonKey.STATUS).toString().equalsIgnoreCase(SUCCESS_NAME_STATUS)) {
       return new SMSActivateGetCurrentActivationsResponse(new HashMap<>(), false);
     }
 
@@ -1218,7 +1223,7 @@ public class SMSActivateApi {
    * @param countryId  id country (default 0 - Russia).
    * @param service    service to which you need to get a number.
    * @param operator   mobile operator.
-   * @param time       time rent (default 4 hour).
+   * @param time       time rent (default MINIMAL_RENT_TIME hour).
    * @param urlWebhook url for webhook.
    * @return object rent.
    * @throws SMSActivateWrongParameterException if one of parameters is incorrect.
@@ -1255,7 +1260,10 @@ public class SMSActivateApi {
       throw new SMSActivateWrongParameterException("Wrong ID country.", "Неверный ID страны.");
     }
     if (time < MINIMAL_RENT_TIME) {
-      throw new SMSActivateWrongParameterException("The rental time cannot be less than 4.", "Время аренды не может быть меньше чем 4.");
+      throw new SMSActivateWrongParameterException(
+        String.format("The rental time cannot be less than %d.", MINIMAL_RENT_TIME),
+        String.format("Время аренды не может быть меньше чем %d.", MINIMAL_RENT_TIME)
+      );
     }
 
     SMSActivateURLBuilder smsActivateURLBuilder = new SMSActivateURLBuilder(apiKey, SMSActivateAction.GET_RENT_NUMBER);
@@ -1273,7 +1281,7 @@ public class SMSActivateApi {
 
     String status = String.valueOf(responseMap.get(SMSActivateJsonKey.STATUS));
 
-    if (!status.equalsIgnoreCase("success")) {
+    if (!status.equalsIgnoreCase(SUCCESS_NAME_STATUS)) {
       throw validator.getBaseExceptionByErrorNameOrUnknown(String.valueOf(responseMap.get(SMSActivateJsonKey.MESSAGE)));
     }
 
@@ -1326,7 +1334,7 @@ public class SMSActivateApi {
 
     String status = String.valueOf(responseMap.get(SMSActivateJsonKey.STATUS));
 
-    if (!status.equalsIgnoreCase("success")) {
+    if (!status.equalsIgnoreCase(SUCCESS_NAME_STATUS)) {
       throw validator.getBaseExceptionByErrorNameOrUnknown(String.valueOf(responseMap.get(SMSActivateJsonKey.MESSAGE)));
     }
 
@@ -1351,7 +1359,7 @@ public class SMSActivateApi {
    *
    * @param id     id activation for set status rent.
    * @param status status rent.
-   * @return state rent.
+   * @return response status from server.
    * @throws SMSActivateWrongParameterException if one of parameters is incorrect.
    * @throws SMSActivateUnknownException        if error type not documented.
    *                                            <p>
@@ -1396,9 +1404,9 @@ public class SMSActivateApi {
   }
 
   /**
-   * Returns the list rent numbers.
+   * Returns the current rents.
    *
-   * @return list rent ids numbers.
+   * @return current rents.
    * @throws SMSActivateWrongParameterException if one of parameters is incorrect.
    * @throws SMSActivateUnknownException        if error type not documented.
    *                                            <p>
@@ -1429,7 +1437,7 @@ public class SMSActivateApi {
 
     String status = String.valueOf(responseMap.get(SMSActivateJsonKey.STATUS));
 
-    if (!status.equalsIgnoreCase("success")) {
+    if (!status.equalsIgnoreCase(SUCCESS_NAME_STATUS)) {
       throw validator.getBaseExceptionByErrorNameOrUnknown(String.valueOf(responseMap.get(SMSActivateJsonKey.MESSAGE)));
     }
 
@@ -1454,15 +1462,14 @@ public class SMSActivateApi {
    * @throws SMSActivateWrongParameterException if one of parameters is incorrect.
    */
   @NotNull
-  private BigDecimal getBalance(@NotNull SMSActivateAction smsActivateAction)
+  private BigDecimal getBalanceByAction(@NotNull SMSActivateAction smsActivateAction)
     throws SMSActivateBaseException {
     SMSActivateURLBuilder smsActivateURLBuilder = new SMSActivateURLBuilder(apiKey, smsActivateAction);
     String data = SMSActivateWebClient.getOrThrowCommonException(smsActivateURLBuilder, validator);
     Matcher matcher = patternDigit.matcher(data);
 
-    //TODO: ADD error message
     if (!matcher.find()) {
-      throw new SMSActivateBaseException("", "");
+      throw new SMSActivateBaseException("Error: " + data, "Error: " + data);
     }
 
     return new BigDecimal(matcher.group());

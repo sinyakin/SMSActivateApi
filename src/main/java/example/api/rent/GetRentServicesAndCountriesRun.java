@@ -10,7 +10,7 @@ import java.util.HashSet;
 public class GetRentServicesAndCountriesRun {
   public static void main(String[] args) {
     try {
-      SMSActivateApi smsActivateApi = new SMSActivateApi("9A34fbf73d52752607e37ebA26f6f0bf");
+      SMSActivateApi smsActivateApi = new SMSActivateApi("API_KEY");
       SMSActivateGetRentServicesAndCountriesResponse smsActivateGetRentServicesAndCountriesResponse = smsActivateApi.getRentServicesAndCountries(
           /*0, new HashSet<String>() {{
             add("mts");

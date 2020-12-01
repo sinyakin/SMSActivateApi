@@ -2,7 +2,6 @@ package example.api.activation;
 
 import com.sms_activate.SMSActivateApi;
 import com.sms_activate.activation.balance.SMSActivateGetBalanceAndCashBackResponse;
-import com.sms_activate.activation.balance.SMSActivateGetBalanceResponse;
 import com.sms_activate.error.base.SMSActivateBaseException;
 
 import java.math.BigDecimal;
@@ -10,7 +9,7 @@ import java.math.BigDecimal;
 public class GetBalanceAndCashBackRun {
   public static void main(String[] args) {
     try {
-      SMSActivateApi smsActivateApi = new SMSActivateApi("9A34fbf73d52752607e37ebA26f6f0bf");
+      SMSActivateApi smsActivateApi = new SMSActivateApi("API_KEY");
       System.out.println("Your api-key: " + smsActivateApi.getApiKey());
 
       BigDecimal balance = smsActivateApi.getBalance();

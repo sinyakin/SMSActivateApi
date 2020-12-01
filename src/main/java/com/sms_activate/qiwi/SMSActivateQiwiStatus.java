@@ -66,6 +66,16 @@ public enum SMSActivateQiwiStatus {
   }
 
   /**
+   * Returns the response from server.
+   *
+   * @return response from server.
+   */
+  @NotNull
+  public String getResponse() {
+    return response;
+  }
+
+  /**
    * Returns status by name or unknown if not contains.
    *
    * @param name status name.
@@ -76,7 +86,7 @@ public enum SMSActivateQiwiStatus {
     name = name.toUpperCase();
 
     for (SMSActivateQiwiStatus status : values()) {
-      if (status.response.equals(name)) {
+      if (status.getResponse().equals(name)) {
         return status;
       }
     }

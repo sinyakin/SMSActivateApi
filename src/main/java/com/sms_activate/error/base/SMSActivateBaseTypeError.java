@@ -73,6 +73,16 @@ public enum SMSActivateBaseTypeError {
   }
 
   /**
+   * Returns the response from server.
+   *
+   * @return response from server.
+   */
+  @NotNull
+  public String getResponse() {
+    return response;
+  }
+
+  /**
    * Returns status by specified name.<br/>
    * if name not contains in enum then returns UNKNOWN.
    *
@@ -84,7 +94,7 @@ public enum SMSActivateBaseTypeError {
     name = name.toUpperCase();
 
     for (SMSActivateBaseTypeError status : values()) {
-      if (status.response.equals(name)) {
+      if (status.getResponse().equals(name)) {
         return status;
       }
     }

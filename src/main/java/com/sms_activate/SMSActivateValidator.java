@@ -35,7 +35,7 @@ class SMSActivateValidator {
       throws SMSActivateBaseException {
     throwWrongParameterExceptionByName(name);
 
-    if (name.contains("SQL")) {
+    if (name.toUpperCase().contains("SQL")) {
       throw new SMSActivateBaseException("Error SQL-server.", "Ошибка SQL-сервера.");
     }
   }
@@ -51,7 +51,7 @@ class SMSActivateValidator {
   public void throwExceptionWithBan(@NotNull String name) throws SMSActivateBaseException {
     throwCommonExceptionByName(name);
 
-    if (name.contains("BANNED")) {
+    if (name.toUpperCase().contains("BANNED")) {
       throw new SMSActivateBannedException("Your account has been banned", "Ваш акаунт был забанен", name.split(":")[1]);
     }
   }

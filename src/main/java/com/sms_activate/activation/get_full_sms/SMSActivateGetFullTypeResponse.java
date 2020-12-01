@@ -66,6 +66,16 @@ public enum SMSActivateGetFullTypeResponse {
   }
 
   /**
+   * Returns the response from server.
+   *
+   * @return response from server.
+   */
+  @NotNull
+  public String getResponse() {
+    return response;
+  }
+
+  /**
    * Returns the state activation by name.
    *
    * @param name state activation name.
@@ -76,7 +86,7 @@ public enum SMSActivateGetFullTypeResponse {
     name = name.toUpperCase();
 
     for (SMSActivateGetFullTypeResponse type : values()) {
-      if (type.response.contains(name)) {
+      if (type.getResponse().contains(name)) {
         return type;
       }
     }

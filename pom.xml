@@ -7,9 +7,6 @@
     <groupId>org.sms_api</groupId>
     <artifactId>sms-activate</artifactId>
     <version>1.0</version>
-    <modules>
-        <module>example</module>
-    </modules>
     <packaging>pom</packaging>
 
     <name>SmsActivateApi</name>
@@ -86,9 +83,6 @@
                     <name>!release</name>
                 </property>
             </activation>
-            <modules>
-                <module>example</module>
-            </modules>
         </profile>
 
         <profile>

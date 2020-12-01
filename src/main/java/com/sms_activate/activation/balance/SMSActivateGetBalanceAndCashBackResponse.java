@@ -4,11 +4,16 @@ import org.jetbrains.annotations.NotNull;
 
 import java.math.BigDecimal;
 
-public class SMSActivateGetBalanceAndCashBackResponse extends SMSActivateGetBalanceResponse {
+public class SMSActivateGetBalanceAndCashBackResponse {
   /**
    * Cashback in account
    */
   private final BigDecimal cashBack;
+
+  /**
+   * Balance in account.
+   */
+  private final BigDecimal balance;
 
   /**
    * Constructor getBalanceAndCashBack response with data.
@@ -17,7 +22,7 @@ public class SMSActivateGetBalanceAndCashBackResponse extends SMSActivateGetBala
    * @param cashBack cashback in account.
    */
   public SMSActivateGetBalanceAndCashBackResponse(@NotNull BigDecimal balance, @NotNull BigDecimal cashBack) {
-    super(balance);
+    this.balance = balance;
     this.cashBack = cashBack;
   }
 
@@ -29,6 +34,16 @@ public class SMSActivateGetBalanceAndCashBackResponse extends SMSActivateGetBala
   @NotNull
   public BigDecimal getCashBack() {
     return cashBack;
+  }
+
+  /**
+   * Returns the balance in account.
+   *
+   * @return balance in account
+   */
+  @NotNull
+  public BigDecimal getBalance() {
+    return balance;
   }
 
   /**

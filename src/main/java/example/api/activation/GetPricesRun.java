@@ -11,7 +11,7 @@ import java.util.Map;
 public class GetPricesRun {
   public static void main(String[] args) {
     try {
-      SMSActivateApi smsActivateApi = new SMSActivateApi("9A34fbf73d52752607e37ebA26f6f0bf");
+      SMSActivateApi smsActivateApi = new SMSActivateApi("API_KEY");
       SMSActivateGetPricesResponse smsActivateGetPricesResponse = smsActivateApi.getPrices(
         0, "vk"// comment this parameter and you get all data.
       );

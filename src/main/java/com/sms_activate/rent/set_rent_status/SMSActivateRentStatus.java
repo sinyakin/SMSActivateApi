@@ -57,6 +57,16 @@ public enum SMSActivateRentStatus {
   }
 
   /**
+   * Returns the response from server.
+   *
+   * @return response from server.
+   */
+  @NotNull
+  public String getResponse() {
+    return response;
+  }
+
+  /**
    * Returns the single concat messages.
    *
    * @return single concat messages.
@@ -71,7 +81,7 @@ public enum SMSActivateRentStatus {
     name = name.toUpperCase();
 
     for (SMSActivateRentStatus status : values()) {
-      if (status.response.equals(name)) {
+      if (status.getResponse().equals(name)) {
         return status;
       }
     }

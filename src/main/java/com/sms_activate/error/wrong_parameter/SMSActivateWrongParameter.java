@@ -81,6 +81,16 @@ public enum SMSActivateWrongParameter {
   }
 
   /**
+   * Returns the response from server.
+   *
+   * @return response from server.
+   */
+  @NotNull
+  public String getResponse() {
+    return response;
+  }
+
+  /**
    * Returns the wrongParameter by name.
    *
    * @param name name wrong parameter.
@@ -91,7 +101,7 @@ public enum SMSActivateWrongParameter {
     name = name.toUpperCase();
 
     for (SMSActivateWrongParameter smsActivateWrongParameter : values()) {
-      if (smsActivateWrongParameter.response.equals(name)) {
+      if (smsActivateWrongParameter.getResponse().equals(name)) {
         return smsActivateWrongParameter;
       }
     }
