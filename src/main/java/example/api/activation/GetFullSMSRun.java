@@ -14,7 +14,7 @@ public class GetFullSMSRun {
   public static void main(String[] args) {
     try {
       SMSActivateApi smsActivateApi = new SMSActivateApi("9A34fbf73d52752607e37ebA26f6f0bf");
-      SMSActivateActivation activation = smsActivateApi.getNumber("tg", 0);
+      SMSActivateActivation activation = smsActivateApi.getNumber(0, "tg");
       System.out.println("Please register your number " + activation.getNumber() + " with ID " + activation.getId());
       Scanner scanner = new Scanner(System.in);
 

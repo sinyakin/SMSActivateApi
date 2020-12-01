@@ -13,13 +13,25 @@ public class SMSActivateGetCurrentActivationsResponse {
    */
   private final Map<Integer, SMSActivateGetCurrentActivationResponse> smsActivateGetCurrentActivationResponseMap;
 
+  private boolean existNext;
+
   /**
    * Constructor response getCurrentActivation with data..
    *
    * @param smsActivateGetCurrentActivationResponseMap map currect activation where key is idActivation.
    */
-  public SMSActivateGetCurrentActivationsResponse(@NotNull Map<Integer, SMSActivateGetCurrentActivationResponse> smsActivateGetCurrentActivationResponseMap) {
+  public SMSActivateGetCurrentActivationsResponse(@NotNull Map<Integer, SMSActivateGetCurrentActivationResponse> smsActivateGetCurrentActivationResponseMap, boolean existNext) {
     this.smsActivateGetCurrentActivationResponseMap = smsActivateGetCurrentActivationResponseMap;
+    this.existNext = existNext;
+  }
+
+  /**
+   * Returns the true if you can send request again else false.
+   *
+   * @return true if you can send request again else false.
+   */
+  public boolean isExistNext() {
+    return existNext;
   }
 
   /**
@@ -57,7 +69,7 @@ public class SMSActivateGetCurrentActivationsResponse {
    *
    * @return true if activations is exists else false.
    */
-  public boolean haveActivation() {
-    return smsActivateGetCurrentActivationResponseMap.isEmpty();
+  public boolean isExistActivation() {
+    return !smsActivateGetCurrentActivationResponseMap.isEmpty();
   }
 }

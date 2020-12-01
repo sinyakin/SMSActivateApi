@@ -25,7 +25,7 @@ public class GetPricesRun {
     try {
       SMSActivateApi smsActivateApi = new SMSActivateApi("9A34fbf73d52752607e37ebA26f6f0bf");
       SMSActivateGetPricesResponse smsActivateGetPricesResponse = smsActivateApi.getPrices(
-          "vk", 0 // comment this parameter and you get all data.
+        0, "vk"// comment this parameter and you get all data.
       );
 
       SMSActivateGetPriceResponse smsActivateGetPriceResponse = smsActivateGetPricesResponse.get(0, "vk");

@@ -8,7 +8,7 @@ public class GetAdditionalServiceRun {
   public static void main(String[] args) {
     try {
       SMSActivateApi smsActivateApi = new SMSActivateApi("9A34fbf73d52752607e37ebA26f6f0bf");
-      SMSActivateActivation parentActivation = smsActivateApi.getNumber("av", 0, null, null, true);
+      SMSActivateActivation parentActivation = smsActivateApi.getNumber(0, "av", null, null, true);
       System.out.println(parentActivation.getId());
       System.out.println(parentActivation.getNumber());
       // check: https://sms-activate.ru/ru/getNumber

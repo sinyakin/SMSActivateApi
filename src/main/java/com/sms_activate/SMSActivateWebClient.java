@@ -30,7 +30,7 @@ class SMSActivateWebClient {
       String data = get(smsActivateURLBuilder.build(), "gzip, json");
       validator.throwCommonExceptionByName(data);
       return data;
-    } catch (IOException ignored) {
+    } catch (IOException e) {
       throw new SMSActivateBaseException("Problem with network connection.", "Проблемы с сетевым подключением.");
     }
   }
@@ -63,15 +63,12 @@ class SMSActivateWebClient {
    * @throws IOException if an I/O exception occurs.
    */
   @NotNull
-  public static String post(@NotNull URL url, @NotNull List<String> dataList, @Nullable String acceptEncoding) throws IOException {
+  public static String post(@NotNull URL url, @NotNull List<String> dataList) throws IOException {
     HttpURLConnection urlConnection = (HttpURLConnection) url.openConnection();
 
     urlConnection.setRequestMethod("POST");
     urlConnection.setDoOutput(true);
-
-    if (acceptEncoding != null) {
-      urlConnection.setRequestProperty("accept-Encoding", acceptEncoding);
-    }
+    urlConnection.setRequestProperty("accept-Encoding", "gzip");
 
     try (BufferedWriter writer = new BufferedWriter(
         new OutputStreamWriter(new GZIPOutputStream(urlConnection.getOutputStream())))) {

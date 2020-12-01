@@ -6,7 +6,6 @@ import com.google.gson.reflect.TypeToken;
 import com.sms_activate.activation.SMSActivateActivation;
 import com.sms_activate.activation.SMSActivateGetMultiServiceNumberResponse;
 import com.sms_activate.activation.balance.SMSActivateGetBalanceAndCashBackResponse;
-import com.sms_activate.activation.balance.SMSActivateGetBalanceResponse;
 import com.sms_activate.activation.current_activation.SMSActivateGetCurrentActivationResponse;
 import com.sms_activate.activation.current_activation.SMSActivateGetCurrentActivationsResponse;
 import com.sms_activate.activation.get_countries.SMSActivateGetCountriesResponse;
@@ -46,6 +45,8 @@ import org.jetbrains.annotations.Nullable;
 import java.lang.reflect.Type;
 import java.math.BigDecimal;
 import java.util.*;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 
 /**
@@ -62,6 +63,11 @@ import java.util.stream.Collectors;
  */
 public class SMSActivateApi {
   /**
+   * The minimal rent time.
+   */
+  private static final int MINIMAL_RENT_TIME = 4;
+
+  /**
    * Json deserializer and serializer.
    */
   private static final Gson gson = new Gson();
@@ -70,6 +76,11 @@ public class SMSActivateApi {
    * Special validator for server responses.
    */
   private static final SMSActivateValidator validator = new SMSActivateValidator();
+
+  /**
+   * Numbers reg expression.
+   */
+  private static final Pattern patternDigit = Pattern.compile("\\d+(?:[\\.,]\\d+)?");
 
   /**
    * Api key from site.
@@ -147,9 +158,8 @@ public class SMSActivateApi {
    *                                            </p>
    */
   @NotNull
-  public SMSActivateGetBalanceResponse getBalance() throws SMSActivateBaseException {
-    BigDecimal balance = getBalance(SMSActivateAction.GET_BALANCE);
-    return new SMSActivateGetBalanceResponse(balance);
+  public BigDecimal getBalance() throws SMSActivateBaseException {
+    return getBalance(SMSActivateAction.GET_BALANCE);
   }
 
   /**
@@ -176,8 +186,8 @@ public class SMSActivateApi {
    */
   @NotNull
   public SMSActivateGetBalanceAndCashBackResponse getBalanceAndCashBack()
-      throws SMSActivateBaseException {
-    BigDecimal balance = getBalance().getBalance();
+    throws SMSActivateBaseException {
+    BigDecimal balance = getBalance();
     BigDecimal balanceAndCashBack = getBalance(SMSActivateAction.GET_BALANCE_AND_CASHBACK);
 
     return new SMSActivateGetBalanceAndCashBackResponse(balance, balanceAndCashBack.subtract(balance));
@@ -207,12 +217,12 @@ public class SMSActivateApi {
    */
   @NotNull
   public SMSActivateGetNumbersStatusResponse getNumbersStatus()
-      throws SMSActivateBaseException {
+    throws SMSActivateBaseException {
     return getNumbersStatus(null, null);
   }
 
   /**
-   * Return a list counts of available services by country and operator.
+   * Returns the list counts of available services by country and operator.
    *
    * @param countryId   id country.
    * @param operatorSet set names operators mobile network.
@@ -238,7 +248,7 @@ public class SMSActivateApi {
    */
   @NotNull
   public SMSActivateGetNumbersStatusResponse getNumbersStatus(@Nullable Integer countryId, @Nullable Set<String> operatorSet)
-      throws SMSActivateBaseException {
+    throws SMSActivateBaseException {
     if (countryId != null && countryId < 0) {
       throw new SMSActivateWrongParameterException("Wrong ID country.", "Неверный ID страны.");
     }
@@ -252,7 +262,7 @@ public class SMSActivateApi {
 
     SMSActivateURLBuilder smsActivateURLBuilder = new SMSActivateURLBuilder(apiKey, SMSActivateAction.GET_NUMBERS_STATUS);
     smsActivateURLBuilder.append(SMSActivateURLKey.COUNTRY, (countryId == null) ? null : String.valueOf(countryId))
-        .append(SMSActivateURLKey.OPERATOR, operator);
+      .append(SMSActivateURLKey.OPERATOR, operator);
 
     String data = SMSActivateWebClient.getOrThrowCommonException(smsActivateURLBuilder, validator);
 
@@ -265,9 +275,9 @@ public class SMSActivateApi {
       String[] partsKey = key.split("_");
 
       smsActivateGetNumbersStatusResponseMap.put(partsKey[0], new SMSActivateGetNumberStatusResponse(
-          Boolean.parseBoolean(partsKey[1]),
-          Integer.parseInt(value),
-          partsKey[0]
+        Boolean.parseBoolean(partsKey[1]),
+        Integer.parseInt(value),
+        partsKey[0]
       ));
     });
 
@@ -277,8 +287,8 @@ public class SMSActivateApi {
   /**
    * Returns the id by service, ref, countryId.
    *
-   * @param service   service name for activation.
    * @param countryId id country.
+   * @param service   service name for activation.
    * @return id activation for activation.
    * @throws SMSActivateWrongParameterException if one of parameters is incorrect.
    * @throws SMSActivateUnknownException        if error type not documented.
@@ -303,17 +313,17 @@ public class SMSActivateApi {
    *                                            </p>
    */
   @NotNull
-  public SMSActivateActivation getNumber(@NotNull String service, int countryId) throws SMSActivateBaseException {
-    return getNumber(service, countryId, null, null, false);
+  public SMSActivateActivation getNumber(int countryId, @NotNull String service) throws SMSActivateBaseException {
+    return getNumber(countryId, service, null, null, false);
   }
 
   /**
    * Returns the id number by service, ref, countryId, phoneException, operator, forward
    *
-   * @param service           service name for activation.
    * @param countryId         id country.
-   * @param phoneExceptionSet set excepted id numbers prefix.
-   * @param operatorSet       set mobile operators.
+   * @param service           service name for activation.
+   * @param operatorSet       set mobile operators if operatorSet is null then .
+   * @param phoneExceptionSet set excepted id numbers prefix if phoneExceptionSet is null then.
    * @param forward           is it necessary to request a number with forwarding.
    * @return id activation for activation.
    * @throws SMSActivateWrongParameterException if one of parameters is incorrect.
@@ -342,11 +352,11 @@ public class SMSActivateApi {
    */
   @NotNull
   public SMSActivateActivation getNumber(
-      @NotNull String service,
-      int countryId,
-      @Nullable Set<String> phoneExceptionSet,
-      @Nullable Set<String> operatorSet,
-      boolean forward
+    int countryId,
+    @NotNull String service,
+    @Nullable Set<String> operatorSet,
+    @Nullable Set<String> phoneExceptionSet,
+    boolean forward
   ) throws SMSActivateBaseException {
     if (countryId < 0) {
       throw new SMSActivateWrongParameterException("Wrong ID country.", "Неверный ID страны.");
@@ -366,11 +376,11 @@ public class SMSActivateApi {
 
     SMSActivateURLBuilder smsActivateURLBuilder = new SMSActivateURLBuilder(apiKey, SMSActivateAction.GET_NUMBER);
     smsActivateURLBuilder.append(SMSActivateURLKey.REF, ref)
-        .append(SMSActivateURLKey.SERVICE, service)
-        .append(SMSActivateURLKey.COUNTRY, String.valueOf(countryId))
-        .append(SMSActivateURLKey.PHONE_EXCEPTION, phoneException)
-        .append(SMSActivateURLKey.OPERATOR, operator)
-        .append(SMSActivateURLKey.FORWARD, forward ? "1" : "0");
+      .append(SMSActivateURLKey.SERVICE, service)
+      .append(SMSActivateURLKey.COUNTRY, String.valueOf(countryId))
+      .append(SMSActivateURLKey.PHONE_EXCEPTION, phoneException)
+      .append(SMSActivateURLKey.OPERATOR, operator)
+      .append(SMSActivateURLKey.FORWARD, forward ? "1" : "0");
 
     String data = SMSActivateWebClient.getOrThrowCommonException(smsActivateURLBuilder, validator);
     validator.throwExceptionWithBan(data);
@@ -390,11 +400,10 @@ public class SMSActivateApi {
   /**
    * Returns the list id by countryId, multiService, ref.<br/>
    * Separator for multiService is commas. <br/>
-   * <pre> multiService -> vk,av,go,tg. </pre>
    *
    * @param multiServiceSet services for ordering (not be null).
    * @param countryId       id country.
-   * @return list id.
+   * @return SMSActivateGetMultiServiceNumberResponse with .
    * @throws SMSActivateWrongParameterException if one of parameters is incorrect.
    * @throws SMSActivateUnknownException        if error type not documented.
    * @throws SMSActivateBannedException         if your account has been banned.
@@ -420,7 +429,7 @@ public class SMSActivateApi {
    */
   @NotNull
   public SMSActivateGetMultiServiceNumberResponse getMultiServiceNumber(@NotNull Set<String> multiServiceSet, int countryId)
-      throws SMSActivateBaseException {
+    throws SMSActivateBaseException {
     return getMultiServiceNumber(multiServiceSet, countryId, null, null);
   }
 
@@ -458,10 +467,10 @@ public class SMSActivateApi {
    */
   @NotNull
   public SMSActivateGetMultiServiceNumberResponse getMultiServiceNumber(
-      @NotNull Set<String> multiServiceSet,
-      int countryId,
-      @Nullable List<Boolean> multiForwardList,
-      @Nullable Set<String> operatorSet
+    @NotNull Set<String> multiServiceSet,
+    int countryId,
+    @Nullable List<Boolean> multiForwardList,
+    @Nullable Set<String> operatorSet
   ) throws SMSActivateBaseException {
     multiServiceSet.removeIf(x -> x == null || x.isEmpty());
 
@@ -484,10 +493,10 @@ public class SMSActivateApi {
 
     SMSActivateURLBuilder smsActivateURLBuilder = new SMSActivateURLBuilder(apiKey, SMSActivateAction.GET_MULTI_SERVICE_NUMBER);
     smsActivateURLBuilder.append(SMSActivateURLKey.REF, ref)
-        .append(SMSActivateURLKey.MULTI_SERVICE, strMultiService)
-        .append(SMSActivateURLKey.COUNTRY, String.valueOf(countryId))
-        .append(SMSActivateURLKey.MULTI_FORWARD, strMultiForward)
-        .append(SMSActivateURLKey.OPERATOR, strOperators);
+      .append(SMSActivateURLKey.MULTI_SERVICE, strMultiService)
+      .append(SMSActivateURLKey.COUNTRY, String.valueOf(countryId))
+      .append(SMSActivateURLKey.MULTI_FORWARD, strMultiForward)
+      .append(SMSActivateURLKey.OPERATOR, strOperators);
 
     String data = SMSActivateWebClient.getOrThrowCommonException(smsActivateURLBuilder, validator);
 
@@ -503,14 +512,14 @@ public class SMSActivateApi {
       Map<String, Object> activationMap = activationMapList.get(i);
 
       int id = new BigDecimal(String.valueOf(activationMap.get("activation"))).intValue();
-      String number = String.valueOf(activationMap.get("phone"));
-      String serviceName = String.valueOf(activationMap.get("service"));
+      String number = String.valueOf(activationMap.get(SMSActivateJsonKey.PHONE));
+      String serviceName = String.valueOf(activationMap.get(SMSActivateJsonKey.SERVICE));
 
       phoneList.add(new SMSActivateActivation(
-          id,
-          number,
-          serviceName,
-          i == indexForwardPhoneNumber
+        id,
+        number,
+        serviceName,
+        i == indexForwardPhoneNumber
       ));
     }
 
@@ -560,7 +569,7 @@ public class SMSActivateApi {
    */
   @NotNull
   public SMSActivateSetStatusResponse setStatus(int id, @NotNull SMSActivateSetStatusRequest status)
-      throws SMSActivateBaseException {
+    throws SMSActivateBaseException {
     return setStatus(id, status, false);
   }
 
@@ -608,14 +617,14 @@ public class SMSActivateApi {
    */
   @NotNull
   public SMSActivateSetStatusResponse setStatus(
-      int id,
-      @NotNull SMSActivateSetStatusRequest status,
-      boolean forward
+    int id,
+    @NotNull SMSActivateSetStatusRequest status,
+    boolean forward
   ) throws SMSActivateBaseException {
     SMSActivateURLBuilder smsActivateURLBuilder = new SMSActivateURLBuilder(apiKey, SMSActivateAction.SET_STATUS);
     smsActivateURLBuilder.append(SMSActivateURLKey.STATUS, String.valueOf(status.getId()))
-        .append(SMSActivateURLKey.ID, String.valueOf(id))
-        .append(SMSActivateURLKey.FORWARD, forward ? "1" : "0");
+      .append(SMSActivateURLKey.ID, String.valueOf(id))
+      .append(SMSActivateURLKey.FORWARD, forward ? "1" : "0");
 
     String data = SMSActivateWebClient.getOrThrowCommonException(smsActivateURLBuilder, validator);
 
@@ -651,7 +660,7 @@ public class SMSActivateApi {
    */
   @NotNull
   public SMSActivateGetStatusResponse getStatus(int id)
-      throws SMSActivateBaseException {
+    throws SMSActivateBaseException {
     SMSActivateURLBuilder smsActivateURLBuilder = new SMSActivateURLBuilder(apiKey, SMSActivateAction.GET_STATUS);
     smsActivateURLBuilder.append(SMSActivateURLKey.ID, String.valueOf(id));
 
@@ -708,7 +717,7 @@ public class SMSActivateApi {
    */
   @NotNull
   public SMSActivateGetFullSmsResponse getFullSms(int id)
-      throws SMSActivateBaseException {
+    throws SMSActivateBaseException {
     SMSActivateURLBuilder smsActivateURLBuilder = new SMSActivateURLBuilder(apiKey, SMSActivateAction.GET_FULL_SMS);
     smsActivateURLBuilder.append(SMSActivateURLKey.ID, String.valueOf(id));
 
@@ -757,9 +766,9 @@ public class SMSActivateApi {
   /**
    * Returns the actual rent prices by country.
    *
+   * @param countryId id number (default null).
    * @param service   service for needed price list (default null).
    *                  <pre>{@code null, null -> all service and all country.}</pre>
-   * @param countryId id number (default null).
    * @return price list country.
    * @throws SMSActivateWrongParameterException if one of parameters is incorrect.
    * @throws SMSActivateUnknownException        if error type not documented.
@@ -782,31 +791,31 @@ public class SMSActivateApi {
    *                                            </p>
    */
   @NotNull
-  public SMSActivateGetPricesResponse getPrices(@Nullable String service, @Nullable Integer countryId)
-      throws SMSActivateBaseException {
+  public SMSActivateGetPricesResponse getPrices(@Nullable Integer countryId, @Nullable String service)
+    throws SMSActivateBaseException {
     if (countryId != null && countryId < 0) {
       throw new SMSActivateWrongParameterException("Wrong ID country.", "Неверный ID страны.");
     }
 
     SMSActivateURLBuilder smsActivateURLBuilder = new SMSActivateURLBuilder(apiKey, SMSActivateAction.GET_PRICES);
     smsActivateURLBuilder.append(SMSActivateURLKey.SERVICE, service)
-        .append(SMSActivateURLKey.COUNTRY, (countryId == null) ? null : String.valueOf(countryId));
+      .append(SMSActivateURLKey.COUNTRY, (countryId == null) ? null : String.valueOf(countryId));
 
     String data = SMSActivateWebClient.getOrThrowCommonException(smsActivateURLBuilder, validator);
 
 
     Map<String, Map<String, Map<String, Double>>> countryMap = tryParseJson(data,
-        new TypeToken<Map<String, Map<String, Map<String, Double>>>>() {
-        }.getType());
+      new TypeToken<Map<String, Map<String, Map<String, Double>>>>() {
+      }.getType());
     Map<Integer, Map<String, SMSActivateGetPriceResponse>> smsActivateGetPriceMapList = new HashMap<>();
 
     countryMap.forEach((countryCode, serviceMap) -> {
       Map<String, SMSActivateGetPriceResponse> smsActivateGetPriceResponseMap = new HashMap<>();
 
       serviceMap.forEach((shortName, value) -> smsActivateGetPriceResponseMap.put(shortName, new SMSActivateGetPriceResponse(
-          shortName,
-          BigDecimal.valueOf(value.get("cost")),
-          BigDecimal.valueOf(value.get("count")).intValue()
+        shortName,
+        BigDecimal.valueOf(value.get(SMSActivateJsonKey.COST)),
+        BigDecimal.valueOf(value.get(SMSActivateJsonKey.COUNT)).intValue()
       )));
 
       smsActivateGetPriceMapList.put(Integer.valueOf(countryCode), smsActivateGetPriceResponseMap);
@@ -847,19 +856,19 @@ public class SMSActivateApi {
     List<SMSActivateGetCountryResponse> countryList = new ArrayList<>();
 
     for (Map<String, Object> countryMap : countryInformationMap.values()) {
-      int id = new BigDecimal(countryMap.get("id").toString()).intValue();
+      int id = new BigDecimal(countryMap.get(SMSActivateJsonKey.ID).toString()).intValue();
 
-      String rus = String.valueOf(countryMap.get("rus"));
-      String eng = String.valueOf(countryMap.get("eng"));
-      String chn = String.valueOf(countryMap.get("chn"));
+      String rus = String.valueOf(countryMap.get(SMSActivateJsonKey.RUS));
+      String eng = String.valueOf(countryMap.get(SMSActivateJsonKey.ENG));
+      String chn = String.valueOf(countryMap.get(SMSActivateJsonKey.CHN));
 
-      boolean isVisible = Boolean.parseBoolean(String.valueOf(countryMap.get("visible")));
-      boolean isSupportRetry = Boolean.parseBoolean(String.valueOf(countryMap.get("retry")));
-      boolean isSupportRent = Boolean.parseBoolean(String.valueOf(countryMap.get("rent")));
-      boolean isSupportMultiService = Boolean.parseBoolean(String.valueOf(countryMap.get("multiService")));
+      boolean isVisible = Boolean.parseBoolean(String.valueOf(countryMap.get(SMSActivateJsonKey.VISIBLE)));
+      boolean isSupportRetry = Boolean.parseBoolean(String.valueOf(countryMap.get(SMSActivateJsonKey.RETRY)));
+      boolean isSupportRent = Boolean.parseBoolean(String.valueOf(countryMap.get(SMSActivateJsonKey.RENT)));
+      boolean isSupportMultiService = Boolean.parseBoolean(String.valueOf(countryMap.get(SMSActivateJsonKey.MULTI_SERVICE)));
 
       countryList.add(new SMSActivateGetCountryResponse(id, rus, eng, chn,
-          isVisible, isSupportRetry, isSupportRent, isSupportMultiService));
+        isVisible, isSupportRetry, isSupportRent, isSupportMultiService));
     }
 
     return new SMSActivateGetCountriesResponse(countryList);
@@ -901,14 +910,15 @@ public class SMSActivateApi {
     Map<String, String> response = tryParseJson(data, new TypeToken<Map<String, String>>() {
     }.getType());
 
-    SMSActivateQiwiStatus status = SMSActivateQiwiStatus.getStatusByName(response.get("status"));
+    SMSActivateQiwiStatus status = SMSActivateQiwiStatus.getStatusByName(response.get(SMSActivateJsonKey.STATUS));
 
     if (status == SMSActivateQiwiStatus.UNKNOWN) {
-      throw validator.getBaseExceptionByErrorNameOrUnknown(response.get("status"));
+      throw validator.getBaseExceptionByErrorNameOrUnknown(response.get(SMSActivateJsonKey.STATUS));
     }
 
     return new SMSActivateGetQiwiRequisitesResponse(
-        status, response.get("comment"), response.get("wallet"), response.get("upToDate")
+      status, response.get(SMSActivateJsonKey.COMMENT),
+      response.get(SMSActivateJsonKey.WALLET), response.get(SMSActivateJsonKey.UP_TO_DATE)
     );
   }
 
@@ -942,15 +952,14 @@ public class SMSActivateApi {
    */
   @NotNull
   public SMSActivateActivation getAdditionalService(int id, @NotNull String serviceName)
-      throws SMSActivateBaseException {
+    throws SMSActivateBaseException {
     SMSActivateURLBuilder smsActivateURLBuilder = new SMSActivateURLBuilder(apiKey, SMSActivateAction.GET_ADDITIONAL_SERVICE);
     smsActivateURLBuilder.append(SMSActivateURLKey.ID, String.valueOf(id))
-        .append(SMSActivateURLKey.SERVICE, serviceName);
+      .append(SMSActivateURLKey.SERVICE, serviceName);
 
     String data = SMSActivateWebClient.getOrThrowCommonException(smsActivateURLBuilder, validator);
 
-
-    if (data.contains("ADDITIONAL")) {
+    if (data.contains(SMSActivateJsonKey.ADDITIONAL)) {
       String[] parts = data.split(":");
       String number = parts[2];
       id = new BigDecimal(parts[1]).intValue();
@@ -962,7 +971,7 @@ public class SMSActivateApi {
   }
 
   /**
-   * Returns the list current activation.
+   * Returns the first ten current activation.
    *
    * @return if you not have activation returns empty list else list with your activations.
    * @throws SMSActivateWrongParameterException if one of parameters is incorrect.
@@ -985,15 +994,14 @@ public class SMSActivateApi {
    */
   @NotNull
   public SMSActivateGetCurrentActivationsResponse getCurrentActivations()
-      throws SMSActivateBaseException {
-    return getCurrentActivations(0, 10);
+    throws SMSActivateBaseException {
+    return getCurrentActivations(1, SMSActivateOrderBy.ASC);
   }
 
   /**
-   * Returns the list current activation.
+   * Returns the list current activation where contains by 10 activation.
    *
-   * @param start  (default 0).
-   * @param length (default 10).
+   * @param page number page (default 1).
    * @return if you not have activation returns empty list else list with your activations.
    * @throws SMSActivateWrongParameterException if one of parameters is incorrect.
    * @throws SMSActivateUnknownException        if error type not documented.
@@ -1014,38 +1022,44 @@ public class SMSActivateApi {
    *                                            </p>
    */
   @NotNull
-  public SMSActivateGetCurrentActivationsResponse getCurrentActivations(int start, int length)
-      throws SMSActivateBaseException {
+  public SMSActivateGetCurrentActivationsResponse getCurrentActivations(int page, @NotNull SMSActivateOrderBy SMSActivateOrderBy)
+    throws SMSActivateBaseException {
+    if (page <= 0) {
+      throw new SMSActivateWrongParameterException("Number page can be positive.", "Номер страницы должен быть позитивным.");
+    }
+
+    int len = page * 10;
     SMSActivateURLBuilder smsActivateURLBuilder = new SMSActivateURLBuilder(apiKey, SMSActivateAction.GET_CURRENT_ACTIVATION);
-    smsActivateURLBuilder.append(SMSActivateURLKey.START, String.valueOf(start))
-        .append(SMSActivateURLKey.LENGTH, String.valueOf(length))
-        .append(SMSActivateURLKey.ORDER, SMSActivateURLKey.ID.getName())
-        .append(SMSActivateURLKey.ORDER_BY, "asc");
+    smsActivateURLBuilder.append(SMSActivateURLKey.START, String.valueOf(page * 10 - 10))
+      .append(SMSActivateURLKey.LENGTH, String.valueOf(len))
+      .append(SMSActivateURLKey.ORDER, SMSActivateURLKey.ID.getName())
+      .append(SMSActivateURLKey.ORDER_BY, SMSActivateOrderBy.getSortType());
 
     String data = SMSActivateWebClient.getOrThrowCommonException(smsActivateURLBuilder, validator);
     Map<String, Object> responseMap = tryParseJson(data, new TypeToken<Map<String, Object>>() {
     }.getType());
 
-    if (responseMap.get("status").toString().equalsIgnoreCase("fail")) {
-      return new SMSActivateGetCurrentActivationsResponse(new HashMap<>());
+    if (responseMap.get(SMSActivateJsonKey.STATUS).toString().equalsIgnoreCase("fail")) {
+      return new SMSActivateGetCurrentActivationsResponse(new HashMap<>(), false);
     }
 
-    List<Map<String, Object>> currentActivationMapList = (List<Map<String, Object>>) responseMap.get("array");
+    List<Map<String, Object>> currentActivationMapList = (List<Map<String, Object>>) responseMap.get(SMSActivateJsonKey.ARRAY);
     Map<Integer, SMSActivateGetCurrentActivationResponse> smsActivateGetCurrentActivationResponseMap = new HashMap<>();
 
     for (Map<String, Object> currentActivationMap : currentActivationMapList) {
-      int id = new BigDecimal(String.valueOf(currentActivationMap.get("id"))).intValue();
-      boolean forward = Boolean.parseBoolean(String.valueOf(currentActivationMap.get("forward")));
+      int id = new BigDecimal(String.valueOf(currentActivationMap.get(SMSActivateJsonKey.ID))).intValue();
+      boolean forward = Boolean.parseBoolean(String.valueOf(currentActivationMap.get(SMSActivateJsonKey.FORWARD)));
 
-      String number = String.valueOf(currentActivationMap.get("phone"));
-      String serviceName = String.valueOf(currentActivationMap.get("service"));
-      int countryCode = Integer.parseInt(String.valueOf(currentActivationMap.get("country")));
+      String number = String.valueOf(currentActivationMap.get(SMSActivateJsonKey.PHONE));
+      String serviceName = String.valueOf(currentActivationMap.get(SMSActivateJsonKey.SERVICE));
+      int countryCode = Integer.parseInt(String.valueOf(currentActivationMap.get(SMSActivateJsonKey.COUNTRY)));
 
       smsActivateGetCurrentActivationResponseMap.put(id, new SMSActivateGetCurrentActivationResponse(
-          id, forward, number, countryCode, serviceName));
+        id, forward, number, countryCode, serviceName));
     }
 
-    return new SMSActivateGetCurrentActivationsResponse(smsActivateGetCurrentActivationResponseMap);
+    int count = new BigDecimal(responseMap.get(SMSActivateJsonKey.QUANT).toString()).intValue();
+    return new SMSActivateGetCurrentActivationsResponse(smsActivateGetCurrentActivationResponseMap, len < count);
   }
 
   /**
@@ -1072,7 +1086,7 @@ public class SMSActivateApi {
    */
   @NotNull
   public SMSActivateGetRentServicesAndCountriesResponse getRentServicesAndCountries()
-      throws SMSActivateBaseException {
+    throws SMSActivateBaseException {
     return getRentServicesAndCountries(0, null, 4);
   }
 
@@ -1105,8 +1119,8 @@ public class SMSActivateApi {
    */
   @NotNull
   public SMSActivateGetRentServicesAndCountriesResponse getRentServicesAndCountries(int countryId, @Nullable Set<String> operatorSet, int time)
-      throws SMSActivateBaseException {
-    if (time < 4) {
+    throws SMSActivateBaseException {
+    if (time < MINIMAL_RENT_TIME) {
       throw new SMSActivateWrongParameterException("Time can't be negative or equals 0.", "Время не может быть меньше или равно 0");
     }
     if (countryId < 0) {
@@ -1122,20 +1136,20 @@ public class SMSActivateApi {
 
     SMSActivateURLBuilder smsActivateURLBuilder = new SMSActivateURLBuilder(apiKey, SMSActivateAction.GET_RENT_SERVICES_AND_COUNTRIES);
     smsActivateURLBuilder.append(SMSActivateURLKey.COUNTRY, String.valueOf(countryId))
-        .append(SMSActivateURLKey.OPERATOR, operator)
-        .append(SMSActivateURLKey.RENT_TIME, String.valueOf(time));
+      .append(SMSActivateURLKey.OPERATOR, operator)
+      .append(SMSActivateURLKey.RENT_TIME, String.valueOf(time));
 
     String data = SMSActivateWebClient.getOrThrowCommonException(smsActivateURLBuilder, validator);
     Map<String, Object> rentCountriesServices = tryParseJson(data, new TypeToken<Map<String, Object>>() {
     }.getType());
 
-    if (rentCountriesServices.containsKey("message")) {
-      throw validator.getBaseExceptionByErrorNameOrUnknown(rentCountriesServices.get("message").toString());
+    if (rentCountriesServices.containsKey(SMSActivateJsonKey.MESSAGE)) {
+      throw validator.getBaseExceptionByErrorNameOrUnknown(rentCountriesServices.get(SMSActivateJsonKey.MESSAGE).toString());
     }
 
-    Map<String, Object> countryMap = (Map<String, Object>) rentCountriesServices.get("countries");
-    Map<String, Object> operatorMap = (Map<String, Object>) rentCountriesServices.get("operators");
-    Map<String, Object> servicesMap = (Map<String, Object>) rentCountriesServices.get("services");
+    Map<String, Object> countryMap = (Map<String, Object>) rentCountriesServices.get(SMSActivateJsonKey.COUNTRIES);
+    Map<String, Object> operatorMap = (Map<String, Object>) rentCountriesServices.get(SMSActivateJsonKey.OPERATORS);
+    Map<String, Object> servicesMap = (Map<String, Object>) rentCountriesServices.get(SMSActivateJsonKey.SERVICES);
 
     Set<String> operatorNameSet = new HashSet<>();
     Set<Integer> countryIdSet = new HashSet<>();
@@ -1151,17 +1165,17 @@ public class SMSActivateApi {
 
     servicesMap.forEach((shortName, service) -> {
       Map<String, Object> serviceMap = (Map<String, Object>) service;
-      int countNumber = new BigDecimal(serviceMap.get("quant").toString()).intValue();
+      int countNumber = new BigDecimal(serviceMap.get(SMSActivateJsonKey.QUANT).toString()).intValue();
 
       smsActivateRentServiceMap.put(shortName, new SMSActivateRentService(
-          shortName,
-          new BigDecimal(serviceMap.get("cost").toString()),
-          countNumber
+        shortName,
+        new BigDecimal(serviceMap.get(SMSActivateJsonKey.COST).toString()),
+        countNumber
       ));
     });
 
     return new SMSActivateGetRentServicesAndCountriesResponse(
-        operatorNameSet, countryIdSet, smsActivateRentServiceMap
+      operatorNameSet, countryIdSet, smsActivateRentServiceMap
     );
   }
 
@@ -1194,15 +1208,15 @@ public class SMSActivateApi {
    */
   @NotNull
   public SMSActivateGetRentNumberResponse getRentNumber(@NotNull String service)
-      throws SMSActivateBaseException {
-    return getRentNumber(service, 0, null, 4, null);
+    throws SMSActivateBaseException {
+    return getRentNumber(0, service, null, 4, null);
   }
 
   /**
    * Returns the object rent.
    *
-   * @param service    service to which you need to get a number.
    * @param countryId  id country (default 0 - Russia).
+   * @param service    service to which you need to get a number.
    * @param operator   mobile operator.
    * @param time       time rent (default 4 hour).
    * @param urlWebhook url for webhook.
@@ -1231,25 +1245,25 @@ public class SMSActivateApi {
    */
   @NotNull
   public SMSActivateGetRentNumberResponse getRentNumber(
-      @NotNull String service,
-      int countryId,
-      @Nullable String operator,
-      int time,
-      @Nullable String urlWebhook
+    int countryId,
+    @NotNull String service,
+    @Nullable String operator,
+    int time,
+    @Nullable String urlWebhook
   ) throws SMSActivateBaseException {
     if (countryId < 0) {
       throw new SMSActivateWrongParameterException("Wrong ID country.", "Неверный ID страны.");
     }
-    if (time < 4) {
+    if (time < MINIMAL_RENT_TIME) {
       throw new SMSActivateWrongParameterException("The rental time cannot be less than 4.", "Время аренды не может быть меньше чем 4.");
     }
 
     SMSActivateURLBuilder smsActivateURLBuilder = new SMSActivateURLBuilder(apiKey, SMSActivateAction.GET_RENT_NUMBER);
     smsActivateURLBuilder.append(SMSActivateURLKey.RENT_TIME, String.valueOf(time))
-        .append(SMSActivateURLKey.COUNTRY, String.valueOf(countryId))
-        .append(SMSActivateURLKey.OPERATOR, operator)
-        .append(SMSActivateURLKey.URL, urlWebhook)
-        .append(SMSActivateURLKey.SERVICE, service);
+      .append(SMSActivateURLKey.COUNTRY, String.valueOf(countryId))
+      .append(SMSActivateURLKey.OPERATOR, operator)
+      .append(SMSActivateURLKey.URL, urlWebhook)
+      .append(SMSActivateURLKey.SERVICE, service);
 
 
     String data = SMSActivateWebClient.getOrThrowCommonException(smsActivateURLBuilder, validator);
@@ -1257,17 +1271,17 @@ public class SMSActivateApi {
     Map<String, Object> responseMap = tryParseJson(data, new TypeToken<Map<String, Object>>() {
     }.getType());
 
-    String status = String.valueOf(responseMap.get("status"));
+    String status = String.valueOf(responseMap.get(SMSActivateJsonKey.STATUS));
 
     if (!status.equalsIgnoreCase("success")) {
-      throw validator.getBaseExceptionByErrorNameOrUnknown(String.valueOf(responseMap.get("message")));
+      throw validator.getBaseExceptionByErrorNameOrUnknown(String.valueOf(responseMap.get(SMSActivateJsonKey.MESSAGE)));
     }
 
-    Map<String, Object> phoneMap = (Map<String, Object>) responseMap.get("phone");
+    Map<String, Object> phoneMap = (Map<String, Object>) responseMap.get(SMSActivateJsonKey.PHONE);
 
-    String number = phoneMap.get("number").toString();
-    int id = new BigDecimal(phoneMap.get("id").toString()).intValue();
-    String endDate = phoneMap.get("endDate").toString();
+    String number = phoneMap.get(SMSActivateJsonKey.NUMBER).toString();
+    int id = new BigDecimal(phoneMap.get(SMSActivateJsonKey.ID).toString()).intValue();
+    String endDate = phoneMap.get(SMSActivateJsonKey.END_DATE).toString();
 
     return new SMSActivateGetRentNumberResponse(id, number, endDate, service);
   }
@@ -1301,7 +1315,7 @@ public class SMSActivateApi {
    */
   @NotNull
   public SMSActivateGetRentStatusResponse getRentStatus(int id)
-      throws SMSActivateBaseException {
+    throws SMSActivateBaseException {
     SMSActivateURLBuilder smsActivateURLBuilder = new SMSActivateURLBuilder(apiKey, SMSActivateAction.GET_RENT_STATUS);
     smsActivateURLBuilder.append(SMSActivateURLKey.ID, String.valueOf(id));
 
@@ -1310,25 +1324,26 @@ public class SMSActivateApi {
     Map<String, Object> responseMap = tryParseJson(data, new TypeToken<Map<String, Object>>() {
     }.getType());
 
-    String status = String.valueOf(responseMap.get("status"));
+    String status = String.valueOf(responseMap.get(SMSActivateJsonKey.STATUS));
 
     if (!status.equalsIgnoreCase("success")) {
-      throw validator.getBaseExceptionByErrorNameOrUnknown(String.valueOf(responseMap.get("message")));
+      throw validator.getBaseExceptionByErrorNameOrUnknown(String.valueOf(responseMap.get(SMSActivateJsonKey.MESSAGE)));
     }
 
-    Map<String, Map<String, Object>> valuesMap = (Map<String, Map<String, Object>>) responseMap.get("values");
+    Map<String, Map<String, Object>> valuesMap = (Map<String, Map<String, Object>>) responseMap.get(SMSActivateJsonKey.VALUES);
     List<SMSActivateSMS> smsList = new ArrayList<>();
 
     for (Map<String, Object> phoneMap : valuesMap.values()) {
-      String number = phoneMap.get("phoneFrom").toString();
-      String text = phoneMap.get("text").toString();
-      String serviceShortName = phoneMap.get("service").toString();
-      String date = phoneMap.get("date").toString();
+      String number = phoneMap.get(SMSActivateJsonKey.PHONE_FROM).toString();
+      String text = phoneMap.get(SMSActivateJsonKey.TEXT).toString();
+      String serviceShortName = phoneMap.get(SMSActivateJsonKey.SERVICE).toString();
+      String date = phoneMap.get(SMSActivateJsonKey.DATE).toString();
 
       smsList.add(new SMSActivateSMS(number, text, date, serviceShortName));
     }
 
-    return new SMSActivateGetRentStatusResponse(Integer.parseInt(String.valueOf(responseMap.get("quantity"))), smsList);
+    return new SMSActivateGetRentStatusResponse(
+      Integer.parseInt(String.valueOf(responseMap.get(SMSActivateJsonKey.QUALITY))), smsList);
   }
 
   /**
@@ -1363,20 +1378,20 @@ public class SMSActivateApi {
    */
   @NotNull
   public SMSActivateSetRentStatusResponse setRentStatus(int id, @NotNull SMSActivateSetRentStatusRequest status)
-      throws SMSActivateBaseException {
+    throws SMSActivateBaseException {
     SMSActivateURLBuilder smsActivateURLBuilder = new SMSActivateURLBuilder(apiKey, SMSActivateAction.SET_RENT_STATUS);
     smsActivateURLBuilder.append(SMSActivateURLKey.ID, String.valueOf(id))
-        .append(SMSActivateURLKey.STATUS, String.valueOf(status.getId()));
+      .append(SMSActivateURLKey.STATUS, String.valueOf(status.getId()));
 
     String data = SMSActivateWebClient.getOrThrowCommonException(smsActivateURLBuilder, validator);
     Map<String, String> responseMap = tryParseJson(data, new TypeToken<Map<String, String>>() {
     }.getType());
-    SMSActivateRentStatus smsActivateRentStatus = SMSActivateRentStatus.getStatusByName(responseMap.get("status"));
+    SMSActivateRentStatus smsActivateRentStatus = SMSActivateRentStatus.getStatusByName(responseMap.get(SMSActivateJsonKey.STATUS));
 
     if (smsActivateRentStatus == SMSActivateRentStatus.SUCCESS) {
       return new SMSActivateSetRentStatusResponse(smsActivateRentStatus);
     } else {
-      throw validator.getBaseExceptionByErrorNameOrUnknown(responseMap.get("message"));
+      throw validator.getBaseExceptionByErrorNameOrUnknown(responseMap.get(SMSActivateJsonKey.MESSAGE));
     }
   }
 
@@ -1405,25 +1420,25 @@ public class SMSActivateApi {
    */
   @NotNull
   public SMSActivateGetRentListResponse getRentList()
-      throws SMSActivateBaseException {
+    throws SMSActivateBaseException {
     SMSActivateURLBuilder smsActivateURLBuilder = new SMSActivateURLBuilder(apiKey, SMSActivateAction.GET_RENT_LIST);
 
     String data = SMSActivateWebClient.getOrThrowCommonException(smsActivateURLBuilder, validator);
     Map<String, Object> responseMap = tryParseJson(data, new TypeToken<Map<String, Object>>() {
     }.getType());
 
-    String status = String.valueOf(responseMap.get("status"));
+    String status = String.valueOf(responseMap.get(SMSActivateJsonKey.STATUS));
 
     if (!status.equalsIgnoreCase("success")) {
-      throw validator.getBaseExceptionByErrorNameOrUnknown(String.valueOf(responseMap.get("message")));
+      throw validator.getBaseExceptionByErrorNameOrUnknown(String.valueOf(responseMap.get(SMSActivateJsonKey.MESSAGE)));
     }
 
-    Map<String, Map<String, Object>> valuesMap = (Map<String, Map<String, Object>>) responseMap.get("values");
+    Map<String, Map<String, Object>> valuesMap = (Map<String, Map<String, Object>>) responseMap.get(SMSActivateJsonKey.VALUES);
     List<SMSActivateGetRentResponse> smsActivateGetRentResponseList = new ArrayList<>();
 
     for (Map<String, Object> phoneMap : valuesMap.values()) {
-      String number = phoneMap.get("phone").toString();
-      int id = new BigDecimal(phoneMap.get("id").toString()).intValue();
+      String number = phoneMap.get(SMSActivateJsonKey.PHONE).toString();
+      int id = new BigDecimal(phoneMap.get(SMSActivateJsonKey.ID).toString()).intValue();
 
       smsActivateGetRentResponseList.add(new SMSActivateGetRentResponse(id, number));
     }
@@ -1440,15 +1455,21 @@ public class SMSActivateApi {
    */
   @NotNull
   private BigDecimal getBalance(@NotNull SMSActivateAction smsActivateAction)
-      throws SMSActivateBaseException {
+    throws SMSActivateBaseException {
     SMSActivateURLBuilder smsActivateURLBuilder = new SMSActivateURLBuilder(apiKey, smsActivateAction);
     String data = SMSActivateWebClient.getOrThrowCommonException(smsActivateURLBuilder, validator);
-    String[] parts = data.split(":");
-    return new BigDecimal(parts[1]);
+    Matcher matcher = patternDigit.matcher(data);
+
+    //TODO: ADD error message
+    if (!matcher.find()) {
+      throw new SMSActivateBaseException("", "");
+    }
+
+    return new BigDecimal(matcher.group());
   }
 
   /**
-   * Try parsing string to json and cast to type.
+   * If string is json object then parsing string to json and cast to type else throw exception.
    *
    * @param data   data in string.
    * @param typeOf type to cast after parse.
@@ -1460,7 +1481,7 @@ public class SMSActivateApi {
   private <T> T tryParseJson(@NotNull String data, @NotNull Type typeOf) throws SMSActivateBaseException {
     try {
       return gson.fromJson(data, typeOf);
-    } catch (JsonSyntaxException ignored) {
+    } catch (JsonSyntaxException e) {
       throw validator.getBaseExceptionByErrorNameOrUnknown(data);
     }
   }
