@@ -10,18 +10,6 @@ import java.util.Map;
 
 public class GetPricesRun {
   public static void main(String[] args) {
-    /*
-      example json:
-        {
-          "CountryId": {
-            "ServiceName": {
-              "cost": someCost,
-              "count": comeCountNumber
-             }
-            }
-           }
-     */
-
     try {
       SMSActivateApi smsActivateApi = new SMSActivateApi("9A34fbf73d52752607e37ebA26f6f0bf");
       SMSActivateGetPricesResponse smsActivateGetPricesResponse = smsActivateApi.getPrices(

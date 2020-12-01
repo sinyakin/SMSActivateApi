@@ -65,7 +65,7 @@ public class SMSActivateApi {
   /**
    * The minimal rent time.
    */
-  private static final int MINIMAL_RENT_TIME = 4;
+  public static final int MINIMAL_RENT_TIME = 4;
 
   /**
    * Json deserializer and serializer.
@@ -1087,7 +1087,7 @@ public class SMSActivateApi {
   @NotNull
   public SMSActivateGetRentServicesAndCountriesResponse getRentServicesAndCountries()
     throws SMSActivateBaseException {
-    return getRentServicesAndCountries(0, null, 4);
+    return getRentServicesAndCountries(0, null, MINIMAL_RENT_TIME);
   }
 
   /**
@@ -1209,7 +1209,7 @@ public class SMSActivateApi {
   @NotNull
   public SMSActivateGetRentNumberResponse getRentNumber(@NotNull String service)
     throws SMSActivateBaseException {
-    return getRentNumber(0, service, null, 4, null);
+    return getRentNumber(0, service, null, MINIMAL_RENT_TIME, null);
   }
 
   /**
