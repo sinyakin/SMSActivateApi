@@ -1,11 +1,13 @@
-package com.sms_activate.activation.get_full_sms;
+package com.sms_activate.activation.extra;
 
 import org.jetbrains.annotations.NotNull;
 
-public enum SMSActivateGetFullTypeResponse {
+public enum SMSActivateGetStatusActivation {
   WAIT_CODE("STATUS_WAIT_CODE", "Ожидание смс.", "Waiting sms."),
+  WAIT_RETRY("STATUS_WAIT_RETRY", "Ожидание уточнения кода.", "Waiting for code clarification."),
+  WAIT_RESEND("STATUS_WAIT_RESEND", "Ожидание повторной отправки смс.", "Waiting for re-sending SMS."),
   CANCEL("STATUS_CANCEL", "Активация отменена.", "Activation canceled."),
-  FULL_SMS("FULL_SMS", "Полный текст смс.", "Full text sms."),
+  OK("STATUS_OK", "Код получен.", "Code received."),
   UNKNOWN("UNKNOWN", "Неизвестный статус активации.", "Unknown status activation.");
 
   /**
@@ -29,7 +31,7 @@ public enum SMSActivateGetFullTypeResponse {
    * @param russianMessage message on russian.
    * @param englishMessage message on english.
    */
-  SMSActivateGetFullTypeResponse(@NotNull String response, @NotNull String russianMessage, @NotNull String englishMessage) {
+  SMSActivateGetStatusActivation(@NotNull String response, @NotNull String russianMessage, @NotNull String englishMessage) {
     this.russianMessage = russianMessage;
     this.englishMessage = englishMessage;
     this.response = response;
@@ -62,7 +64,7 @@ public enum SMSActivateGetFullTypeResponse {
    */
   @NotNull
   public String getMessage() {
-    return String.join("/", englishMessage, russianMessage);
+    return String.join("|", englishMessage, russianMessage);
   }
 
   /**
@@ -82,12 +84,12 @@ public enum SMSActivateGetFullTypeResponse {
    * @return state activation.
    */
   @NotNull
-  public static SMSActivateGetFullTypeResponse getStatusByName(@NotNull String name) {
+  public static SMSActivateGetStatusActivation getStatusByName(@NotNull String name) {
     name = name.toUpperCase();
 
-    for (SMSActivateGetFullTypeResponse type : values()) {
-      if (type.getResponse().contains(name)) {
-        return type;
+    for (SMSActivateGetStatusActivation stateActivationResponse : values()) {
+      if (stateActivationResponse.getResponse().equals(name)) {
+        return stateActivationResponse;
       }
     }
 

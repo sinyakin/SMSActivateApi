@@ -1,8 +1,8 @@
-package com.sms_activate.rent.get_rent_list;
+package com.sms_activate.rent.extra;
 
 import org.jetbrains.annotations.NotNull;
 
-public class SMSActivateGetRentResponse {
+public class SMSActivateRentNumber {
   /**
    * Id rent.
    */
@@ -19,7 +19,7 @@ public class SMSActivateGetRentResponse {
    * @param id     id rent.
    * @param number phone number.
    */
-  public SMSActivateGetRentResponse(int id, @NotNull String number) {
+  public SMSActivateRentNumber(int id, @NotNull String number) {
     this.id = id;
     this.number = number;
   }

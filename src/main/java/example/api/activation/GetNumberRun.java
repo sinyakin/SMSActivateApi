@@ -5,15 +5,13 @@ import com.sms_activate.activation.SMSActivateActivation;
 import com.sms_activate.error.base.SMSActivateBaseException;
 import com.sms_activate.error.wrong_parameter.SMSActivateWrongParameterException;
 
-import java.util.HashSet;
-
 public class GetNumberRun {
   public static void main(String[] args) {
     try {
       SMSActivateApi smsActivateApi = new SMSActivateApi("API_KEY");
       SMSActivateActivation smsActivateActivation = smsActivateApi.getNumber(
         0,
-          "tn"
+        "tn"
           /*new HashSet<String>(){{
             add("mts");
             add("tele2");

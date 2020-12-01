@@ -4,7 +4,7 @@ import org.jetbrains.annotations.NotNull;
 
 public class SMSActivateSetStatusResponse {
   /**
-   * Response status about activaiton from server.
+   * Response status about activation from server.
    */
   private final SMSActivateAccessStatus smsActivateAccessStatus;
 

@@ -1,4 +1,4 @@
-package com.sms_activate.rent.set_rent_status;
+package com.sms_activate.rent.extra;
 
 import org.jetbrains.annotations.NotNull;
 
@@ -73,7 +73,7 @@ public enum SMSActivateRentStatus {
    */
   @NotNull
   public String getMessage() {
-    return String.join("/", englishMessage, russianMessage);
+    return String.join("|", englishMessage, russianMessage);
   }
 
   @NotNull

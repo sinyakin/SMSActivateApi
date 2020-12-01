@@ -1,8 +1,8 @@
-package com.sms_activate.activation.current_activation;
+package com.sms_activate.activation.extra;
 
 import org.jetbrains.annotations.NotNull;
 
-public class SMSActivateGetCurrentActivationResponse {
+public class SMSActivateCurrentActivation {
   /**
    * Id activation.
    */
@@ -31,18 +31,18 @@ public class SMSActivateGetCurrentActivationResponse {
   /**
    * Constructor activation with info.
    *
-   * @param id          id activaiton.
+   * @param id          id activation.
    * @param forward     is forward acitvation.
    * @param number      phone number.
    * @param countryId   country id.
    * @param serviceName short service name.
    */
-  public SMSActivateGetCurrentActivationResponse(
-      int id,
-      boolean forward,
-      @NotNull String number,
-      int countryId,
-      @NotNull String serviceName
+  public SMSActivateCurrentActivation(
+    int id,
+    boolean forward,
+    @NotNull String number,
+    int countryId,
+    @NotNull String serviceName
   ) {
     this.id = id;
     this.forward = forward;
@@ -54,7 +54,7 @@ public class SMSActivateGetCurrentActivationResponse {
   /**
    * Returns the id activation.
    *
-   * @return id activaiton.
+   * @return id activation.
    */
   public int getId() {
     return id;

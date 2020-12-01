@@ -1,4 +1,4 @@
-package com.sms_activate.activation.balance;
+package com.sms_activate.activation;
 
 import org.jetbrains.annotations.NotNull;
 

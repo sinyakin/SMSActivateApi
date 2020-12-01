@@ -1,13 +1,11 @@
-package com.sms_activate.activation.get_status;
+package com.sms_activate.activation.extra;
 
 import org.jetbrains.annotations.NotNull;
 
-public enum SMSActivateGetStatus {
+public enum SMSActivateStatusNumber {
   WAIT_CODE("STATUS_WAIT_CODE", "Ожидание смс.", "Waiting sms."),
-  WAIT_RETRY("STATUS_WAIT_RETRY", "Ожидание уточнения кода.", "Waiting for code clarification."),
-  WAIT_RESEND("STATUS_WAIT_RESEND", "Ожидание повторной отправки смс.", "Waiting for re-sending SMS."),
   CANCEL("STATUS_CANCEL", "Активация отменена.", "Activation canceled."),
-  OK("STATUS_OK", "Код получен.", "Code received."),
+  FULL_SMS("FULL_SMS", "Полный текст смс.", "Full text sms."),
   UNKNOWN("UNKNOWN", "Неизвестный статус активации.", "Unknown status activation.");
 
   /**
@@ -31,7 +29,7 @@ public enum SMSActivateGetStatus {
    * @param russianMessage message on russian.
    * @param englishMessage message on english.
    */
-  SMSActivateGetStatus(@NotNull String response, @NotNull String russianMessage, @NotNull String englishMessage) {
+  SMSActivateStatusNumber(@NotNull String response, @NotNull String russianMessage, @NotNull String englishMessage) {
     this.russianMessage = russianMessage;
     this.englishMessage = englishMessage;
     this.response = response;
@@ -64,7 +62,7 @@ public enum SMSActivateGetStatus {
    */
   @NotNull
   public String getMessage() {
-    return String.join("/", englishMessage, russianMessage);
+    return String.join("|", englishMessage, russianMessage);
   }
 
   /**
@@ -84,12 +82,12 @@ public enum SMSActivateGetStatus {
    * @return state activation.
    */
   @NotNull
-  public static SMSActivateGetStatus getStatusByName(@NotNull String name) {
+  public static SMSActivateStatusNumber getStatusByName(@NotNull String name) {
     name = name.toUpperCase();
 
-    for (SMSActivateGetStatus stateActivationResponse : values()) {
-      if (stateActivationResponse.getResponse().equals(name)) {
-        return stateActivationResponse;
+    for (SMSActivateStatusNumber type : values()) {
+      if (type.getResponse().contains(name)) {
+        return type;
       }
     }
 

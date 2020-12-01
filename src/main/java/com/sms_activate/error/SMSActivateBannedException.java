@@ -11,7 +11,6 @@ public class SMSActivateBannedException extends SMSActivateBaseException {
 
   /**
    * Constructor sms activate banned exception with multilang, endDate.
-   * T
    *
    * @param englishMessage message on english language.
    * @param russianMessage message on russian language.
@@ -39,8 +38,6 @@ public class SMSActivateBannedException extends SMSActivateBaseException {
   @Override
   @NotNull
   public String getMessage() {
-    String english = String.join(": ", super.getEnglishMessage(), endDate);
-    String russian = String.join(": ", super.getRussianMessage(), endDate);
-    return String.join("/", english, russian);
+    return String.format("%s: %s./%s: %s.", super.getEnglishMessage(), endDate, super.getRussianMessage(), endDate);
   }
 }

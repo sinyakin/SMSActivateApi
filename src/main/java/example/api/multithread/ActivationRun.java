@@ -2,55 +2,43 @@ package example.api.multithread;
 
 import com.sms_activate.SMSActivateApi;
 import com.sms_activate.activation.SMSActivateActivation;
-import com.sms_activate.activation.get_status.SMSActivateGetStatus;
-import com.sms_activate.activation.get_status.SMSActivateGetStatusResponse;
 import com.sms_activate.activation.set_status.SMSActivateSetStatusRequest;
 import com.sms_activate.error.base.SMSActivateBaseException;
+import com.sms_activate.error.base.SMSActivateBaseTypeError;
 import com.sms_activate.error.wrong_parameter.SMSActivateWrongParameterException;
 
+import java.io.FileWriter;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Timer;
-import java.util.TimerTask;
 
 public class ActivationRun {
-  public static void main(String[] args) throws SMSActivateWrongParameterException {
+  public static void main(String[] args) throws SMSActivateWrongParameterException, InterruptedException, IOException {
     final int COUNT_THREAD = 100;
 
     long start = System.currentTimeMillis();
-    List<Thread> threadList = new ArrayList<>();
+    List<SMSActivateActivation> smsActivateActivationList = new ArrayList<>();
+    List<Thread> threadGetNumberList = new ArrayList<>();
     SMSActivateApi smsActivateApi = new SMSActivateApi("9A34fbf73d52752607e37ebA26f6f0bf");
 
     for (int i = 0; i < COUNT_THREAD; i++) {
-      threadList.add(new Thread(() -> {
+      threadGetNumberList.add(new Thread(() -> {
         try {
-          SMSActivateActivation smsActivateGetNumberStatusResponse = smsActivateApi.getNumber(0, "tn");
-          Thread current = Thread.currentThread();
-
-          System.out.println(smsActivateGetNumberStatusResponse.getNumber() + " in thread " + Thread.currentThread().getName());
-
-         /* new Timer().schedule(new TimerTask() {
-            @Override
-            public void run() {
-              new Thread(() -> {
-                try {
-                  SMSActivateGetStatusResponse status = smsActivateApi.getStatus(smsActivateGetNumberStatusResponse.getId());
-
-                  if (status.getSMSActivateGetStatus() == SMSActivateGetStatus.OK || status.getSMSActivateGetStatus() == SMSActivateGetStatus.CANCEL) {
-                    System.out.println("End thread: " + current.getName());
-                    current.interrupt();
-                  } else {
-                    System.out.println(current.getName());
+          SMSActivateActivation activateActivation = smsActivateApi.getNumber(0, "tn");
+          smsActivateActivationList.add(activateActivation);
+          new Thread(() -> {
+            for (int j = 0; j < COUNT_THREAD; j++) {
+              threadGetNumberList.add(new Thread(() -> {
+                for (int k = 0; k < COUNT_THREAD; k++) {
+                  try {
+                    SMSActivateActivation activateActivation1 = smsActivateApi.getNumber(0, "tn");
+                  } catch (SMSActivateBaseException e) {
+                    e.printStackTrace();
                   }
-                } catch (SMSActivateBaseException e) {
-                  e.printStackTrace();
                 }
-              }).start();
+              }));
             }
-          }, 10, 100);
-*/
-
-          smsActivateApi.setStatus(smsActivateGetNumberStatusResponse.getId(), SMSActivateSetStatusRequest.CANCEL);
+          }).start();
         } catch (SMSActivateWrongParameterException e) {
           System.out.println(e.getWrongParameter());
           System.out.println(e.getMessage());
@@ -58,42 +46,45 @@ public class ActivationRun {
           System.out.println(e.getTypeError());
           System.out.println(e.getMessage());
         }
-
-        System.out.println(Thread.currentThread().getName());
-
-        System.out.println("=====================================");
-      }, "Name: " + (i + 1)));
+       }, "Name: " + (i + 1)));
     }
 
-    new Thread(() -> {
-      for (Thread thread : threadList) {
+    /*new Thread(() -> {
+      for (Thread thread : threadGetNumberList) {
         thread.start();
       }
-/*
-      while (true) {
-        boolean isAllInterrupt = false;
+    }).start();*/
 
-        for (Thread thread : threadList) {
-          if (thread.isInterrupted()) {
-            isAllInterrupt = true;
-          } else {
-            isAllInterrupt = false;
-            break;
+    new Thread(() -> {
+      for (int i = 0; i < threadGetNumberList.size(); i++) {
+        threadGetNumberList.get(i).start();
+
+        final int temp = i;
+
+        new Thread(() -> {
+          try {
+            smsActivateApi.setStatus(smsActivateActivationList.get(temp).getId(), SMSActivateSetStatusRequest.CANCEL);
+          } catch (SMSActivateBaseException | IndexOutOfBoundsException ignored) {
           }
-        }
+        }).start();
 
-        if (isAllInterrupt) {
-          break;
-        }
-
-        try {
-          Thread.sleep(15000);
-        } catch (InterruptedException e) {
-          e.printStackTrace();
-        }
+        new Thread(() -> {
+          try {
+            smsActivateApi.getStatus(smsActivateActivationList.get(temp).getId());
+            new Thread(() -> {
+              try {
+                smsActivateApi.getBalance();
+              } catch (SMSActivateBaseException | IndexOutOfBoundsException ignored) {
+              }
+            }).start();
+          } catch (SMSActivateBaseException | IndexOutOfBoundsException ignored) {
+          }
+        }).start();
       }
-*/
     }).start();
+
+    System.in.read();
+
     System.out.println("Time: " + (System.currentTimeMillis() - start));
   }
 }

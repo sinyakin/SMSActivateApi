@@ -1,5 +1,6 @@
-package com.sms_activate.activation.numbers_status;
+package com.sms_activate.activation;
 
+import com.sms_activate.activation.extra.SMSActivateServiceInfo;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -11,14 +12,14 @@ public class SMSActivateGetNumbersStatusResponse {
   /**
    * Map services where key is short name service.
    */
-  private final Map<String, SMSActivateGetNumberStatusResponse> smsActivateGetNumberStatusResponseMap;
+  private final Map<String, SMSActivateServiceInfo> smsActivateGetNumberStatusResponseMap;
 
   /**
    * Constructor response getNumbersStatus with services.
    *
    * @param smsActivateGetNumberStatusResponseMap map services where key is short name service.
    */
-  public SMSActivateGetNumbersStatusResponse(@NotNull Map<String, SMSActivateGetNumberStatusResponse> smsActivateGetNumberStatusResponseMap) {
+  public SMSActivateGetNumbersStatusResponse(@NotNull Map<String, SMSActivateServiceInfo> smsActivateGetNumberStatusResponseMap) {
     this.smsActivateGetNumberStatusResponseMap = smsActivateGetNumberStatusResponseMap;
   }
 
@@ -29,7 +30,7 @@ public class SMSActivateGetNumbersStatusResponse {
    * @return if serviceName not contains in map then returns null else service object.
    */
   @Nullable
-  public SMSActivateGetNumberStatusResponse get(@NotNull String serviceName) {
+  public SMSActivateServiceInfo get(@NotNull String serviceName) {
     return smsActivateGetNumberStatusResponseMap.get(serviceName);
   }
 
@@ -39,7 +40,7 @@ public class SMSActivateGetNumbersStatusResponse {
    * @return all services.
    */
   @NotNull
-  public List<SMSActivateGetNumberStatusResponse> getSMSActivateGetNumberStatusResponseList() {
+  public List<SMSActivateServiceInfo> getSMSActivateGetNumberStatusResponseList() {
     return new ArrayList<>(smsActivateGetNumberStatusResponseMap.values());
   }
 }

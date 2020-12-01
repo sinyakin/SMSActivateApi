@@ -23,7 +23,7 @@ public class SMSActivateGetMultiServiceNumberResponse {
    * Returns the activations by specified Id.
    *
    * @param id id activation.
-   * @return activaiton.
+   * @return activation.
    */
   @NotNull
   public SMSActivateActivation get(int id) {

@@ -1,4 +1,4 @@
-package com.sms_activate.rent.get_rent_status;
+package com.sms_activate.rent.extra;
 
 import org.jetbrains.annotations.NotNull;
 
@@ -32,10 +32,10 @@ public class SMSActivateSMS {
    * @param service   short service name (not be null).
    */
   public SMSActivateSMS(
-      @NotNull String phoneFrom,
-      @NotNull String text,
-      @NotNull String date,
-      @NotNull String service
+    @NotNull String phoneFrom,
+    @NotNull String text,
+    @NotNull String date,
+    @NotNull String service
   ) {
     this.phoneFrom = phoneFrom;
     this.text = text;

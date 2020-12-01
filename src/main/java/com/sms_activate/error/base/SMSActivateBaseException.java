@@ -74,6 +74,6 @@ public class SMSActivateBaseException extends Exception {
   @Override
   @NotNull
   public String getMessage() {
-    return String.join("/", englishMessage, russianMessage);
+    return String.join("|", englishMessage, russianMessage);
   }
 }

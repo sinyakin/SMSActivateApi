@@ -1,14 +1,14 @@
-package com.sms_activate.activation.get_prices;
+package com.sms_activate.activation.extra;
 
 import org.jetbrains.annotations.NotNull;
 
 import java.math.BigDecimal;
 
-public class SMSActivateGetPriceResponse {
+public class SMSActivateGetPriceInfo {
   /**
    * Name service.
    */
-  private final String service;
+  private final String name;
   /**
    * Service cost.
    */
@@ -25,8 +25,8 @@ public class SMSActivateGetPriceResponse {
    * @param cost  cost service.
    * @param count count number service.
    */
-  public SMSActivateGetPriceResponse(@NotNull String name, @NotNull BigDecimal cost, int count) {
-    this.service = name;
+  public SMSActivateGetPriceInfo(@NotNull String name, @NotNull BigDecimal cost, int count) {
+    this.name = name;
     this.cost = cost;
     this.count = count;
   }
@@ -37,8 +37,8 @@ public class SMSActivateGetPriceResponse {
    * @return name service.
    */
   @NotNull
-  public String getName() {
-    return service;
+  public String getShortName() {
+    return name;
   }
 
   /**

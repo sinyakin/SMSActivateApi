@@ -1,5 +1,6 @@
-package com.sms_activate.activation.get_status;
+package com.sms_activate.activation;
 
+import com.sms_activate.activation.extra.SMSActivateGetStatusActivation;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -7,7 +8,7 @@ public class SMSActivateGetStatusResponse {
   /**
    * Status activation.
    */
-  private final SMSActivateGetStatus smsActivateGetStatus;
+  private final SMSActivateGetStatusActivation smsActivateGetStatusActivation;
 
   /**
    * Code from sms.
@@ -17,11 +18,11 @@ public class SMSActivateGetStatusResponse {
   /**
    * Constructor response getStatus with data..
    *
-   * @param smsActivateGetStatus status activation.
-   * @param codeFromSMS          code sms.
+   * @param smsActivateGetStatusActivation status activation.
+   * @param codeFromSMS                    code sms.
    */
-  public SMSActivateGetStatusResponse(@NotNull SMSActivateGetStatus smsActivateGetStatus, @Nullable String codeFromSMS) {
-    this.smsActivateGetStatus = smsActivateGetStatus;
+  public SMSActivateGetStatusResponse(@NotNull SMSActivateGetStatusActivation smsActivateGetStatusActivation, @Nullable String codeFromSMS) {
+    this.smsActivateGetStatusActivation = smsActivateGetStatusActivation;
     this.codeFromSMS = codeFromSMS;
   }
 
@@ -32,7 +33,7 @@ public class SMSActivateGetStatusResponse {
    */
   @NotNull
   public String getMessage() {
-    return smsActivateGetStatus.getMessage();
+    return smsActivateGetStatusActivation.getMessage();
   }
 
   /**
@@ -51,7 +52,7 @@ public class SMSActivateGetStatusResponse {
    * @return status activation.
    */
   @NotNull
-  public SMSActivateGetStatus getSMSActivateGetStatus() {
-    return smsActivateGetStatus;
+  public SMSActivateGetStatusActivation getSMSActivateGetStatus() {
+    return smsActivateGetStatusActivation;
   }
 }

@@ -28,10 +28,10 @@ public class GetMultiServiceRun {
         }}
       );
 
-      smsActivateGetMultiServiceNumberResponse.getSMSActivateActivationList().forEach(x -> {
-        System.out.println("Id: " + x.getId());
-        System.out.println("Number: " + x.getNumber());
-        System.out.println("Service name: " + x.getServiceName());
+      smsActivateGetMultiServiceNumberResponse.getSMSActivateActivationList().forEach(activation -> {
+        System.out.println("Id: " + activation.getId());
+        System.out.println("Number: " + activation.getNumber());
+        System.out.println("Service name: " + activation.getShortName());
         System.out.println("===============================================");
       });
     } catch (SMSActivateWrongParameterException e) {

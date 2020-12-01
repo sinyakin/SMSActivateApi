@@ -1,8 +1,8 @@
-package com.sms_activate.activation.numbers_status;
+package com.sms_activate.activation.extra;
 
 import org.jetbrains.annotations.NotNull;
 
-public class SMSActivateGetNumberStatusResponse {
+public class SMSActivateServiceInfo {
   /**
    * Service support forward.
    */
@@ -25,10 +25,10 @@ public class SMSActivateGetNumberStatusResponse {
    * @param countNumber count of service numbers.
    * @param nameService service short name.
    */
-  public SMSActivateGetNumberStatusResponse(
-      boolean forward,
-      int countNumber,
-      @NotNull String nameService
+  public SMSActivateServiceInfo(
+    boolean forward,
+    int countNumber,
+    @NotNull String nameService
   ) {
     this.forward = forward;
     this.countNumber = countNumber;
@@ -60,7 +60,7 @@ public class SMSActivateGetNumberStatusResponse {
    * @return short name of service.
    */
   @NotNull
-  public String getNameService() {
+  public String getShortName() {
     return nameService;
   }
 }

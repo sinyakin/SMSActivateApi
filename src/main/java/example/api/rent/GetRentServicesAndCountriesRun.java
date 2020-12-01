@@ -3,9 +3,7 @@ package example.api.rent;
 import com.sms_activate.SMSActivateApi;
 import com.sms_activate.error.base.SMSActivateBaseException;
 import com.sms_activate.error.wrong_parameter.SMSActivateWrongParameterException;
-import com.sms_activate.rent.get_rent_services_and_countries.SMSActivateGetRentServicesAndCountriesResponse;
-
-import java.util.HashSet;
+import com.sms_activate.rent.SMSActivateGetRentServicesAndCountriesResponse;
 
 public class GetRentServicesAndCountriesRun {
   public static void main(String[] args) {
@@ -31,14 +29,14 @@ public class GetRentServicesAndCountriesRun {
 
       System.out.println("Operators: ");
       smsActivateGetRentServicesAndCountriesResponse.getOperatorNameSet()
-          .forEach(x -> System.out.println(">> name: " + x));
+        .forEach(x -> System.out.println(">> name: " + x));
 
       System.out.println();
       System.out.println();
 
       System.out.println("Countries supported rent: ");
       smsActivateGetRentServicesAndCountriesResponse.getCountryIdSet()
-          .forEach(x -> System.out.println(">> id: " + x));
+        .forEach(x -> System.out.println(">> id: " + x));
     } catch (SMSActivateWrongParameterException e) {
       System.out.println(e.getWrongParameter());
     } catch (SMSActivateBaseException e) {

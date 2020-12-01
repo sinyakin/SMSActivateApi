@@ -1,8 +1,8 @@
-package com.sms_activate.activation.get_countries;
+package com.sms_activate.activation.extra;
 
 import org.jetbrains.annotations.NotNull;
 
-public class SMSActivateGetCountryResponse {
+public class SMSActivateCountryInfo {
   /**
    * Country id.
    */
@@ -55,15 +55,15 @@ public class SMSActivateGetCountryResponse {
    * @param visible             in site.
    * @param supportMultiService support multi service.
    */
-  public SMSActivateGetCountryResponse(
-      int id,
-      @NotNull String russianName,
-      @NotNull String englishName,
-      @NotNull String chineseName,
-      boolean supportRent,
-      boolean supportRetry,
-      boolean visible,
-      boolean supportMultiService
+  public SMSActivateCountryInfo(
+    int id,
+    @NotNull String russianName,
+    @NotNull String englishName,
+    @NotNull String chineseName,
+    boolean supportRent,
+    boolean supportRetry,
+    boolean visible,
+    boolean supportMultiService
   ) {
     this.id = id;
     this.chineseName = chineseName;

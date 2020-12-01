@@ -1,12 +1,9 @@
 package example.api.activation;
 
 import com.sms_activate.SMSActivateApi;
-import com.sms_activate.activation.get_prices.SMSActivateGetPriceResponse;
-import com.sms_activate.activation.get_prices.SMSActivateGetPricesResponse;
+import com.sms_activate.activation.SMSActivateGetPricesResponse;
+import com.sms_activate.activation.extra.SMSActivateGetPriceInfo;
 import com.sms_activate.error.base.SMSActivateBaseException;
-import com.sms_activate.error.wrong_parameter.SMSActivateWrongParameterException;
-
-import java.util.Map;
 
 public class GetPricesRun {
   public static void main(String[] args) {
@@ -16,10 +13,10 @@ public class GetPricesRun {
         0, "vk"// comment this parameter and you get all data.
       );
 
-      SMSActivateGetPriceResponse smsActivateGetPriceResponse = smsActivateGetPricesResponse.get(0, "vk");
-      System.out.println(">> Service name: " + smsActivateGetPriceResponse.getName());
-      System.out.println(">>> Cost: " + smsActivateGetPriceResponse.getCost());
-      System.out.println(">>> Count number: " + smsActivateGetPriceResponse.getCount());
+      SMSActivateGetPriceInfo smsActivateGetPriceInfo = smsActivateGetPricesResponse.get(0, "vk");
+      System.out.println(">> Service name: " + smsActivateGetPriceInfo.getShortName());
+      System.out.println(">>> Cost: " + smsActivateGetPriceInfo.getCost());
+      System.out.println(">>> Count number: " + smsActivateGetPriceInfo.getCount());
 
       // output all
       /*smsActivateGetPricesResponse.getSmsActivateGetPriceMap().forEach((countryId, value) -> {

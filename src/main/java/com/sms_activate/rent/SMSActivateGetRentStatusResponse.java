@@ -1,5 +1,6 @@
-package com.sms_activate.rent.get_rent_status;
+package com.sms_activate.rent;
 
+import com.sms_activate.rent.extra.SMSActivateSMS;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.List;

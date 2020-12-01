@@ -3,12 +3,10 @@ package com.sms_activate;
 import com.sms_activate.error.base.SMSActivateBaseException;
 import com.sms_activate.error.wrong_parameter.SMSActivateWrongParameterException;
 import org.jetbrains.annotations.NotNull;
-import org.jetbrains.annotations.Nullable;
 
 import java.io.*;
 import java.net.HttpURLConnection;
 import java.net.URL;
-import java.net.URLConnection;
 import java.util.List;
 import java.util.zip.GZIPInputStream;
 import java.util.zip.GZIPOutputStream;
@@ -24,34 +22,20 @@ class SMSActivateWebClient {
    * @throws SMSActivateBaseException           if error happened on position SMSActivate.
    */
   @NotNull
-  public static String getOrThrowCommonException(@NotNull SMSActivateURLBuilder smsActivateURLBuilder, @NotNull SMSActivateValidator validator)
-      throws SMSActivateBaseException {
+  public String getOrThrowCommonException(@NotNull SMSActivateURLBuilder smsActivateURLBuilder, @NotNull SMSActivateValidator validator)
+    throws SMSActivateBaseException {
     try {
-      String data = get(smsActivateURLBuilder.build(), "gzip, json");
+      HttpURLConnection urlConnection = (HttpURLConnection) smsActivateURLBuilder.build().openConnection();
+      urlConnection.setRequestMethod("GET");
+      urlConnection.setRequestProperty("accept-Encoding", "gzip, json");
+
+      String data = load(urlConnection);
       validator.throwCommonExceptionByName(data);
+
       return data;
     } catch (IOException e) {
       throw new SMSActivateBaseException("Problem with network connection.", "Проблемы с сетевым подключением.");
     }
-  }
-
-  /**
-   * Method get to load data by URL object.
-   *
-   * @param url target url.
-   * @return load data from url.
-   * @throws IOException if an I/O exception occurs.
-   */
-  @NotNull
-  public static String get(@NotNull URL url, @Nullable String acceptEncoding) throws IOException {
-    HttpURLConnection urlConnection = (HttpURLConnection) url.openConnection();
-    urlConnection.setRequestMethod("GET");
-
-    if (acceptEncoding != null) {
-      urlConnection.setRequestProperty("accept-Encoding", acceptEncoding);
-    }
-
-    return load(urlConnection);
   }
 
   /**
@@ -63,7 +47,7 @@ class SMSActivateWebClient {
    * @throws IOException if an I/O exception occurs.
    */
   @NotNull
-  public static String post(@NotNull URL url, @NotNull List<String> dataList) throws IOException {
+  public String post(@NotNull URL url, @NotNull List<String> dataList) throws IOException {
     HttpURLConnection urlConnection = (HttpURLConnection) url.openConnection();
 
     urlConnection.setRequestMethod("POST");
@@ -71,14 +55,10 @@ class SMSActivateWebClient {
     urlConnection.setRequestProperty("accept-Encoding", "gzip");
 
     try (BufferedWriter writer = new BufferedWriter(
-        new OutputStreamWriter(new GZIPOutputStream(urlConnection.getOutputStream())))) {
-      dataList.forEach(x -> {
-        try {
-          writer.write(x);
-        } catch (IOException e) {
-          e.printStackTrace();
-        }
-      });
+      new OutputStreamWriter(new GZIPOutputStream(urlConnection.getOutputStream())))) {
+      for (String data : dataList) {
+        writer.write(data);
+      }
     }
 
     return load(urlConnection);
@@ -92,22 +72,30 @@ class SMSActivateWebClient {
    * @throws IOException if an I/O exception occurs.
    */
   @NotNull
-  private static String load(@NotNull URLConnection urlConnection) throws IOException {
-    if (urlConnection.getContentEncoding().contains("gzip")) {
-      try (BufferedReader reader = new BufferedReader(
-          new InputStreamReader(new GZIPInputStream(urlConnection.getInputStream())))) {
-        return read(reader);
-      }
+  private String load(@NotNull HttpURLConnection urlConnection) throws IOException {
+    InputStreamReader inputStreamReader;
+
+    if (urlConnection.getContentEncoding() != null && urlConnection.getContentEncoding().contains("gzip")) {
+      inputStreamReader = new InputStreamReader(new GZIPInputStream(urlConnection.getInputStream()));
     } else {
-      try (BufferedReader reader = new BufferedReader(
-          new InputStreamReader(urlConnection.getInputStream()))) {
-        return read(reader);
-      }
+      inputStreamReader = new InputStreamReader(urlConnection.getInputStream());
     }
+
+    BufferedReader reader = new BufferedReader(inputStreamReader);
+    String data = read(reader);
+    reader.close();
+    return data;
   }
 
+  /**
+   * Reads the data from stream.
+   *
+   * @param reader reader.
+   * @return data.
+   * @throws IOException if an I/O exception occurs.
+   */
   @NotNull
-  private static String read(@NotNull BufferedReader reader) throws IOException {
+  private String read(@NotNull BufferedReader reader) throws IOException {
     String data;
     StringBuilder builder = new StringBuilder();
 

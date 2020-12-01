@@ -64,7 +64,7 @@ public enum SMSActivateAccessStatus {
    */
   @NotNull
   public String getMessage() {
-    return String.join("/", englishMessage, russianMessage);
+    return String.join("|", englishMessage, russianMessage);
   }
 
   /**

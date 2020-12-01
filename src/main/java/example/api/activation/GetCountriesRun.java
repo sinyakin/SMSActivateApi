@@ -1,8 +1,8 @@
 package example.api.activation;
 
 import com.sms_activate.SMSActivateApi;
-import com.sms_activate.activation.get_countries.SMSActivateGetCountriesResponse;
-import com.sms_activate.activation.get_countries.SMSActivateGetCountryResponse;
+import com.sms_activate.activation.SMSActivateGetCountriesResponse;
+import com.sms_activate.activation.extra.SMSActivateCountryInfo;
 import com.sms_activate.error.base.SMSActivateBaseException;
 import com.sms_activate.error.wrong_parameter.SMSActivateWrongParameterException;
 import org.jetbrains.annotations.NotNull;
@@ -25,11 +25,11 @@ public class GetCountriesRun {
     }
   }
 
-  private static void printInfo(@NotNull SMSActivateGetCountryResponse smsActivateGetCountryResponse) {
-    System.out.println("Id: " + smsActivateGetCountryResponse.getId());
-    System.out.println("Russian name: " + smsActivateGetCountryResponse.getRussianName());
-    System.out.println("English name: " + smsActivateGetCountryResponse.getEnglishName());
-    System.out.println("Chinese name: " + smsActivateGetCountryResponse.getChineseName());
+  private static void printInfo(@NotNull SMSActivateCountryInfo smsActivateCountryInfo) {
+    System.out.println("Id: " + smsActivateCountryInfo.getId());
+    System.out.println("Russian name: " + smsActivateCountryInfo.getRussianName());
+    System.out.println("English name: " + smsActivateCountryInfo.getEnglishName());
+    System.out.println("Chinese name: " + smsActivateCountryInfo.getChineseName());
     System.out.println("====================================================");
   }
 }

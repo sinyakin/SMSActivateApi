@@ -34,5 +34,5 @@ class SMSActivateJsonKey {
   public static final String VISIBLE = "visible";
   public static final String RETRY = "retry";
   public static final String RENT = "rent";
-  public static final String MULTI_SERVICE= "multiService";
+  public static final String MULTI_SERVICE = "multiService";
 }

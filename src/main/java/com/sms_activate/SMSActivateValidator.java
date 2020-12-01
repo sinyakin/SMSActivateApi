@@ -32,7 +32,7 @@ class SMSActivateValidator {
    * @throws SMSActivateBaseException           if error happened on SQL-server.
    */
   public void throwCommonExceptionByName(@NotNull String name)
-      throws SMSActivateBaseException {
+    throws SMSActivateBaseException {
     throwWrongParameterExceptionByName(name);
 
     if (name.toUpperCase().contains("SQL")) {
@@ -56,6 +56,7 @@ class SMSActivateValidator {
     }
   }
 
+  @NotNull
   public SMSActivateBaseException getBaseExceptionByErrorNameOrUnknown(@NotNull String errorName) {
     SMSActivateBaseTypeError error = SMSActivateBaseTypeError.getErrorByName(errorName);
 

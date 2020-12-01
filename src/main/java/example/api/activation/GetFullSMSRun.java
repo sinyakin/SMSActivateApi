@@ -2,8 +2,8 @@ package example.api.activation;
 
 import com.sms_activate.SMSActivateApi;
 import com.sms_activate.activation.SMSActivateActivation;
-import com.sms_activate.activation.get_full_sms.SMSActivateGetFullSmsResponse;
-import com.sms_activate.activation.get_full_sms.SMSActivateGetFullTypeResponse;
+import com.sms_activate.activation.SMSActivateGetFullSmsResponse;
+import com.sms_activate.activation.extra.SMSActivateStatusNumber;
 import com.sms_activate.activation.set_status.SMSActivateSetStatusRequest;
 import com.sms_activate.error.base.SMSActivateBaseException;
 import com.sms_activate.error.wrong_parameter.SMSActivateWrongParameterException;
@@ -27,7 +27,7 @@ public class GetFullSMSRun {
         } else if (response.equals("ch")) {
           SMSActivateGetFullSmsResponse smsActivateGetFullSmsResponse = smsActivateApi.getFullSms(activation.getId());
 
-          if (smsActivateGetFullSmsResponse.getSmsActivateGetFullTypeResponse() == SMSActivateGetFullTypeResponse.FULL_SMS) {
+          if (smsActivateGetFullSmsResponse.getSmsActivateGetFullTypeResponse() == SMSActivateStatusNumber.FULL_SMS) {
             System.out.println(smsActivateGetFullSmsResponse.getText());
             smsActivateApi.setStatus(activation.getId(), SMSActivateSetStatusRequest.FINISH);
             break;

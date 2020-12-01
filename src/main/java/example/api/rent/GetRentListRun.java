@@ -3,7 +3,7 @@ package example.api.rent;
 import com.sms_activate.SMSActivateApi;
 import com.sms_activate.error.base.SMSActivateBaseException;
 import com.sms_activate.error.wrong_parameter.SMSActivateWrongParameterException;
-import com.sms_activate.rent.get_rent_list.SMSActivateGetRentListResponse;
+import com.sms_activate.rent.SMSActivateGetRentListResponse;
 
 public class GetRentListRun {
   public static void main(String[] args) {

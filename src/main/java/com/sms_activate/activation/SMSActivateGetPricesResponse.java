@@ -1,7 +1,6 @@
-package com.sms_activate.activation.get_prices;
+package com.sms_activate.activation;
 
-import com.sms_activate.error.wrong_parameter.SMSActivateWrongParameter;
-import com.sms_activate.error.wrong_parameter.SMSActivateWrongParameterException;
+import com.sms_activate.activation.extra.SMSActivateGetPriceInfo;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -11,14 +10,14 @@ public class SMSActivateGetPricesResponse {
   /**
    * Map prices where key is country id and short name service.
    */
-  private final Map<Integer, Map<String, SMSActivateGetPriceResponse>> smsActivateGetPriceMap;
+  private final Map<Integer, Map<String, SMSActivateGetPriceInfo>> smsActivateGetPriceMap;
 
   /**
    * Constructor response getPrices with data.
    *
    * @param smsActivateGetPriceMap map where first key is countryId, second key is service short name.
    */
-  public SMSActivateGetPricesResponse(@NotNull Map<Integer, Map<String, SMSActivateGetPriceResponse>> smsActivateGetPriceMap) {
+  public SMSActivateGetPricesResponse(@NotNull Map<Integer, Map<String, SMSActivateGetPriceInfo>> smsActivateGetPriceMap) {
     this.smsActivateGetPriceMap = smsActivateGetPriceMap;
   }
 
@@ -30,7 +29,7 @@ public class SMSActivateGetPricesResponse {
    * @return object with info about service.
    */
   @Nullable
-  public SMSActivateGetPriceResponse get(int countryId, @NotNull String serviceName) {
+  public SMSActivateGetPriceInfo get(int countryId, @NotNull String serviceName) {
     return getPricesByCountry(countryId).get(serviceName);
   }
 
@@ -41,7 +40,7 @@ public class SMSActivateGetPricesResponse {
    * @return map services with info by country.
    */
   @Nullable
-  public Map<String, SMSActivateGetPriceResponse> getPricesByCountry(int countryId) {
+  public Map<String, SMSActivateGetPriceInfo> getPricesByCountry(int countryId) {
     return this.smsActivateGetPriceMap.get(countryId);
   }
 
@@ -59,7 +58,7 @@ public class SMSActivateGetPricesResponse {
    * @return map with countryId and service map.
    */
   @NotNull
-  public Map<Integer, Map<String, SMSActivateGetPriceResponse>> getSmsActivateGetPriceMap() {
+  public Map<Integer, Map<String, SMSActivateGetPriceInfo>> getSmsActivateGetPriceMap() {
     return smsActivateGetPriceMap;
   }
 }

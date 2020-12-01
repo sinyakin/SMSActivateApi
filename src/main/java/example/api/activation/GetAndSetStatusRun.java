@@ -2,7 +2,7 @@ package example.api.activation;
 
 import com.sms_activate.SMSActivateApi;
 import com.sms_activate.activation.SMSActivateActivation;
-import com.sms_activate.activation.get_status.SMSActivateGetStatusResponse;
+import com.sms_activate.activation.SMSActivateGetStatusResponse;
 import com.sms_activate.activation.set_status.SMSActivateSetStatusRequest;
 import com.sms_activate.activation.set_status.SMSActivateSetStatusResponse;
 import com.sms_activate.error.base.SMSActivateBaseException;
@@ -33,7 +33,7 @@ public class GetAndSetStatusRun {
       System.out.println("Current status: " + smsActivateGetStatusResponse.getMessage());
 
       SMSActivateSetStatusResponse smsActivateSetStatusResponse = smsActivateApi.setStatus(smsActivateActivation.getId(),
-          SMSActivateSetStatusRequest.SEND_READY_NUMBER);
+        SMSActivateSetStatusRequest.SEND_READY_NUMBER);
 
       // check: https://sms-activate.ru/ru/getNumber
 

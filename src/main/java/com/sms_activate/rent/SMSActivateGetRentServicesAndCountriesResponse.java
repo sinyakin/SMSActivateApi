@@ -1,5 +1,6 @@
-package com.sms_activate.rent.get_rent_services_and_countries;
+package com.sms_activate.rent;
 
+import com.sms_activate.rent.extra.SMSActivateRentService;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 

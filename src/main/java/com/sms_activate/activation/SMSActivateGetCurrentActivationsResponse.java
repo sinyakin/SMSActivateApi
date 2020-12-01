@@ -1,5 +1,6 @@
-package com.sms_activate.activation.current_activation;
+package com.sms_activate.activation;
 
+import com.sms_activate.activation.extra.SMSActivateCurrentActivation;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -9,9 +10,9 @@ import java.util.Set;
 
 public class SMSActivateGetCurrentActivationsResponse {
   /**
-   * Map currectActivation where key is id activation.
+   * Map current Activation where key is id activation.
    */
-  private final Map<Integer, SMSActivateGetCurrentActivationResponse> smsActivateGetCurrentActivationResponseMap;
+  private final Map<Integer, SMSActivateCurrentActivation> smsActivateGetCurrentActivationResponseMap;
 
   /**
    * True if count activation > 10 else false.
@@ -19,13 +20,29 @@ public class SMSActivateGetCurrentActivationsResponse {
   private final boolean existNext;
 
   /**
-   * Constructor response getCurrentActivation with data..
    *
-   * @param smsActivateGetCurrentActivationResponseMap map currect activation where key is idActivation.
    */
-  public SMSActivateGetCurrentActivationsResponse(@NotNull Map<Integer, SMSActivateGetCurrentActivationResponse> smsActivateGetCurrentActivationResponseMap, boolean existNext) {
+  private final int totalCount;
+
+  /**
+   * Constructor response getCurrentActivation with data.
+   *
+   * @param smsActivateGetCurrentActivationResponseMap map current activation where key is idActivation.
+   */
+  public SMSActivateGetCurrentActivationsResponse(@NotNull Map<Integer, SMSActivateCurrentActivation> smsActivateGetCurrentActivationResponseMap,
+                                                  boolean existNext, int totalCount) {
     this.smsActivateGetCurrentActivationResponseMap = smsActivateGetCurrentActivationResponseMap;
     this.existNext = existNext;
+    this.totalCount = totalCount;
+  }
+
+  /**
+   * Returns the total count activations.
+   *
+   * @return total count activations.
+   */
+  public int getTotalCount() {
+    return totalCount;
   }
 
   /**
@@ -43,7 +60,7 @@ public class SMSActivateGetCurrentActivationsResponse {
    * @return current activation.
    */
   @Nullable
-  public SMSActivateGetCurrentActivationResponse get(int idActivation) {
+  public SMSActivateCurrentActivation get(int idActivation) {
     return smsActivateGetCurrentActivationResponseMap.get(idActivation);
   }
 
@@ -63,7 +80,7 @@ public class SMSActivateGetCurrentActivationsResponse {
    * @return set all current activations.
    */
   @NotNull
-  public Set<SMSActivateGetCurrentActivationResponse> getSMSActivateGetCurrentActivationResponseSet() {
+  public Set<SMSActivateCurrentActivation> getSMSActivateGetCurrentActivationResponseSet() {
     return new HashSet<>(smsActivateGetCurrentActivationResponseMap.values());
   }
 

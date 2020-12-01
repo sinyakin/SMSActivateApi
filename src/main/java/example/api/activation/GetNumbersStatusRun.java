@@ -1,8 +1,8 @@
 package example.api.activation;
 
 import com.sms_activate.SMSActivateApi;
-import com.sms_activate.activation.numbers_status.SMSActivateGetNumberStatusResponse;
-import com.sms_activate.activation.numbers_status.SMSActivateGetNumbersStatusResponse;
+import com.sms_activate.activation.SMSActivateGetNumbersStatusResponse;
+import com.sms_activate.activation.extra.SMSActivateServiceInfo;
 import com.sms_activate.error.base.SMSActivateBaseException;
 import org.jetbrains.annotations.NotNull;
 
@@ -13,7 +13,7 @@ public class GetNumbersStatusRun {
       System.out.println("Your api-key: " + smsActivateApi.getApiKey());
 
       SMSActivateGetNumbersStatusResponse smsActivateGetNumbersStatusResponse = smsActivateApi.getNumbersStatus();
-      SMSActivateGetNumberStatusResponse go = smsActivateGetNumbersStatusResponse.get("go"); // google
+      SMSActivateServiceInfo go = smsActivateGetNumbersStatusResponse.get("go"); // google
 
       printInfo(go);
 
@@ -27,9 +27,9 @@ public class GetNumbersStatusRun {
     }
   }
 
-  private static void printInfo(@NotNull SMSActivateGetNumberStatusResponse smsActivateGetNumberStatusResponse) {
-    System.out.println("Name: " + smsActivateGetNumberStatusResponse.getNameService());
-    System.out.println("Count numbers: " + smsActivateGetNumberStatusResponse.getCountNumber());
+  private static void printInfo(@NotNull SMSActivateServiceInfo smsActivateServiceInfo) {
+    System.out.println("Name: " + smsActivateServiceInfo.getShortName());
+    System.out.println("Count numbers: " + smsActivateServiceInfo.getCountNumber());
     System.out.println("=============================================");
   }
 }

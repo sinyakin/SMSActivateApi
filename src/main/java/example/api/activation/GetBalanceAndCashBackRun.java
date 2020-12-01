@@ -1,7 +1,7 @@
 package example.api.activation;
 
 import com.sms_activate.SMSActivateApi;
-import com.sms_activate.activation.balance.SMSActivateGetBalanceAndCashBackResponse;
+import com.sms_activate.activation.SMSActivateGetBalanceAndCashBackResponse;
 import com.sms_activate.error.base.SMSActivateBaseException;
 
 import java.math.BigDecimal;
