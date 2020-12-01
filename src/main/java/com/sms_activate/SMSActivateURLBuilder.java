@@ -62,11 +62,11 @@ class SMSActivateURLBuilder {
    */
   @NotNull
   public URL build() throws IOException {
-    String urlParameters = this.parameterMap.entrySet().stream().map(x -> {
-      String value = x.getValue();
-      SMSActivateURLKey key = x.getKey();
-      return String.join("=", key.getName(), value);
-    }).collect(Collectors.joining("&"));
+    String urlParameters = this.parameterMap
+      .entrySet()
+      .stream()
+      .map(entry -> String.join("=", entry.getKey().getName(), entry.getValue()))
+      .collect(Collectors.joining("&"));
 
     return new URL(BASE_URL + urlParameters);
   }
