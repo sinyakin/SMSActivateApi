@@ -2,20 +2,24 @@ package example.api.multithread;
 
 import com.sms_activate.SMSActivateApi;
 import com.sms_activate.activation.SMSActivateActivation;
+import com.sms_activate.activation.get_status.SMSActivateGetStatus;
+import com.sms_activate.activation.get_status.SMSActivateGetStatusResponse;
 import com.sms_activate.activation.set_status.SMSActivateSetStatusRequest;
 import com.sms_activate.error.base.SMSActivateBaseException;
 import com.sms_activate.error.wrong_parameter.SMSActivateWrongParameterException;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Timer;
+import java.util.TimerTask;
 
 public class ActivationRun {
   public static void main(String[] args) throws SMSActivateWrongParameterException {
-    final int COUNT_THREAD = 30;
+    final int COUNT_THREAD = 100;
 
     long start = System.currentTimeMillis();
     List<Thread> threadList = new ArrayList<>();
-    SMSActivateApi smsActivateApi = new SMSActivateApi("API_KEY");
+    SMSActivateApi smsActivateApi = new SMSActivateApi("9A34fbf73d52752607e37ebA26f6f0bf");
 
     for (int i = 0; i < COUNT_THREAD; i++) {
       threadList.add(new Thread(() -> {
@@ -24,8 +28,8 @@ public class ActivationRun {
           Thread current = Thread.currentThread();
 
           System.out.println(smsActivateGetNumberStatusResponse.getNumber() + " in thread " + Thread.currentThread().getName());
-/*
-          new Timer().schedule(new TimerTask() {
+
+         /* new Timer().schedule(new TimerTask() {
             @Override
             public void run() {
               new Thread(() -> {
@@ -61,10 +65,35 @@ public class ActivationRun {
       }, "Name: " + (i + 1)));
     }
 
-    for (Thread thread : threadList) {
-      thread.start();
-    }
+    new Thread(() -> {
+      for (Thread thread : threadList) {
+        thread.start();
+      }
+/*
+      while (true) {
+        boolean isAllInterrupt = false;
 
+        for (Thread thread : threadList) {
+          if (thread.isInterrupted()) {
+            isAllInterrupt = true;
+          } else {
+            isAllInterrupt = false;
+            break;
+          }
+        }
+
+        if (isAllInterrupt) {
+          break;
+        }
+
+        try {
+          Thread.sleep(15000);
+        } catch (InterruptedException e) {
+          e.printStackTrace();
+        }
+      }
+*/
+    }).start();
     System.out.println("Time: " + (System.currentTimeMillis() - start));
   }
 }
