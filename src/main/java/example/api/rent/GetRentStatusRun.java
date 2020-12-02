@@ -2,6 +2,8 @@ package example.api.rent;
 
 import com.sms_activate.SMSActivateApi;
 import com.sms_activate.error.base.SMSActivateBaseException;
+import com.sms_activate.error.base.SMSActivateBaseTypeError;
+import com.sms_activate.error.wrong_parameter.SMSActivateWrongParameter;
 import com.sms_activate.error.wrong_parameter.SMSActivateWrongParameterException;
 import com.sms_activate.rent.SMSActivateGetRentStatusResponse;
 
@@ -9,8 +11,14 @@ public class GetRentStatusRun {
   public static void main(String[] args) {
     try {
       SMSActivateApi smsActivateApi = new SMSActivateApi("API_KEY");
-      SMSActivateGetRentStatusResponse smsActivateGetRentStatusResponse = smsActivateApi.getRentStatus(417694);
-      System.out.println("Count sms: " + smsActivateGetRentStatusResponse.getQuantity());
+
+      // ID rent for check status rent
+      SMSActivateGetRentStatusResponse smsActivateGetRentStatusResponse = smsActivateApi.getRentStatus(8794654 );
+
+      // count sms in rent
+      System.out.println("Count sms: " + smsActivateGetRentStatusResponse.getCountSms());
+
+      // info about each sms
       smsActivateGetRentStatusResponse.getSmsActivateSMSList().forEach(x -> {
         System.out.println("Phone from: " + x.getPhoneFrom());
         System.out.println("Text: " + x.getText());
@@ -18,9 +26,22 @@ public class GetRentStatusRun {
         System.out.println("=========================================");
       });
     } catch (SMSActivateWrongParameterException e) {
-      e.printStackTrace();
+      if (e.getWrongParameter() == SMSActivateWrongParameter.BAD_ACTION) {
+        System.out.println("Contact support.");
+      }
+      if (e.getWrongParameter() == SMSActivateWrongParameter.BAD_KEY) {
+        System.out.println("Your api-key is incorrect.");
+      } else {
+        // todo check other wrong parameter
+        System.out.println(e.getMessage() + "  " + e.getMessage());
+      }
     } catch (SMSActivateBaseException e) {
-      e.printStackTrace();
+      if (e.getTypeError() == SMSActivateBaseTypeError.WAIT_CODE) {
+        System.out.println("No sms...");
+      } else {
+        // todo check other type error
+        System.out.println(e.getTypeError() + "  " + e.getMessage());
+      }
     }
   }
 }

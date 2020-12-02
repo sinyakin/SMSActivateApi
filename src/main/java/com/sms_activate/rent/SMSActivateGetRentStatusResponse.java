@@ -9,7 +9,7 @@ public class SMSActivateGetRentStatusResponse {
   /**
    * Count sms.
    */
-  private final int quantity;
+  private final int countSms;
 
   /**
    * SMS list from server.
@@ -19,11 +19,11 @@ public class SMSActivateGetRentStatusResponse {
   /**
    * Constructor response getRentStatusResponse with data from server.
    *
-   * @param quantity           count sms.
+   * @param countSms           count sms.
    * @param smsActivateSMSList list sms from server.
    */
-  public SMSActivateGetRentStatusResponse(int quantity, @NotNull List<SMSActivateSMS> smsActivateSMSList) {
-    this.quantity = quantity;
+  public SMSActivateGetRentStatusResponse(int countSms, @NotNull List<SMSActivateSMS> smsActivateSMSList) {
+    this.countSms = countSms;
     this.smsActivateSMSList = smsActivateSMSList;
   }
 
@@ -32,8 +32,8 @@ public class SMSActivateGetRentStatusResponse {
    *
    * @return count sms.
    */
-  public int getQuantity() {
-    return quantity;
+  public int getCountSms() {
+    return countSms;
   }
 
   /**

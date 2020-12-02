@@ -22,6 +22,7 @@ public class GetAndSetStatusRun {
             add("tele2");
           }},
           false*/);
+      // print info about activation
       System.out.println("Id: " + smsActivateActivation.getId());
       System.out.println("Number: " + smsActivateActivation.getNumber());
       // check: https://sms-activate.ru/ru/getNumber
@@ -30,7 +31,7 @@ public class GetAndSetStatusRun {
 
       SMSActivateGetStatusResponse smsActivateGetStatusResponse = smsActivateApi.getStatus(smsActivateActivation.getId());
 
-      System.out.println("Current status: " + smsActivateGetStatusResponse.getMessage());
+      System.out.println("Description of the current lease status: " + smsActivateGetStatusResponse.getMessage());
 
       SMSActivateSetStatusResponse smsActivateSetStatusResponse = smsActivateApi.setStatus(smsActivateActivation.getId(),
         SMSActivateSetStatusRequest.SEND_READY_NUMBER);

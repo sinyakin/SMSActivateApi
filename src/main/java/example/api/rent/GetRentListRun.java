@@ -2,6 +2,7 @@ package example.api.rent;
 
 import com.sms_activate.SMSActivateApi;
 import com.sms_activate.error.base.SMSActivateBaseException;
+import com.sms_activate.error.wrong_parameter.SMSActivateWrongParameter;
 import com.sms_activate.error.wrong_parameter.SMSActivateWrongParameterException;
 import com.sms_activate.rent.SMSActivateGetRentListResponse;
 
@@ -15,10 +16,18 @@ public class GetRentListRun {
         System.out.println("Number: " + x.getNumber());
         System.out.println("========================================");
       });
-    } catch (SMSActivateWrongParameterException e) {
-      e.printStackTrace();
+    }catch (SMSActivateWrongParameterException e) {
+      if (e.getWrongParameter() == SMSActivateWrongParameter.BAD_ACTION) {
+        System.out.println("Contact support.");
+      } if (e.getWrongParameter() == SMSActivateWrongParameter.BAD_KEY) {
+        System.out.println("Your api-key is incorrect.");
+      } else {
+        // todo check other wrong parameter
+        System.out.println(e.getMessage() + "  " + e.getMessage());
+      }
     } catch (SMSActivateBaseException e) {
-      e.printStackTrace();
+      // todo check
+      System.out.println(e.getTypeError() + "  " + e.getMessage());
     }
   }
 }

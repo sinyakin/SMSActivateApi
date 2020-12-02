@@ -12,9 +12,13 @@ public class GetBalanceAndCashBackRun {
       SMSActivateApi smsActivateApi = new SMSActivateApi("API_KEY");
       System.out.println("Your api-key: " + smsActivateApi.getApiKey());
 
+      // request balance
       BigDecimal balance = smsActivateApi.getBalance();
+
+      //request balance and cashback
       SMSActivateGetBalanceAndCashBackResponse smsActivateGetBalanceAndCashBackResponse = smsActivateApi.getBalanceAndCashBack();
 
+      // print info about score
       System.out.println("Balance: " + balance);
       System.out.println("Cashback: " + smsActivateGetBalanceAndCashBackResponse.getCashBack());
       System.out.println("Cashback + balance: " + smsActivateGetBalanceAndCashBackResponse.getBalanceAndCashBack());

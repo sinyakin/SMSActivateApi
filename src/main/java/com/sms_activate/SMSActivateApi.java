@@ -55,6 +55,11 @@ public class SMSActivateApi {
   public static final int MINIMAL_RENT_TIME = 4;
 
   /**
+   * Maximum string in each batch.
+   */
+  public static final int MAX_COUNT_STRING_IN_BATCH = 10;
+
+  /**
    * Json deserializer and serializer.
    */
   private static final Gson gson = new Gson();
@@ -68,11 +73,6 @@ public class SMSActivateApi {
    * Success value status.
    */
   private static final String SUCCESS_NAME_STATUS = "success";
-
-  /**
-   * Maximum string in each batch.
-   */
-  private static final int MAX_COUNT_STRING_IN_BATCH = 10;
 
   /**
    * Numbers reg expression.

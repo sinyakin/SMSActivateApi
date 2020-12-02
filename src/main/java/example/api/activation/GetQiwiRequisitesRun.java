@@ -2,6 +2,7 @@ package example.api.activation;
 
 import com.sms_activate.SMSActivateApi;
 import com.sms_activate.error.base.SMSActivateBaseException;
+import com.sms_activate.error.wrong_parameter.SMSActivateWrongParameter;
 import com.sms_activate.error.wrong_parameter.SMSActivateWrongParameterException;
 import com.sms_activate.qiwi.SMSActivateGetQiwiRequisitesResponse;
 import com.sms_activate.qiwi.SMSActivateQiwiStatus;
@@ -18,9 +19,17 @@ public class GetQiwiRequisitesRun {
         System.out.println("Up to date: " + smsActivateGetQiwiRequisitesResponse.getUpToDate());
       }
     } catch (SMSActivateWrongParameterException e) {
-      System.out.println(e.getWrongParameter());
+      if (e.getWrongParameter() == SMSActivateWrongParameter.BAD_ACTION) {
+        System.out.println("Contact support.");
+      } if (e.getWrongParameter() == SMSActivateWrongParameter.BAD_KEY) {
+        System.out.println("Your api-key is incorrect.");
+      } else {
+        // todo check other wrong parameter
+        System.out.println(e.getMessage() + "  " + e.getMessage());
+      }
     } catch (SMSActivateBaseException e) {
-      System.out.println(e.getTypeError());
+      // todo check
+      System.out.println(e.getTypeError() + "  " + e.getMessage());
     }
   }
 }
