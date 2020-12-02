@@ -791,27 +791,10 @@ public class SMSActivateApi {
 
     String data = new SMSActivateWebClient().getOrThrowCommonException(smsActivateURLBuilder, validator);
 
-    Map<String, Map<String, Map<String, Double>>> countryMap = new SMSActivateJsonParser().tryParseJson(data,
-      new TypeToken<Map<String, Map<String, Map<String, Double>>>>() {
-      }.getType(), validator);
-    Map<Integer, Map<String, SMSActivateGetPriceInfo>> smsActivateGetPriceMapList = new HashMap<>();
+    Map<String, Map<String, SMSActivateGetPriceInfo>> stringSMSActivateGetPricesResponseMap = new SMSActivateJsonParser().tryParseJson(data,
+      new TypeToken<Map<String, Map<String, SMSActivateGetPriceInfo>>>() {}.getType(), validator);
 
-    try {
-      countryMap.forEach((countryCode, serviceMap) -> {
-        Map<String, SMSActivateGetPriceInfo> smsActivateGetPriceResponseMap = new HashMap<>();
-
-        serviceMap.forEach((shortName, value) -> smsActivateGetPriceResponseMap.put(shortName, new SMSActivateGetPriceInfo(
-          BigDecimal.valueOf(value.get(SMSActivateJsonKey.COST)),
-          BigDecimal.valueOf(value.get(SMSActivateJsonKey.COUNT)).intValue()
-        )));
-
-        smsActivateGetPriceMapList.put(Integer.valueOf(countryCode), smsActivateGetPriceResponseMap);
-      });
-
-      return new SMSActivateGetPricesResponse(smsActivateGetPriceMapList);
-    } catch (NumberFormatException e) {
-      throw new SMSActivateUnknownException(data, "Error formatting to number.");
-    }
+    return new SMSActivateGetPricesResponse(stringSMSActivateGetPricesResponseMap.get(countryId));
   }
 
   /**

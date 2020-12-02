@@ -10,14 +10,14 @@ public class SMSActivateGetPricesResponse {
   /**
    * Map prices where key is country id and short name service.
    */
-  private final Map<Integer, Map<String, SMSActivateGetPriceInfo>> smsActivateGetPriceMap;
+  private Map<String, SMSActivateGetPriceInfo> smsActivateGetPriceMap;
 
   /**
    * Constructor response getPrices with data from server.
    *
    * @param smsActivateGetPriceMap map where first key is countryId, second key is service short name.
    */
-  public SMSActivateGetPricesResponse(@NotNull Map<Integer, Map<String, SMSActivateGetPriceInfo>> smsActivateGetPriceMap) {
+  public SMSActivateGetPricesResponse(@NotNull Map<String, SMSActivateGetPriceInfo> smsActivateGetPriceMap) {
     this.smsActivateGetPriceMap = smsActivateGetPriceMap;
   }
 
@@ -29,31 +29,14 @@ public class SMSActivateGetPricesResponse {
    * @return object with info about service.
    */
   @NotNull
-  public SMSActivateGetPriceInfo get(int countryId, @NotNull String serviceName) throws SMSActivateBaseException {
-    SMSActivateGetPriceInfo smsActivateGetPriceInfo = getPricesByCountry(countryId).get(serviceName);
+  public SMSActivateGetPriceInfo get(@NotNull String serviceName) throws SMSActivateBaseException {
+    SMSActivateGetPriceInfo smsActivateGetPriceInfo = this.smsActivateGetPriceMap.get(serviceName);
 
     if (smsActivateGetPriceInfo == null) {
-      throw new SMSActivateBaseException("Wrong service name.", "Некорректный имя сервиса.");
+      throw new SMSActivateBaseException("Wrong service name.", "Некорректное имя сервиса.");
     }
 
     return smsActivateGetPriceInfo;
-  }
-
-  /**
-   * Returns the map services with info by country.
-   *
-   * @param countryId country id.
-   * @return map services with info by country.
-   */
-  @NotNull
-  public Map<String, SMSActivateGetPriceInfo> getPricesByCountry(int countryId) throws SMSActivateBaseException {
-    Map<String, SMSActivateGetPriceInfo> priceInfoMap = this.smsActivateGetPriceMap.get(countryId);
-
-    if (priceInfoMap == null) {
-      throw new SMSActivateBaseException("Wrong country id.", "Некорректный id страны.");
-    }
-
-    return priceInfoMap;
   }
 
   /**
@@ -69,8 +52,8 @@ public class SMSActivateGetPricesResponse {
    *
    * @return map with countryId and service map.
    */
-  @NotNull
+  /*@NotNull
   public Map<Integer, Map<String, SMSActivateGetPriceInfo>> getSmsActivateGetPriceMap() {
     return smsActivateGetPriceMap;
-  }
+  }*/
 }

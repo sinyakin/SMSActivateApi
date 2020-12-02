@@ -14,13 +14,13 @@ public class GetPricesRun {
     try {
       SMSActivateApi smsActivateApi = new SMSActivateApi("9A34fbf73d52752607e37ebA26f6f0bf");
       SMSActivateGetPricesResponse smsActivateGetPricesResponse = smsActivateApi.getPrices(
-        //0, "vk"// comment this parameter and you get all data.
+        0, "vk"// comment this parameter and you get all data.
       );
-
+/*
       SMSActivateGetPriceInfo smsActivateGetPriceInfo = smsActivateGetPricesResponse.get(0, "vk");
       System.out.println(">>> Cost: " + smsActivateGetPriceInfo.getCost());
       System.out.println(">>> Count number: " + smsActivateGetPriceInfo.getCount());
-
+*/
       // output all
       /*smsActivateGetPricesResponse.getSmsActivateGetPriceMap().forEach((countryId, value) -> {
         System.out.println("> Country id: " + countryId);
