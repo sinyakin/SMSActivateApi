@@ -1,7 +1,5 @@
 package com.sms_activate;
 
-import com.google.gson.Gson;
-import com.google.gson.JsonSyntaxException;
 import com.google.gson.reflect.TypeToken;
 import com.sms_activate.activation.*;
 import com.sms_activate.activation.extra.*;
@@ -29,7 +27,6 @@ import com.sms_activate.rent.set_rent_status.SMSActivateSetRentStatusResponse;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
-import java.lang.reflect.Type;
 import java.math.BigDecimal;
 import java.util.*;
 import java.util.regex.Matcher;
@@ -58,11 +55,6 @@ public class SMSActivateApi {
    * Maximum string in each batch.
    */
   public static final int MAX_COUNT_STRING_IN_BATCH = 10;
-
-  /**
-   * Json deserializer and serializer.
-   */
-  private static final Gson gson = new Gson();
 
   /**
    * Special validator for server responses.
@@ -256,8 +248,8 @@ public class SMSActivateApi {
 
     String data = new SMSActivateWebClient().getOrThrowCommonException(smsActivateURLBuilder, validator);
 
-    Map<String, String> serviceMap = tryParseJson(data, new TypeToken<Map<String, String>>() {
-    }.getType());
+    Map<String, String> serviceMap = new SMSActivateJsonParser().tryParseJson(data, new TypeToken<Map<String, String>>() {
+    }.getType(), validator);
     Map<String, SMSActivateServiceInfo> smsActivateGetNumbersStatusResponseMap = new HashMap<>();
 
     serviceMap.forEach((key, value) -> {
@@ -491,8 +483,8 @@ public class SMSActivateApi {
 
     validator.throwExceptionWithBan(data);
 
-    List<Map<String, Object>> activationMapList = tryParseJson(data, new TypeToken<List<Map<String, Object>>>() {
-    }.getType());
+    List<Map<String, Object>> activationMapList = new SMSActivateJsonParser().tryParseJson(data, new TypeToken<List<Map<String, Object>>>() {
+    }.getType(), validator);
     List<SMSActivateActivation> phoneList = new ArrayList<>();
 
     int indexForwardPhoneNumber = (multiForwardList == null) ? -1 : multiForwardList.indexOf(true); //index id where need forwarding
@@ -788,9 +780,9 @@ public class SMSActivateApi {
 
     String data = new SMSActivateWebClient().getOrThrowCommonException(smsActivateURLBuilder, validator);
 
-    Map<String, Map<String, Map<String, Double>>> countryMap = tryParseJson(data,
+    Map<String, Map<String, Map<String, Double>>> countryMap = new SMSActivateJsonParser().tryParseJson(data,
       new TypeToken<Map<String, Map<String, Map<String, Double>>>>() {
-      }.getType());
+      }.getType(), validator);
     Map<Integer, Map<String, SMSActivateGetPriceInfo>> smsActivateGetPriceMapList = new HashMap<>();
 
     countryMap.forEach((countryCode, serviceMap) -> {
@@ -834,8 +826,8 @@ public class SMSActivateApi {
     SMSActivateURLBuilder smsActivateURLBuilder = new SMSActivateURLBuilder(apiKey, SMSActivateAction.GET_COUNTRIES);
     String data = new SMSActivateWebClient().getOrThrowCommonException(smsActivateURLBuilder, validator);
 
-    Map<Integer, SMSActivateCountryInfo> countryInformationMap = tryParseJson(data, new TypeToken<Map<Integer, SMSActivateCountryInfo>>() {
-    }.getType());
+    Map<Integer, SMSActivateCountryInfo> countryInformationMap = new SMSActivateJsonParser().tryParseJson(data, new TypeToken<Map<Integer, SMSActivateCountryInfo>>() {
+    }.getType(), validator);
 
     return new SMSActivateGetCountriesResponse(new ArrayList<>(countryInformationMap.values()));
   }
@@ -873,8 +865,8 @@ public class SMSActivateApi {
     SMSActivateURLBuilder smsActivateURLBuilder = new SMSActivateURLBuilder(apiKey, SMSActivateAction.GET_QIWI_REQUISITES);
     String data = new SMSActivateWebClient().getOrThrowCommonException(smsActivateURLBuilder, validator);
 
-    Map<String, String> response = tryParseJson(data, new TypeToken<Map<String, String>>() {
-    }.getType());
+    Map<String, String> response = new SMSActivateJsonParser().tryParseJson(data, new TypeToken<Map<String, String>>() {
+    }.getType(), validator);
 
     SMSActivateQiwiStatus status = SMSActivateQiwiStatus.getStatusByName(response.get(SMSActivateJsonKey.STATUS));
 
@@ -1012,8 +1004,8 @@ public class SMSActivateApi {
       .append(SMSActivateURLKey.ORDER_BY, smsActivateOrderBy.getSortType());
 
     String data = new SMSActivateWebClient().getOrThrowCommonException(smsActivateURLBuilder, validator);
-    Map<String, Object> responseMap = tryParseJson(data, new TypeToken<Map<String, Object>>() {
-    }.getType());
+    Map<String, Object> responseMap = new SMSActivateJsonParser().tryParseJson(data, new TypeToken<Map<String, Object>>() {
+    }.getType(), validator);
     String status = String.valueOf(responseMap.get(SMSActivateJsonKey.STATUS));
 
     if (!validator.isSuccessStatus(status)) {
@@ -1119,8 +1111,8 @@ public class SMSActivateApi {
       .append(SMSActivateURLKey.RENT_TIME, String.valueOf(time));
 
     String data = new SMSActivateWebClient().getOrThrowCommonException(smsActivateURLBuilder, validator);
-    Map<String, Object> rentCountriesServices = tryParseJson(data, new TypeToken<Map<String, Object>>() {
-    }.getType());
+    Map<String, Object> rentCountriesServices = new SMSActivateJsonParser().tryParseJson(data, new TypeToken<Map<String, Object>>() {
+    }.getType(), validator);
 
     if (rentCountriesServices.containsKey(SMSActivateJsonKey.MESSAGE)) {
       throw validator.getBaseExceptionByErrorNameOrUnknown(String.valueOf(rentCountriesServices.get(SMSActivateJsonKey.MESSAGE)), null);
@@ -1248,8 +1240,8 @@ public class SMSActivateApi {
 
     String data = new SMSActivateWebClient().getOrThrowCommonException(smsActivateURLBuilder, validator);
 
-    Map<String, Object> responseMap = tryParseJson(data, new TypeToken<Map<String, Object>>() {
-    }.getType());
+    Map<String, Object> responseMap = new SMSActivateJsonParser().tryParseJson(data, new TypeToken<Map<String, Object>>() {
+    }.getType(), validator);
 
     String status = String.valueOf(responseMap.get(SMSActivateJsonKey.STATUS));
 
@@ -1300,8 +1292,8 @@ public class SMSActivateApi {
 
     String data = new SMSActivateWebClient().getOrThrowCommonException(smsActivateURLBuilder, validator);
 
-    Map<String, Object> responseMap = tryParseJson(data, new TypeToken<Map<String, Object>>() {
-    }.getType());
+    Map<String, Object> responseMap = new SMSActivateJsonParser().tryParseJson(data, new TypeToken<Map<String, Object>>() {
+    }.getType(), validator);
 
     String status = String.valueOf(responseMap.get(SMSActivateJsonKey.STATUS));
 
@@ -1363,8 +1355,8 @@ public class SMSActivateApi {
       .append(SMSActivateURLKey.STATUS, String.valueOf(status.getId()));
 
     String data = new SMSActivateWebClient().getOrThrowCommonException(smsActivateURLBuilder, validator);
-    Map<String, String> responseMap = tryParseJson(data, new TypeToken<Map<String, String>>() {
-    }.getType());
+    Map<String, String> responseMap = new SMSActivateJsonParser().tryParseJson(data, new TypeToken<Map<String, String>>() {
+    }.getType(), validator);
     SMSActivateRentStatus smsActivateRentStatus = SMSActivateRentStatus.getStatusByName(responseMap.get(SMSActivateJsonKey.STATUS));
 
     if (smsActivateRentStatus == SMSActivateRentStatus.SUCCESS) {
@@ -1402,8 +1394,8 @@ public class SMSActivateApi {
     SMSActivateURLBuilder smsActivateURLBuilder = new SMSActivateURLBuilder(apiKey, SMSActivateAction.GET_RENT_LIST);
 
     String data = new SMSActivateWebClient().getOrThrowCommonException(smsActivateURLBuilder, validator);
-    Map<String, Object> responseMap = tryParseJson(data, new TypeToken<Map<String, Object>>() {
-    }.getType());
+    Map<String, Object> responseMap = new SMSActivateJsonParser().tryParseJson(data, new TypeToken<Map<String, Object>>() {
+    }.getType(), validator);
 
     String status = String.valueOf(responseMap.get(SMSActivateJsonKey.STATUS));
 
@@ -1442,23 +1434,5 @@ public class SMSActivateApi {
     }
 
     return new BigDecimal(matcher.group());
-  }
-
-  /**
-   * If string is json object then parsing string to json and cast to type else throw exception.
-   *
-   * @param data   data in string.
-   * @param typeOf type to cast after parse.
-   * @param <T>    type to return.
-   * @return Object from string.
-   * @throws SMSActivateBaseException if response from server not equals success.
-   */
-  @NotNull
-  private <T> T tryParseJson(@NotNull String data, @NotNull Type typeOf) throws SMSActivateBaseException {
-    try {
-      return gson.fromJson(data, typeOf);
-    } catch (JsonSyntaxException e) {
-      throw validator.getBaseExceptionByErrorNameOrUnknown(data, e.getMessage());
-    }
   }
 }
