@@ -23,12 +23,13 @@ public class GetCurrentActivationRun {
       if (smsActivateGetCurrentActivationsResponse.isExistActivation()) {
         // if you have more than 10 activations, then we can make request again
         if (smsActivateGetCurrentActivationsResponse.isExistNextBatch()) {
-          // if page > 0!!!
-          for (int page = 1; smsActivateGetCurrentActivationsResponse.isExistNextBatch(); page++) {
-            smsActivateGetCurrentActivationsResponse.getSMSActivateGetCurrentActivationResponseSet().forEach(GetCurrentActivationRun::printInfoActivation);
+          // if batch > 0!!!
+          int batch = 1;
 
-            smsActivateGetCurrentActivationsResponse = smsActivateApi.getCurrentActivations(page, countStringInBatch, SMSActivateOrderBy.ASC);
-          }
+          do {
+            smsActivateGetCurrentActivationsResponse.getSMSActivateGetCurrentActivationResponseSet().forEach(GetCurrentActivationRun::printInfoActivation);
+            smsActivateGetCurrentActivationsResponse = smsActivateApi.getCurrentActivations(batch, countStringInBatch, SMSActivateOrderBy.ASC);
+          } while (smsActivateGetCurrentActivationsResponse.isExistNextBatch());
         } else {
           System.out.printf("Count your activation is %d: %n", smsActivateGetCurrentActivationsResponse.getTotalCount());
           smsActivateGetCurrentActivationsResponse.getSMSActivateGetCurrentActivationResponseSet().forEach(GetCurrentActivationRun::printInfoActivation);

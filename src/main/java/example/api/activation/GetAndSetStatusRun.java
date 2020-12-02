@@ -47,16 +47,17 @@ public class GetAndSetStatusRun {
           System.out.println("Activation wait retry sms....");
           break;
         case ACTIVATION: // if activation is completed is successfully.
-          System.out.println("Activation is completed.");
+          System.out.println("Activation is complete.");
           break;
         case CANCEL: // if activation has been canceled.
-          System.out.println("Activation is canceled.");
+          System.out.println("Activation is cancel.");
           break;
       }
 
       smsActivateGetStatusResponse = smsActivateApi.getStatus(smsActivateActivation.getId());
-      System.out.println("Current status: " + smsActivateGetStatusResponse.getMessage());
+      System.out.println("Description of the current lease status: " + smsActivateGetStatusResponse.getMessage());
     } catch (SMSActivateBaseException e) {
+      // todo check type error
       System.out.println(e.getTypeError());
       System.out.println(e.getMessage());
     }
