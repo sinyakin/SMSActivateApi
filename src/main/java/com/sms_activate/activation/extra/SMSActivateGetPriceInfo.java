@@ -6,10 +6,6 @@ import java.math.BigDecimal;
 
 public class SMSActivateGetPriceInfo {
   /**
-   * Name service.
-   */
-  private final String name;
-  /**
    * Service cost.
    */
   private final BigDecimal cost;
@@ -21,24 +17,12 @@ public class SMSActivateGetPriceInfo {
   /**
    * Constructor SMSActivateGetPriceResponse with name, cost, count.
    *
-   * @param name  service name.
    * @param cost  cost service.
    * @param count count number service.
    */
-  public SMSActivateGetPriceInfo(@NotNull String name, @NotNull BigDecimal cost, int count) {
-    this.name = name;
+  public SMSActivateGetPriceInfo(@NotNull BigDecimal cost, int count) {
     this.cost = cost;
     this.count = count;
-  }
-
-  /**
-   * Returns the name service.
-   *
-   * @return name service.
-   */
-  @NotNull
-  public String getShortName() {
-    return name;
   }
 
   /**

@@ -1,8 +1,8 @@
 package com.sms_activate.activation;
 
 import com.sms_activate.activation.extra.SMSActivateGetPriceInfo;
+import com.sms_activate.error.base.SMSActivateBaseException;
 import org.jetbrains.annotations.NotNull;
-import org.jetbrains.annotations.Nullable;
 
 import java.util.Map;
 
@@ -28,9 +28,15 @@ public class SMSActivateGetPricesResponse {
    * @param serviceName service short name.
    * @return object with info about service.
    */
-  @Nullable
-  public SMSActivateGetPriceInfo get(int countryId, @NotNull String serviceName) {
-    return getPricesByCountry(countryId).get(serviceName);
+  @NotNull
+  public SMSActivateGetPriceInfo get(int countryId, @NotNull String serviceName) throws SMSActivateBaseException {
+    SMSActivateGetPriceInfo smsActivateGetPriceInfo = getPricesByCountry(countryId).get(serviceName);
+
+    if (smsActivateGetPriceInfo == null) {
+      throw new SMSActivateBaseException("Wrong service name.", "Некорректный имя сервиса.");
+    }
+
+    return smsActivateGetPriceInfo;
   }
 
   /**
@@ -39,9 +45,15 @@ public class SMSActivateGetPricesResponse {
    * @param countryId country id.
    * @return map services with info by country.
    */
-  @Nullable
-  public Map<String, SMSActivateGetPriceInfo> getPricesByCountry(int countryId) {
-    return this.smsActivateGetPriceMap.get(countryId);
+  @NotNull
+  public Map<String, SMSActivateGetPriceInfo> getPricesByCountry(int countryId) throws SMSActivateBaseException {
+    Map<String, SMSActivateGetPriceInfo> priceInfoMap = this.smsActivateGetPriceMap.get(countryId);
+
+    if (priceInfoMap == null) {
+      throw new SMSActivateBaseException("Wrong country id.", "Некорректный id страны.");
+    }
+
+    return priceInfoMap;
   }
 
   /**

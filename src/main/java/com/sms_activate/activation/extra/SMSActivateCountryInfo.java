@@ -6,75 +6,42 @@ public class SMSActivateCountryInfo {
   /**
    * Country id.
    */
-  private final int id;
+  private int id;
 
   /**
    * Country name on chinese.
    */
-  private final String chineseName;
+  private String chn;
 
   /**
    * Country name on english.
    */
-  private final String englishName;
+  private String eng;
 
   /**
    * Country name on russian.
    */
-  private final String russianName;
+  private String rus;
 
   /**
    * Country support rent.
    */
-  private final boolean supportRent;
+  private int rent;
 
   /**
    * Country support retry sms.
    */
-  private final boolean supportRetry;
+  private int retry;
 
   /**
    * Country visible in site.
    */
-  private final boolean visible;
+  private int visible;
 
   /**
    * Country support multi service.
    */
-  private final boolean supportMultiService;
-
-  /**
-   * Constructor sms-activate country.
-   *
-   * @param id                  country id.
-   * @param russianName         name on chinese.
-   * @param englishName         name on english.
-   * @param chineseName         name on russian.
-   * @param supportRent         support rent.
-   * @param supportRetry        support retry sms.
-   * @param visible             in site.
-   * @param supportMultiService support multi service.
-   */
-  public SMSActivateCountryInfo(
-    int id,
-    @NotNull String russianName,
-    @NotNull String englishName,
-    @NotNull String chineseName,
-    boolean supportRent,
-    boolean supportRetry,
-    boolean visible,
-    boolean supportMultiService
-  ) {
-    this.id = id;
-    this.chineseName = chineseName;
-    this.englishName = englishName;
-    this.russianName = russianName;
-
-    this.supportRent = supportRent;
-    this.supportRetry = supportRetry;
-    this.visible = visible;
-    this.supportMultiService = supportMultiService;
-  }
+  private int multiService;
 
   /**
    * Returns the country id.
@@ -92,7 +59,7 @@ public class SMSActivateCountryInfo {
    */
   @NotNull
   public String getChineseName() {
-    return chineseName;
+    return chn;
   }
 
   /**
@@ -102,7 +69,7 @@ public class SMSActivateCountryInfo {
    */
   @NotNull
   public String getEnglishName() {
-    return englishName;
+    return eng;
   }
 
   /**
@@ -112,7 +79,7 @@ public class SMSActivateCountryInfo {
    */
   @NotNull
   public String getRussianName() {
-    return russianName;
+    return rus;
   }
 
   /**
@@ -121,7 +88,7 @@ public class SMSActivateCountryInfo {
    * @return support rent.
    */
   public boolean isSupportRent() {
-    return supportRent;
+    return rent == 1;
   }
 
   /**
@@ -130,7 +97,7 @@ public class SMSActivateCountryInfo {
    * @return support retry sms.
    */
   public boolean isSupportRetry() {
-    return supportRetry;
+    return retry == 1;
   }
 
   /**
@@ -139,7 +106,7 @@ public class SMSActivateCountryInfo {
    * @return visible in site.
    */
   public boolean isVisible() {
-    return visible;
+    return visible == 1;
   }
 
   /**
@@ -148,6 +115,6 @@ public class SMSActivateCountryInfo {
    * @return support multi service.
    */
   public boolean isSupportMultiService() {
-    return supportMultiService;
+    return multiService == 1;
   }
 }

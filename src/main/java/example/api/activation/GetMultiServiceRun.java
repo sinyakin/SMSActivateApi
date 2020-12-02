@@ -14,24 +14,25 @@ import java.util.HashSet;
 public class GetMultiServiceRun {
   public static void main(String[] args) {
     try {
-      SMSActivateApi smsActivateApi = new SMSActivateApi("API_KEY");
+      SMSActivateApi smsActivateApi = new SMSActivateApi("9A34fbf73d52752607e37ebA26f6f0bf");
       SMSActivateGetMultiServiceNumberResponse smsActivateGetMultiServiceNumberResponse = smsActivateApi.getMultiServiceNumber(
         0,
         // services
         new HashSet<String>() {{
-          add("go");
-          add("tn");
-        }},
+          add("av");
+          add("vk");
+        }},null
         // operators
-        new HashSet<String>() {{
+/*        new HashSet<String>() {{
           add("mts");
           add("tele2");
-        }},
+        }}*/,
         // forward
         new ArrayList<Boolean>() {{
-          add(false);
+          add(true); // go with forward
           add(false);
         }}
+        //null
       );
 
       // print info about activations

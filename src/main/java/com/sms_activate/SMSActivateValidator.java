@@ -7,6 +7,7 @@ import com.sms_activate.error.base.SMSActivateBaseTypeError;
 import com.sms_activate.error.wrong_parameter.SMSActivateWrongParameter;
 import com.sms_activate.error.wrong_parameter.SMSActivateWrongParameterException;
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
 class SMSActivateValidator {
   /**
@@ -68,14 +69,14 @@ class SMSActivateValidator {
    * @return smsactivate base exception.
    */
   @NotNull
-  public SMSActivateBaseException getBaseExceptionByErrorNameOrUnknown(@NotNull String errorName) throws SMSActivateBaseException {
+  public SMSActivateBaseException getBaseExceptionByErrorNameOrUnknown(@NotNull String errorName, @Nullable String messageUnknown) throws SMSActivateBaseException {
     throwCommonExceptionByName(errorName);
     SMSActivateBaseTypeError error = SMSActivateBaseTypeError.getErrorByName(errorName);
 
     if (error != SMSActivateBaseTypeError.UNKNOWN) {
       return new SMSActivateBaseException(error);
     } else {
-      return new SMSActivateUnknownException(errorName);
+      return new SMSActivateUnknownException(errorName, messageUnknown);
     }
   }
 

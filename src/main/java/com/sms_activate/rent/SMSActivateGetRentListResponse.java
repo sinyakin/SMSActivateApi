@@ -1,31 +1,44 @@
 package com.sms_activate.rent;
 
+import com.sms_activate.error.base.SMSActivateBaseException;
+import com.sms_activate.error.wrong_parameter.SMSActivateWrongParameter;
+import com.sms_activate.error.wrong_parameter.SMSActivateWrongParameterException;
 import com.sms_activate.rent.extra.SMSActivateRentNumber;
 import org.jetbrains.annotations.NotNull;
 
+import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 
 public class SMSActivateGetRentListResponse {
   /**
-   *
+   *  Map current rents where key is id rent.
    */
-  private final List<SMSActivateRentNumber> smsActivateRentNumberList;
+  private final Map<Integer, SMSActivateRentNumber> smsActivateRentNumberMap;
 
   /**
    * Constructor response getRentList with list current rents.
    * @param smsActivateRentNumberList list current rents.
    */
-  public SMSActivateGetRentListResponse(@NotNull List<SMSActivateRentNumber> smsActivateRentNumberList) {
-    this.smsActivateRentNumberList = smsActivateRentNumberList;
+  public SMSActivateGetRentListResponse(@NotNull Map<Integer, SMSActivateRentNumber> smsActivateRentNumberList) {
+    this.smsActivateRentNumberMap = smsActivateRentNumberList;
   }
 
   /**
    * Returns the rent by index.
-   * @param i index rent.
+   * @param id index rent.
    * @return rent object.
+   * @throws SMSActivateWrongParameter if id incorrect.
    */
-  public SMSActivateRentNumber get(int i) {
-    return this.smsActivateRentNumberList.get(i);
+  @NotNull
+  public SMSActivateRentNumber get(int id) throws SMSActivateWrongParameterException {
+    SMSActivateRentNumber smsActivateRentNumber = this.smsActivateRentNumberMap.get(id);
+
+    if (smsActivateRentNumber == null) {
+      throw new SMSActivateWrongParameterException(SMSActivateWrongParameter.INVALID_PHONE);
+    }
+
+    return smsActivateRentNumber;
   }
 
   /**
@@ -34,6 +47,6 @@ public class SMSActivateGetRentListResponse {
    */
   @NotNull
   public List<SMSActivateRentNumber> getSmsActivateGetRentResponseList() {
-    return smsActivateRentNumberList;
+    return new ArrayList<>(smsActivateRentNumberMap.values());
   }
 }

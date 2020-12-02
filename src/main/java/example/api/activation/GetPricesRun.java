@@ -12,13 +12,12 @@ import com.sms_activate.error.wrong_parameter.SMSActivateWrongParameterException
 public class GetPricesRun {
   public static void main(String[] args) {
     try {
-      SMSActivateApi smsActivateApi = new SMSActivateApi("API_KEY");
+      SMSActivateApi smsActivateApi = new SMSActivateApi("9A34fbf73d52752607e37ebA26f6f0bf");
       SMSActivateGetPricesResponse smsActivateGetPricesResponse = smsActivateApi.getPrices(
-        0, "vk"// comment this parameter and you get all data.
+        //0, "vk"// comment this parameter and you get all data.
       );
 
       SMSActivateGetPriceInfo smsActivateGetPriceInfo = smsActivateGetPricesResponse.get(0, "vk");
-      System.out.println(">> Service name: " + smsActivateGetPriceInfo.getShortName());
       System.out.println(">>> Cost: " + smsActivateGetPriceInfo.getCost());
       System.out.println(">>> Count number: " + smsActivateGetPriceInfo.getCount());
 
@@ -27,8 +26,6 @@ public class GetPricesRun {
         System.out.println("> Country id: " + countryId);
 
         value.forEach((serviceName, smsActivateGetPriceResponse) -> {
-          System.out.println(">> Service name: " + serviceName);
-
           System.out.println(">>> Cost: " + smsActivateGetPriceResponse.getCost());
           System.out.println(">>> Count number: " + smsActivateGetPriceResponse.getCount());
         });
