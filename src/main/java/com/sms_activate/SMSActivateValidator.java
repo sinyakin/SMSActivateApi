@@ -10,6 +10,11 @@ import org.jetbrains.annotations.NotNull;
 
 class SMSActivateValidator {
   /**
+   * Success value status.
+   */
+  private static final String SUCCESS_NAME_STATUS = "success";
+
+  /**
    * Throws WrongParameterException if name contains in wrong parameter.
    *
    * @param name name parameter.
@@ -56,6 +61,12 @@ class SMSActivateValidator {
     }
   }
 
+  /**
+   * Returns the smsactivate base exception by name.
+   *
+   * @param errorName name exception.
+   * @return smsactivate base exception.
+   */
   @NotNull
   public SMSActivateBaseException getBaseExceptionByErrorNameOrUnknown(@NotNull String errorName) {
     SMSActivateBaseTypeError error = SMSActivateBaseTypeError.getErrorByName(errorName);
@@ -65,5 +76,15 @@ class SMSActivateValidator {
     } else {
       return new SMSActivateUnknownException(errorName);
     }
+  }
+
+  /**
+   * Returns the true if status is success else false.
+   *
+   * @param status status request.
+   * @return true if status is success else false.
+   */
+  public boolean isSuccessStatus(@NotNull String status) {
+    return SUCCESS_NAME_STATUS.equalsIgnoreCase(status);
   }
 }
