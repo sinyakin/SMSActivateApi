@@ -22,8 +22,8 @@ import com.sms_activate.rent.SMSActivateGetRentServicesAndCountriesResponse;
 import com.sms_activate.rent.SMSActivateGetRentStatusResponse;
 import com.sms_activate.rent.extra.SMSActivateRentNumber;
 import com.sms_activate.rent.extra.SMSActivateRentService;
-import com.sms_activate.rent.set_rent_status.SMSActivateRentStatus;
 import com.sms_activate.rent.extra.SMSActivateSMS;
+import com.sms_activate.rent.set_rent_status.SMSActivateRentStatus;
 import com.sms_activate.rent.set_rent_status.SMSActivateSetRentStatusRequest;
 import com.sms_activate.rent.set_rent_status.SMSActivateSetRentStatusResponse;
 import org.jetbrains.annotations.NotNull;
@@ -852,10 +852,15 @@ public class SMSActivateApi {
       String eng = String.valueOf(countryMap.get(SMSActivateJsonKey.ENG));
       String chn = String.valueOf(countryMap.get(SMSActivateJsonKey.CHN));
 
-      boolean isVisible = Boolean.parseBoolean(String.valueOf(countryMap.get(SMSActivateJsonKey.VISIBLE)));
-      boolean isSupportRetry = Boolean.parseBoolean(String.valueOf(countryMap.get(SMSActivateJsonKey.RETRY)));
-      boolean isSupportRent = Boolean.parseBoolean(String.valueOf(countryMap.get(SMSActivateJsonKey.RENT)));
-      boolean isSupportMultiService = Boolean.parseBoolean(String.valueOf(countryMap.get(SMSActivateJsonKey.MULTI_SERVICE)));
+      String visible = String.valueOf(countryMap.get(SMSActivateJsonKey.VISIBLE));
+      String retry = String.valueOf(countryMap.get(SMSActivateJsonKey.RETRY));
+      String rent = String.valueOf(countryMap.get(SMSActivateJsonKey.RENT));
+      String multiService = String.valueOf(countryMap.get(SMSActivateJsonKey.MULTI_SERVICE));
+
+      boolean isVisible = visible.equals("1") || visible.equals("true");
+      boolean isSupportRetry = retry.equals("1") || retry.equals("true");
+      boolean isSupportRent = rent.equals("1") || rent.equals("true");
+      boolean isSupportMultiService = multiService.equals("1") || multiService.equals("true");
 
       countryList.add(new SMSActivateCountryInfo(id, rus, eng, chn,
         isVisible, isSupportRetry, isSupportRent, isSupportMultiService));
@@ -960,9 +965,9 @@ public class SMSActivateApi {
   }
 
   /**
-   * Returns the first 10 current activation.
-   * If your count of activations is < 10, then return only the existing ones,
-   * else they will return in batches of first 10 activations.
+   * Returns the first {@value MAX_COUNT_STRING_IN_BATCH} current activation.
+   * If your count of activations is < {@value MAX_COUNT_STRING_IN_BATCH}, then return only the existing ones,
+   * else they will return in batches of first {@value MAX_COUNT_STRING_IN_BATCH} activations.
    *
    * @return if you not have activation returns empty list else list with your activations.
    * @throws SMSActivateWrongParameterException if one of parameters is incorrect.
@@ -985,13 +990,13 @@ public class SMSActivateApi {
    */
   @NotNull
   public SMSActivateGetCurrentActivationsResponse getCurrentActivations() throws SMSActivateBaseException {
-    return getCurrentActivations(1, 10, SMSActivateOrderBy.ASC);
+    return getCurrentActivations(1, MAX_COUNT_STRING_IN_BATCH, SMSActivateOrderBy.ASC);
   }
 
   /**
-   * Returns the list current activation where contains by 10 activation.
-   * If your count of activations is < 10, then return only the existing ones,
-   * else they will return in batches of 10 activations in each response.
+   * Returns the list current activation where contains by {@value MAX_COUNT_STRING_IN_BATCH} activation.
+   * If your count of activations is < {@value MAX_COUNT_STRING_IN_BATCH}, then return only the existing ones,
+   * else they will return in batches of {@value MAX_COUNT_STRING_IN_BATCH} activations in each response.
    *
    * @param batch              number requested batch (default 1).
    * @param countStringInBatch count string in current batch.
@@ -1182,7 +1187,7 @@ public class SMSActivateApi {
   }
 
   /**
-   * Returns the object rent.
+   * Returns the object rent on {@value MINIMAL_RENT_TIME}.
    *
    * @param service service to which you need to get a number.
    * @return object rent.
@@ -1214,7 +1219,7 @@ public class SMSActivateApi {
   }
 
   /**
-   * Returns the object rent.
+   * Returns the object rent on time.
    *
    * @param countryId  id country (default 0 - Russia).
    * @param service    service to which you need to get a number.
