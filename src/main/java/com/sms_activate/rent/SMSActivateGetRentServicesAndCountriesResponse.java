@@ -26,7 +26,7 @@ public class SMSActivateGetRentServicesAndCountriesResponse {
   private final Map<String, SMSActivateRentService> smsActivateRentServiceMap;
 
   /**
-   * Constructor response getRentServiceAndCountries with data.
+   * Constructor response getRentServiceAndCountries with data from server.
    *
    * @param operatorNameSet           set with name operators.
    * @param countryIdSet              set with id countries.

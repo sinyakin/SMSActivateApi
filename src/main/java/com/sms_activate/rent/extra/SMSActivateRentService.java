@@ -21,7 +21,7 @@ public class SMSActivateRentService {
   private final int count;
 
   /**
-   * Constructor rent service with data.
+   * Constructor rent service with data from server.
    *
    * @param name  short name service.
    * @param cost  cost number by service.

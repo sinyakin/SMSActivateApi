@@ -24,7 +24,8 @@ public class SMSActivateActivation {
   private final String serviceName;
 
   /**
-   * Constructor activation with data.
+   * Constructor activation
+   *
    *
    * @param id          id activation.
    * @param number      phone number.

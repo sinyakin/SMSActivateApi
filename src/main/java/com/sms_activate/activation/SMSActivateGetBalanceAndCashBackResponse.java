@@ -16,7 +16,7 @@ public class SMSActivateGetBalanceAndCashBackResponse {
   private final BigDecimal balance;
 
   /**
-   * Constructor getBalanceAndCashBack response with data.
+   * Constructor getBalanceAndCashBack response with data from server.
    *
    * @param balance  balance in account.
    * @param cashBack cashback in account.

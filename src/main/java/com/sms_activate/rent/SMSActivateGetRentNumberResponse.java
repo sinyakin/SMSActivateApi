@@ -24,7 +24,7 @@ public class SMSActivateGetRentNumberResponse {
   private final String serviceName;
 
   /**
-   * Constructor response getRentNumber with data.
+   * Constructor response getRentNumber with data from server.
    *
    * @param id          id rent.
    * @param number      phone number.

@@ -25,12 +25,15 @@ public class SMSActivateGetCurrentActivationsResponse {
   private final int totalCount;
 
   /**
-   * Constructor response getCurrentActivation with data.
+   * Constructor response getCurrentActivation with data from server.
    *
    * @param smsActivateGetCurrentActivationResponseMap map current activation where key is idActivation.
    */
-  public SMSActivateGetCurrentActivationsResponse(@NotNull Map<Integer, SMSActivateCurrentActivation> smsActivateGetCurrentActivationResponseMap,
-                                                  boolean existNext, int totalCount) {
+  public SMSActivateGetCurrentActivationsResponse(
+    @NotNull Map<Integer, SMSActivateCurrentActivation> smsActivateGetCurrentActivationResponseMap,
+    boolean existNext,
+    int totalCount
+  ) {
     this.smsActivateGetCurrentActivationResponseMap = smsActivateGetCurrentActivationResponseMap;
     this.existNext = existNext;
     this.totalCount = totalCount;
@@ -50,7 +53,7 @@ public class SMSActivateGetCurrentActivationsResponse {
    *
    * @return true if you can send request again else false.
    */
-  public boolean isExistNext() {
+  public boolean isExistNextBatch() {
     return existNext;
   }
 

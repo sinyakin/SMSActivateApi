@@ -70,9 +70,9 @@ public class SMSActivateApi {
   private static final String SUCCESS_NAME_STATUS = "success";
 
   /**
-   * Interval output activation.
+   * Maximum string in each batch.
    */
-  private static final int INTERVAL = 10;
+  private static final int MAX_COUNT_STRING_IN_BATCH = 10;
 
   /**
    * Numbers reg expression.
@@ -986,7 +986,7 @@ public class SMSActivateApi {
    */
   @NotNull
   public SMSActivateGetCurrentActivationsResponse getCurrentActivations() throws SMSActivateBaseException {
-    return getCurrentActivations(1, SMSActivateOrderBy.ASC);
+    return getCurrentActivations(1, 10, SMSActivateOrderBy.ASC);
   }
 
   /**
@@ -994,7 +994,9 @@ public class SMSActivateApi {
    * If your count of activations is < 10, then return only the existing ones,
    * else they will return in batches of 10 activations in each response.
    *
-   * @param page number page (default 1).
+   * @param batch              number requested batch (default 1).
+   * @param countStringInBatch count string in current batch.
+   * @param smsActivateOrderBy type sort.
    * @return if you not have activation returns empty list else list with your activations.
    * @throws SMSActivateWrongParameterException if one of parameters is incorrect.
    * @throws SMSActivateUnknownException        if error type not documented.
@@ -1015,18 +1017,24 @@ public class SMSActivateApi {
    *                                            </p>
    */
   @NotNull
-  public SMSActivateGetCurrentActivationsResponse getCurrentActivations(int page, @NotNull SMSActivateOrderBy SMSActivateOrderBy)
+  public SMSActivateGetCurrentActivationsResponse getCurrentActivations(int batch, int countStringInBatch, @NotNull SMSActivateOrderBy smsActivateOrderBy)
     throws SMSActivateBaseException {
-    if (page <= 0) {
-      throw new SMSActivateWrongParameterException("Number page can be positive.", "Номер страницы должен быть положиельным.");
+    if (batch <= 0) {
+      throw new SMSActivateWrongParameterException("Number page must be positive.", "Номер страницы должен быть положиельным.");
+    }
+    if (countStringInBatch <= 0 || countStringInBatch > MAX_COUNT_STRING_IN_BATCH) {
+      throw new SMSActivateWrongParameterException(
+        String.format("The maximum number of requested lines is not more than %d.", MAX_COUNT_STRING_IN_BATCH),
+        String.format("Максимальное число запрашиваемых строк не более %d.", MAX_COUNT_STRING_IN_BATCH)
+      );
     }
 
-    int len = page * INTERVAL;
+    int len = batch * countStringInBatch;
     SMSActivateURLBuilder smsActivateURLBuilder = new SMSActivateURLBuilder(apiKey, SMSActivateAction.GET_CURRENT_ACTIVATION);
-    smsActivateURLBuilder.append(SMSActivateURLKey.START, String.valueOf(len - INTERVAL))
+    smsActivateURLBuilder.append(SMSActivateURLKey.START, String.valueOf(len - countStringInBatch))
       .append(SMSActivateURLKey.LENGTH, String.valueOf(len))
       .append(SMSActivateURLKey.ORDER, SMSActivateURLKey.ID.getName())
-      .append(SMSActivateURLKey.ORDER_BY, SMSActivateOrderBy.getSortType());
+      .append(SMSActivateURLKey.ORDER_BY, smsActivateOrderBy.getSortType());
 
     String data = new SMSActivateWebClient().getOrThrowCommonException(smsActivateURLBuilder, validator);
     Map<String, Object> responseMap = tryParseJson(data, new TypeToken<Map<String, Object>>() {

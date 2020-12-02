@@ -15,7 +15,7 @@ public class SMSActivateGetFullSmsResponse {
   private final com.sms_activate.activation.extra.SMSActivateStatusNumber SMSActivateStatusNumber;
 
   /**
-   * Constructor response getFullSMS with data..
+   * Constructor response getFullSMS with data from server.
    *
    * @param text                    text sms.
    * @param SMSActivateStatusNumber status activation.

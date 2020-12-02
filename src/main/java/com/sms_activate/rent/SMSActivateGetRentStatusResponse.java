@@ -17,7 +17,7 @@ public class SMSActivateGetRentStatusResponse {
   private final List<SMSActivateSMS> smsActivateSMSList;
 
   /**
-   * Constructor response getRentStatusResponse with data.
+   * Constructor response getRentStatusResponse with data from server.
    *
    * @param quantity           count sms.
    * @param smsActivateSMSList list sms from server.
