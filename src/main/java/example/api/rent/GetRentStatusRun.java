@@ -19,10 +19,10 @@ public class GetRentStatusRun {
       System.out.println("Count sms: " + smsActivateGetRentStatusResponse.getCountSms());
 
       // info about each sms
-      smsActivateGetRentStatusResponse.getSmsActivateSMSList().forEach(x -> {
-        System.out.println("Phone from: " + x.getPhoneFrom());
-        System.out.println("Text: " + x.getText());
-        System.out.println("Date: " + x.getDate());
+      smsActivateGetRentStatusResponse.getSmsActivateSMSList().forEach(smsActivateSMS -> {
+        System.out.println("Phone from: " + smsActivateSMS.getPhoneFrom());
+        System.out.println("Text: " + smsActivateSMS.getText());
+        System.out.println("Date: " + smsActivateSMS.getDate());
         System.out.println("=========================================");
       });
     } catch (SMSActivateWrongParameterException e) {

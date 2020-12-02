@@ -251,7 +251,7 @@ public class SMSActivateApi {
     String operator = null;
 
     if (operatorSet != null && !operatorSet.isEmpty()) {
-      operatorSet.removeIf(x -> x == null || x.isEmpty());
+      operatorSet.removeIf(op -> op == null || op.isEmpty());
       operator = String.join(",", operatorSet);
     }
 
@@ -260,7 +260,6 @@ public class SMSActivateApi {
       .append(SMSActivateURLKey.OPERATOR, operator);
 
     String data = new SMSActivateWebClient().getOrThrowCommonException(smsActivateURLBuilder, validator);
-
 
     Map<String, String> serviceMap = tryParseJson(data, new TypeToken<Map<String, String>>() {
     }.getType());
@@ -361,11 +360,11 @@ public class SMSActivateApi {
     String operator = null;
 
     if (phoneExceptionSet != null && phoneExceptionSet.size() != 0) {
-      phoneExceptionSet.removeIf(x -> x == null || x.isEmpty());
+      phoneExceptionSet.removeIf(phone -> phone == null || phone.isEmpty());
       phoneException = String.join(",", phoneExceptionSet);
     }
     if (operatorSet != null && operatorSet.size() != 0) {
-      operatorSet.removeIf(x -> x == null || x.isEmpty());
+      operatorSet.removeIf(op -> op == null || op.isEmpty());
       operator = String.join(",", operatorSet);
     }
 
@@ -467,7 +466,7 @@ public class SMSActivateApi {
     @Nullable Set<String> operatorSet,
     @Nullable List<Boolean> multiForwardList
   ) throws SMSActivateBaseException {
-    multiServiceSet.removeIf(x -> x == null || x.isEmpty());
+    multiServiceSet.removeIf(service -> service == null || service.isEmpty());
 
     String strMultiService = String.join(",", multiServiceSet);
     String strOperators = null;
@@ -475,10 +474,10 @@ public class SMSActivateApi {
 
     if (multiForwardList != null && !multiForwardList.isEmpty()) {
       multiForwardList.removeIf(Objects::isNull);
-      strMultiForward = multiForwardList.stream().map(x -> x ? "1" : "0").collect(Collectors.joining(","));
+      strMultiForward = multiForwardList.stream().map(service -> service ? "1" : "0").collect(Collectors.joining(","));
     }
     if (operatorSet != null && !operatorSet.isEmpty()) {
-      operatorSet.removeIf(x -> x == null || x.isEmpty());
+      operatorSet.removeIf(service -> service == null || service.isEmpty());
       strOperators = String.join(",", operatorSet);
     }
 
@@ -1133,7 +1132,7 @@ public class SMSActivateApi {
     String operator = null;
 
     if (operatorSet != null && !operatorSet.isEmpty()) {
-      operatorSet.removeIf(x -> x == null || x.isEmpty());
+      operatorSet.removeIf(op -> op == null || op.isEmpty());
       operator = String.join(",", operatorSet);
     }
 

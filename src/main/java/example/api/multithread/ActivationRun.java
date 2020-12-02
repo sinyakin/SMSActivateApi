@@ -30,7 +30,7 @@ public class ActivationRun {
           System.out.println(e.getTypeError());
           System.out.println(e.getMessage());
         }
-       }, "Name: " + (i + 1)));
+       }, "Short name service: " + (i + 1)));
     }
 
     new Thread(() -> {

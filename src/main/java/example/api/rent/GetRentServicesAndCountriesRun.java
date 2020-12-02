@@ -1,9 +1,7 @@
 package example.api.rent;
 
 import com.sms_activate.SMSActivateApi;
-import com.sms_activate.error.SMSActivateBannedException;
 import com.sms_activate.error.base.SMSActivateBaseException;
-import com.sms_activate.error.base.SMSActivateBaseTypeError;
 import com.sms_activate.error.wrong_parameter.SMSActivateWrongParameter;
 import com.sms_activate.error.wrong_parameter.SMSActivateWrongParameterException;
 import com.sms_activate.rent.SMSActivateGetRentServicesAndCountriesResponse;
@@ -15,10 +13,10 @@ public class GetRentServicesAndCountriesRun {
     try {
       SMSActivateApi smsActivateApi = new SMSActivateApi("API_KEY");
       // request services and countries where rent is supported
-      SMSActivateGetRentServicesAndCountriesResponse smsActivateGetRentServicesAndCountriesResponse = smsActivateApi.getRentServicesAndCountries (
+      SMSActivateGetRentServicesAndCountriesResponse smsActivateGetRentServicesAndCountriesResponse = smsActivateApi.getRentServicesAndCountries(
         0, // 0 - Russia
         // operators
-        new HashSet<String>(){{
+        new HashSet<String>() {{
           add("mts");
           add("tele2");
         }},
@@ -26,10 +24,10 @@ public class GetRentServicesAndCountriesRun {
       );
 
       System.out.println("Services: ");
-      smsActivateGetRentServicesAndCountriesResponse.getAllServices().forEach(x -> {
-        System.out.println(">> Name: " + x.getName());
-        System.out.println(">> Count numbers: " + x.getCount());
-        System.out.println(">> Cost: " + x.getCost());
+      smsActivateGetRentServicesAndCountriesResponse.getAllServices().forEach(smsActivateRentService -> {
+        System.out.println(">> Short name service: " + smsActivateRentService.getName());
+        System.out.println(">> Count numbers: " + smsActivateRentService.getCount());
+        System.out.println(">> Cost: " + smsActivateRentService.getCost());
         System.out.println("====================================");
       });
 
@@ -46,10 +44,11 @@ public class GetRentServicesAndCountriesRun {
       System.out.println("Countries supported rent: ");
       smsActivateGetRentServicesAndCountriesResponse.getCountryIdSet()
         .forEach(x -> System.out.println(">> id: " + x));
-    }  catch (SMSActivateWrongParameterException e) {
+    } catch (SMSActivateWrongParameterException e) {
       if (e.getWrongParameter() == SMSActivateWrongParameter.BAD_ACTION) {
         System.out.println("Contact support.");
-      } if (e.getWrongParameter() == SMSActivateWrongParameter.BAD_KEY) {
+      }
+      if (e.getWrongParameter() == SMSActivateWrongParameter.BAD_KEY) {
         System.out.println("Your api-key is incorrect.");
       } else {
         // todo check other wrong parameter

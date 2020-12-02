@@ -12,13 +12,25 @@ public class GetNumbersStatusRun {
       SMSActivateApi smsActivateApi = new SMSActivateApi("API_KEY");
       System.out.println("Your api-key: " + smsActivateApi.getApiKey());
 
+      // request count available numbers
       SMSActivateGetNumbersStatusResponse smsActivateGetNumbersStatusResponse = smsActivateApi.getNumbersStatus();
+
+      /*
+        if you need specify service
+        you can get it by short name.
+
+        more info about short name service: https://sms-activate.ru/ru/api2#quantity
+       */
       SMSActivateServiceInfo go = smsActivateGetNumbersStatusResponse.get("go"); // google
 
-      printInfo(go);
+      // if this service is exists
+      if (go != null) {
+        printInfo(go);
+      }
 
       Thread.sleep(1500);
 
+      // print info about all available services
       smsActivateGetNumbersStatusResponse.getSMSActivateGetNumberStatusResponseList().forEach(GetNumbersStatusRun::printInfo);
     } catch (SMSActivateBaseException e) {
       System.out.println(e.getTypeError());
@@ -28,7 +40,7 @@ public class GetNumbersStatusRun {
   }
 
   private static void printInfo(@NotNull SMSActivateServiceInfo smsActivateServiceInfo) {
-    System.out.println("Name: " + smsActivateServiceInfo.getShortName());
+    System.out.println("Short name service: " + smsActivateServiceInfo.getShortName());
     System.out.println("Count numbers: " + smsActivateServiceInfo.getCountNumber());
     System.out.println("=============================================");
   }
