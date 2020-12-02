@@ -22,7 +22,7 @@ import com.sms_activate.rent.SMSActivateGetRentServicesAndCountriesResponse;
 import com.sms_activate.rent.SMSActivateGetRentStatusResponse;
 import com.sms_activate.rent.extra.SMSActivateRentNumber;
 import com.sms_activate.rent.extra.SMSActivateRentService;
-import com.sms_activate.rent.extra.SMSActivateRentStatus;
+import com.sms_activate.rent.set_rent_status.SMSActivateRentStatus;
 import com.sms_activate.rent.extra.SMSActivateSMS;
 import com.sms_activate.rent.set_rent_status.SMSActivateSetRentStatusRequest;
 import com.sms_activate.rent.set_rent_status.SMSActivateSetRentStatusResponse;

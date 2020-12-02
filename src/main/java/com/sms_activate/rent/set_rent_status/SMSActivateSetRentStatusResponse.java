@@ -1,6 +1,5 @@
 package com.sms_activate.rent.set_rent_status;
 
-import com.sms_activate.rent.extra.SMSActivateRentStatus;
 import org.jetbrains.annotations.NotNull;
 
 public class SMSActivateSetRentStatusResponse {
