@@ -27,7 +27,7 @@ class SMSActivateJsonParser {
     try {
       return gson.fromJson(data, typeOf);
     } catch (JsonSyntaxException e) {
-      throw validator.getBaseExceptionByErrorNameOrUnknown(data, e.getMessage());
+      throw validator.getBaseExceptionByErrorNameOrUnknown(data, "Error parsing json.");
     }
   }
 }

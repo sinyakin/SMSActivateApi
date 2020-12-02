@@ -1,6 +1,7 @@
 package com.sms_activate.qiwi;
 
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
 public enum SMSActivateQiwiStatus {
   UNKNOWN("UNKNOWN", "", ""),

@@ -7,42 +7,22 @@ public class SMSActivateGetQiwiRequisitesResponse {
   /**
    * Status qiwi wallet.
    */
-  private final SMSActivateQiwiStatus status;
+  private String status;
 
   /**
    * Comment specified in payment.
    */
-  private final String comment;
+  private String comment;
 
   /**
    * Number qiwi wallet.
    */
-  private final String wallet;
+  private String wallet;
 
   /**
    * Date by which the details are relevant.
    */
-  private final String upToDate;
-
-  /**
-   * Constructor the qiwi response with status, walletNumber.
-   *
-   * @param status   status qiwi wallet (not be null).
-   * @param wallet   number qiwi wallet.
-   * @param comment  comment specified in payment.
-   * @param upToDate Date by which the details are relevant.
-   */
-  public SMSActivateGetQiwiRequisitesResponse(
-      @NotNull SMSActivateQiwiStatus status,
-      @Nullable String comment,
-      @Nullable String wallet,
-      @Nullable String upToDate
-  ) {
-    this.status = status;
-    this.comment = comment;
-    this.wallet = wallet;
-    this.upToDate = upToDate;
-  }
+  private String upToDate;
 
   /**
    * Returns the status qiwi wallet.
@@ -51,7 +31,7 @@ public class SMSActivateGetQiwiRequisitesResponse {
    */
   @NotNull
   public SMSActivateQiwiStatus getStatus() {
-    return status;
+    return SMSActivateQiwiStatus.getStatusByName(status);
   }
 
   /**

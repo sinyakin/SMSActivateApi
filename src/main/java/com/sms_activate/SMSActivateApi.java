@@ -252,15 +252,19 @@ public class SMSActivateApi {
     }.getType(), validator);
     Map<String, SMSActivateServiceInfo> smsActivateGetNumbersStatusResponseMap = new HashMap<>();
 
-    serviceMap.forEach((key, value) -> {
-      String[] partsKey = key.split("_");
+    try {
+      serviceMap.forEach((key, value) -> {
+        String[] partsKey = key.split("_");
 
-      smsActivateGetNumbersStatusResponseMap.put(partsKey[0], new SMSActivateServiceInfo(
-        Boolean.parseBoolean(partsKey[1]),
-        Integer.parseInt(value),
-        partsKey[0]
-      ));
-    });
+        smsActivateGetNumbersStatusResponseMap.put(partsKey[0], new SMSActivateServiceInfo(
+          Boolean.parseBoolean(partsKey[1]),
+          Integer.parseInt(value),
+          partsKey[0]
+        ));
+      });
+    } catch (NumberFormatException e) {
+      throw new SMSActivateUnknownException(data, "Error formatting to number.");
+    }
 
     return new SMSActivateGetNumbersStatusResponse(smsActivateGetNumbersStatusResponseMap);
   }
@@ -369,13 +373,16 @@ public class SMSActivateApi {
     if (!data.contains(SMSActivateJsonKey.ACCESS)) {
       throw validator.getBaseExceptionByErrorNameOrUnknown(data, null);
     }
+    try {
+      String[] parts = data.split(":");
 
-    String[] parts = data.split(":");
+      String number = parts[2];
+      int id = new BigDecimal(parts[1]).intValue();
 
-    String number = parts[2];
-    int id = new BigDecimal(parts[1]).intValue();
-
-    return new SMSActivateActivation(id, number, service, forward);
+      return new SMSActivateActivation(id, number, service, forward);
+    } catch (NumberFormatException e) {
+      throw new SMSActivateUnknownException(data, "Error formatting to number.");
+    }
   }
 
   /**
@@ -489,22 +496,26 @@ public class SMSActivateApi {
 
     int indexForwardPhoneNumber = (multiForwardList == null) ? -1 : multiForwardList.indexOf(true); //index id where need forwarding
 
-    for (int i = 0; i < activationMapList.size(); i++) {
-      Map<String, Object> activationMap = activationMapList.get(i);
+    try {
+      for (int i = 0; i < activationMapList.size(); i++) {
+        Map<String, Object> activationMap = activationMapList.get(i);
 
-      int id = new BigDecimal(String.valueOf(activationMap.get("activation"))).intValue();
-      String number = String.valueOf(activationMap.get(SMSActivateJsonKey.PHONE));
-      String serviceName = String.valueOf(activationMap.get(SMSActivateJsonKey.SERVICE));
+        int id = new BigDecimal(String.valueOf(activationMap.get("activation"))).intValue();
+        String number = String.valueOf(activationMap.get(SMSActivateJsonKey.PHONE));
+        String serviceName = String.valueOf(activationMap.get(SMSActivateJsonKey.SERVICE));
 
-      phoneList.add(new SMSActivateActivation(
-        id,
-        number,
-        serviceName,
-        i == indexForwardPhoneNumber
-      ));
+        phoneList.add(new SMSActivateActivation(
+          id,
+          number,
+          serviceName,
+          i == indexForwardPhoneNumber
+        ));
+      }
+
+      return new SMSActivateGetMultiServiceNumberResponse(phoneList);
+    } catch (NumberFormatException e) {
+      throw new SMSActivateUnknownException(data, "Error formatting to number.");
     }
-
-    return new SMSActivateGetMultiServiceNumberResponse(phoneList);
   }
 
   /**
@@ -785,18 +796,22 @@ public class SMSActivateApi {
       }.getType(), validator);
     Map<Integer, Map<String, SMSActivateGetPriceInfo>> smsActivateGetPriceMapList = new HashMap<>();
 
-    countryMap.forEach((countryCode, serviceMap) -> {
-      Map<String, SMSActivateGetPriceInfo> smsActivateGetPriceResponseMap = new HashMap<>();
+    try {
+      countryMap.forEach((countryCode, serviceMap) -> {
+        Map<String, SMSActivateGetPriceInfo> smsActivateGetPriceResponseMap = new HashMap<>();
 
-      serviceMap.forEach((shortName, value) -> smsActivateGetPriceResponseMap.put(shortName, new SMSActivateGetPriceInfo(
-        BigDecimal.valueOf(value.get(SMSActivateJsonKey.COST)),
-        BigDecimal.valueOf(value.get(SMSActivateJsonKey.COUNT)).intValue()
-      )));
+        serviceMap.forEach((shortName, value) -> smsActivateGetPriceResponseMap.put(shortName, new SMSActivateGetPriceInfo(
+          BigDecimal.valueOf(value.get(SMSActivateJsonKey.COST)),
+          BigDecimal.valueOf(value.get(SMSActivateJsonKey.COUNT)).intValue()
+        )));
 
-      smsActivateGetPriceMapList.put(Integer.valueOf(countryCode), smsActivateGetPriceResponseMap);
-    });
+        smsActivateGetPriceMapList.put(Integer.valueOf(countryCode), smsActivateGetPriceResponseMap);
+      });
 
-    return new SMSActivateGetPricesResponse(smsActivateGetPriceMapList);
+      return new SMSActivateGetPricesResponse(smsActivateGetPriceMapList);
+    } catch (NumberFormatException e) {
+      throw new SMSActivateUnknownException(data, "Error formatting to number.");
+    }
   }
 
   /**
@@ -864,20 +879,8 @@ public class SMSActivateApi {
   public SMSActivateGetQiwiRequisitesResponse getQiwiRequisites() throws SMSActivateBaseException {
     SMSActivateURLBuilder smsActivateURLBuilder = new SMSActivateURLBuilder(apiKey, SMSActivateAction.GET_QIWI_REQUISITES);
     String data = new SMSActivateWebClient().getOrThrowCommonException(smsActivateURLBuilder, validator);
-
-    Map<String, String> response = new SMSActivateJsonParser().tryParseJson(data, new TypeToken<Map<String, String>>() {
+    return new SMSActivateJsonParser().tryParseJson(data, new TypeToken<SMSActivateGetQiwiRequisitesResponse>() {
     }.getType(), validator);
-
-    SMSActivateQiwiStatus status = SMSActivateQiwiStatus.getStatusByName(response.get(SMSActivateJsonKey.STATUS));
-
-    if (status == SMSActivateQiwiStatus.UNKNOWN) {
-      throw validator.getBaseExceptionByErrorNameOrUnknown(response.get(SMSActivateJsonKey.STATUS), null);
-    }
-
-    return new SMSActivateGetQiwiRequisitesResponse(
-      status, response.get(SMSActivateJsonKey.COMMENT),
-      response.get(SMSActivateJsonKey.WALLET), response.get(SMSActivateJsonKey.UP_TO_DATE)
-    );
   }
 
   /**
@@ -1015,20 +1018,24 @@ public class SMSActivateApi {
     List<Map<String, Object>> currentActivationMapList = (List<Map<String, Object>>) responseMap.get(SMSActivateJsonKey.ARRAY);
     Map<Integer, SMSActivateCurrentActivation> smsActivateGetCurrentActivationResponseMap = new HashMap<>();
 
-    for (Map<String, Object> currentActivationMap : currentActivationMapList) {
-      int id = new BigDecimal(String.valueOf(currentActivationMap.get(SMSActivateJsonKey.ID))).intValue();
-      boolean forward = Boolean.parseBoolean(String.valueOf(currentActivationMap.get(SMSActivateJsonKey.FORWARD)));
+    try {
+      for (Map<String, Object> currentActivationMap : currentActivationMapList) {
+        int id = new BigDecimal(String.valueOf(currentActivationMap.get(SMSActivateJsonKey.ID))).intValue();
+        boolean forward = Boolean.parseBoolean(String.valueOf(currentActivationMap.get(SMSActivateJsonKey.FORWARD)));
 
-      String number = String.valueOf(currentActivationMap.get(SMSActivateJsonKey.PHONE));
-      String serviceName = String.valueOf(currentActivationMap.get(SMSActivateJsonKey.SERVICE));
-      int countryCode = Integer.parseInt(String.valueOf(currentActivationMap.get(SMSActivateJsonKey.COUNTRY)));
+        String number = String.valueOf(currentActivationMap.get(SMSActivateJsonKey.PHONE));
+        String serviceName = String.valueOf(currentActivationMap.get(SMSActivateJsonKey.SERVICE));
+        int countryCode = Integer.parseInt(String.valueOf(currentActivationMap.get(SMSActivateJsonKey.COUNTRY)));
 
-      smsActivateGetCurrentActivationResponseMap.put(id, new SMSActivateCurrentActivation(
-        id, forward, number, countryCode, serviceName));
+        smsActivateGetCurrentActivationResponseMap.put(id, new SMSActivateCurrentActivation(
+          id, forward, number, countryCode, serviceName));
+      }
+
+      int count = new BigDecimal(String.valueOf(responseMap.get(SMSActivateJsonKey.QUANT))).intValue();
+      return new SMSActivateGetCurrentActivationsResponse(smsActivateGetCurrentActivationResponseMap, len < count, count);
+    } catch (NumberFormatException e) {
+      throw new SMSActivateUnknownException(data, "Error formatting to number.");
     }
-
-    int count = new BigDecimal(String.valueOf(responseMap.get(SMSActivateJsonKey.QUANT))).intValue();
-    return new SMSActivateGetCurrentActivationsResponse(smsActivateGetCurrentActivationResponseMap, len < count, count);
   }
 
   /**
@@ -1134,20 +1141,24 @@ public class SMSActivateApi {
       operatorNameSet.add(String.valueOf(name));
     }
 
-    servicesMap.forEach((shortName, service) -> {
-      Map<String, Object> serviceMap = (Map<String, Object>) service;
-      int countNumber = new BigDecimal(String.valueOf(serviceMap.get(SMSActivateJsonKey.QUANT))).intValue();
+    try {
+      servicesMap.forEach((shortName, service) -> {
+        Map<String, Object> serviceMap = (Map<String, Object>) service;
+        int countNumber = new BigDecimal(String.valueOf(serviceMap.get(SMSActivateJsonKey.QUANT))).intValue();
 
-      smsActivateRentServiceMap.put(shortName, new SMSActivateRentService(
-        shortName,
-        new BigDecimal(String.valueOf(serviceMap.get(SMSActivateJsonKey.COST))),
-        countNumber
-      ));
-    });
+        smsActivateRentServiceMap.put(shortName, new SMSActivateRentService(
+          shortName,
+          new BigDecimal(String.valueOf(serviceMap.get(SMSActivateJsonKey.COST))),
+          countNumber
+        ));
+      });
 
-    return new SMSActivateGetRentServicesAndCountriesResponse(
-      operatorNameSet, countryIdSet, smsActivateRentServiceMap
-    );
+      return new SMSActivateGetRentServicesAndCountriesResponse(
+        operatorNameSet, countryIdSet, smsActivateRentServiceMap
+      );
+    } catch (NumberFormatException e) {
+      throw new SMSActivateUnknownException(data, "Error formatting to number.");
+    }
   }
 
   /**
@@ -1304,17 +1315,21 @@ public class SMSActivateApi {
     Map<String, Map<String, Object>> valuesMap = (Map<String, Map<String, Object>>) responseMap.get(SMSActivateJsonKey.VALUES);
     List<SMSActivateSMS> smsList = new ArrayList<>();
 
-    for (Map<String, Object> phoneMap : valuesMap.values()) {
-      String number = String.valueOf(phoneMap.get(SMSActivateJsonKey.PHONE_FROM));
-      String text = String.valueOf(phoneMap.get(SMSActivateJsonKey.TEXT));
-      String serviceShortName = String.valueOf(phoneMap.get(SMSActivateJsonKey.SERVICE));
-      String date = String.valueOf(phoneMap.get(SMSActivateJsonKey.DATE));
+    try {
+      for (Map<String, Object> phoneMap : valuesMap.values()) {
+        String number = String.valueOf(phoneMap.get(SMSActivateJsonKey.PHONE_FROM));
+        String text = String.valueOf(phoneMap.get(SMSActivateJsonKey.TEXT));
+        String serviceShortName = String.valueOf(phoneMap.get(SMSActivateJsonKey.SERVICE));
+        String date = String.valueOf(phoneMap.get(SMSActivateJsonKey.DATE));
 
-      smsList.add(new SMSActivateSMS(number, text, date, serviceShortName));
+        smsList.add(new SMSActivateSMS(number, text, date, serviceShortName));
+      }
+
+      return new SMSActivateGetRentStatusResponse(
+        Integer.parseInt(String.valueOf(responseMap.get(SMSActivateJsonKey.QUALITY))), smsList);
+    } catch (NumberFormatException e) {
+      throw new SMSActivateUnknownException(data, "Error formatting to number.");
     }
-
-    return new SMSActivateGetRentStatusResponse(
-      Integer.parseInt(String.valueOf(responseMap.get(SMSActivateJsonKey.QUALITY))), smsList);
   }
 
   /**

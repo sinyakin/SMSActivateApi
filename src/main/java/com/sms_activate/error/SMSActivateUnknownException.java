@@ -16,12 +16,13 @@ public class SMSActivateUnknownException extends SMSActivateBaseException {
    * @param error name not documented error.
    */
   public SMSActivateUnknownException(@NotNull String error, @Nullable String messageUnknownError) {
-    super("Send request developer: " + error, "Обратитесь к разработчикам.");
-    this.messageUnknownError = messageUnknownError;
+    super("Send request developer: ", "Обратитесь к разработчикам.");
+    this.messageUnknownError = error + " " + (messageUnknownError == null ? "" : messageUnknownError);
   }
 
   /**
    * Returns the message unknown error.
+   *
    * @return message unknown error.
    */
   @Nullable
