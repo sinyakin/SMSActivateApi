@@ -11,14 +11,14 @@ import com.sms_activate.rent.set_rent_status.SMSActivateSetRentStatusResponse;
 public class SetRentStatusRun {
   public static void main(String[] args) {
     try {
-      SMSActivateApi smsActivateApi = new SMSActivateApi("API_KEY");
+      SMSActivateApi smsActivateApi = new SMSActivateApi("9A34fbf73d52752607e37ebA26f6f0bf");
       // request rent number
       SMSActivateGetRentNumberResponse number = smsActivateApi.getRentNumber("vk");
       /*
         set status for rent
         example: CANCEL
         */
-      SMSActivateSetRentStatusResponse smsActivateSetRentStatusResponse = smsActivateApi.setRentStatus(number.getId(), SMSActivateSetRentStatusRequest.CANCEL);
+      SMSActivateSetRentStatusResponse smsActivateSetRentStatusResponse = smsActivateApi.setRentStatus(number.getId()  + 5, SMSActivateSetRentStatusRequest.CANCEL);
 
       // print desc about new status
       System.out.println("Description of the current lease status: " + smsActivateSetRentStatusResponse.getStatus().getMessage());

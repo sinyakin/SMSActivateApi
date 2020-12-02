@@ -9,7 +9,7 @@ import com.sms_activate.rent.SMSActivateGetRentListResponse;
 public class GetRentListRun {
   public static void main(String[] args) {
     try {
-      SMSActivateApi smsActivateApi = new SMSActivateApi("API_KEY");
+      SMSActivateApi smsActivateApi = new SMSActivateApi("9A34fbf73d52752607e37ebA26f6f0bf");
       SMSActivateGetRentListResponse smsActivateGetRentListResponse = smsActivateApi.getRentList();
       smsActivateGetRentListResponse.getSmsActivateGetRentResponseList().forEach(x -> {
         System.out.println("ID: " + x.getId());

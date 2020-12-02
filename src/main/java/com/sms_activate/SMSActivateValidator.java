@@ -68,7 +68,8 @@ class SMSActivateValidator {
    * @return smsactivate base exception.
    */
   @NotNull
-  public SMSActivateBaseException getBaseExceptionByErrorNameOrUnknown(@NotNull String errorName) {
+  public SMSActivateBaseException getBaseExceptionByErrorNameOrUnknown(@NotNull String errorName) throws SMSActivateBaseException {
+    throwCommonExceptionByName(errorName);
     SMSActivateBaseTypeError error = SMSActivateBaseTypeError.getErrorByName(errorName);
 
     if (error != SMSActivateBaseTypeError.UNKNOWN) {
