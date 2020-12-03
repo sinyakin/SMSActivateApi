@@ -29,29 +29,6 @@ public class SMSActivateCurrentActivation {
   private int countryId;
 
   /**
-   * Constructor activation with info.
-   *
-   * @param id          id activation.
-   * @param forward     is forward acitvation.
-   * @param number      phone number.
-   * @param countryId   country id.
-   * @param serviceName short service name.
-   */
-  public SMSActivateCurrentActivation(
-    int id,
-    boolean forward,
-    @NotNull String number,
-    int countryId,
-    @NotNull String serviceName
-  ) {
-    this.id = id;
-    this.forward = 1;
-    this.number = number;
-    this.serviceName = serviceName;
-    this.countryId = countryId;
-  }
-
-  /**
    * Returns the id activation.
    *
    * @return id activation.

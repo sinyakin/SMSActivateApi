@@ -13,17 +13,17 @@ class SMSActivateValidator {
   /**
    * Success value status.
    */
-  private static final String SUCCESS_STATUS = "success";
+  public static final String SUCCESS_STATUS = "success";
 
   /**
    * Banned status.
    */
-  public static final String BANNED = "BANNED";
+  private static final String BANNED = "BANNED";
 
   /**
    * Status sql error.
    */
-  public static final String SQL = "SQL";
+  private static final String SQL = "SQL";
 
   /**
    * Throws WrongParameterException if name contains in wrong parameter.
