@@ -16,23 +16,23 @@ public class SMSActivateServiceInfo {
   /**
    * Service short name.
    */
-  private final String nameService;
+  private final String serviceShortName;
 
   /**
    * Constructor response getNumbersStatus with data from server.
    *
-   * @param forward     service support forward.
-   * @param countNumber count of service numbers.
-   * @param nameService service short name.
+   * @param forward          service support forward.
+   * @param countNumber      count of service numbers.
+   * @param serviceShortName service short name.
    */
   public SMSActivateServiceInfo(
     boolean forward,
     int countNumber,
-    @NotNull String nameService
+    @NotNull String serviceShortName
   ) {
     this.forward = forward;
     this.countNumber = countNumber;
-    this.nameService = nameService;
+    this.serviceShortName = serviceShortName;
   }
 
   /**
@@ -61,6 +61,6 @@ public class SMSActivateServiceInfo {
    */
   @NotNull
   public String getShortName() {
-    return nameService;
+    return serviceShortName;
   }
 }

@@ -11,7 +11,7 @@ public class GetAndSetStatusRun {
   public static void main(String[] args) {
     try {
       SMSActivateApi smsActivateApi = new SMSActivateApi("API_KEY");
-      SMSActivateActivation smsActivateActivation = smsActivateApi.getNumber(0, "vk");
+      SMSActivateActivation smsActivateActivation = smsActivateApi.getNumber(0, "av", true);
       // print info about activation
       System.out.println("Id: " + smsActivateActivation.getId());
       System.out.println("Number: " + smsActivateActivation.getNumber());
@@ -22,6 +22,10 @@ public class GetAndSetStatusRun {
       SMSActivateGetStatusResponse smsActivateGetStatusResponse = smsActivateApi.getStatus(smsActivateActivation.getId());
 
       System.out.println("Description of the current lease status: " + smsActivateGetStatusResponse.getMessage());
+
+      if (smsActivateGetStatusResponse.getCodeFromSMS() != null) {
+        System.out.println("Code from sms: " + smsActivateGetStatusResponse.getCodeFromSMS());
+      }
 
       SMSActivateSetStatusResponse smsActivateSetStatusResponse = smsActivateApi.setStatus(smsActivateActivation.getId(),
         SMSActivateSetStatusRequest.CANCEL);

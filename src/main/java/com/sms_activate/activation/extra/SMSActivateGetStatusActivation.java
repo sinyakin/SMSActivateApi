@@ -32,9 +32,9 @@ public enum SMSActivateGetStatusActivation {
    * @param englishMessage message on english.
    */
   SMSActivateGetStatusActivation(@NotNull String response, @NotNull String russianMessage, @NotNull String englishMessage) {
+    this.response = response;
     this.russianMessage = russianMessage;
     this.englishMessage = englishMessage;
-    this.response = response;
   }
 
   /**

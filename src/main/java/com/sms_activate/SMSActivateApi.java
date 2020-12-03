@@ -287,7 +287,40 @@ public class SMSActivateApi {
    */
   @NotNull
   public SMSActivateActivation getNumber(int countryId, @NotNull String service) throws SMSActivateBaseException {
-    return getNumber(countryId, service, null, null, false);
+    return getNumber(countryId, service,false);
+  }
+
+  /**
+   * Returns the activation by service, countryId.
+   *
+   * @param countryId id country.
+   * @param service   service name for activation.
+   * @return activation.
+   * @throws SMSActivateWrongParameterException if one of parameters is incorrect.
+   * @throws SMSActivateUnknownException        if error type not documented.
+   * @throws SMSActivateBannedException         if your account has been banned.
+   *                                            <p>
+   *                                            Types errors:
+   *                                            <p>
+   *                                            Base type error in this method:
+   *                                              <ul>
+   *                                                <li>ERROR_SQL - if error happened in sql-server;</li>
+   *                                                <li>NO_NUMBERS - if currently no numbers;</li>
+   *                                                <li>NO_BALANCE - if money in the account;</li>
+   *                                              </ul>
+   *                                            </p>
+   *                                            <p>
+   *                                              Wrong parameter type error:
+   *                                              <ul>
+   *                                                <li>BAD_KEY - if your api-key is incorrect;</li>
+   *                                                <li>BAD_SERVICE - if service is incorrect;</li>
+   *                                                <li>BANNED - if your account has been banned.</li>
+   *                                              </ul>
+   *                                            </p>
+   */
+  @NotNull
+  public SMSActivateActivation getNumber(int countryId, @NotNull String service, boolean forward) throws SMSActivateBaseException {
+    return getNumber(countryId, service, forward, null, null);
   }
 
   /**
@@ -327,9 +360,9 @@ public class SMSActivateApi {
   public SMSActivateActivation getNumber(
     int countryId,
     @NotNull String service,
+    boolean forward,
     @Nullable Set<String> operatorSet,
-    @Nullable Set<String> phoneExceptionSet,
-    boolean forward
+    @Nullable Set<String> phoneExceptionSet
   ) throws SMSActivateBaseException {
     if (countryId < 0) {
       throw new SMSActivateWrongParameterException("Wrong ID country.", "Неверный ID страны.");
@@ -486,28 +519,28 @@ public class SMSActivateApi {
 
   /**
    * Sets the status activation.
+   * <p>
+   * Get number using getNumber method after that the following actions are available:<br/>
+   * <em>CANCEL</em> - Cancel activation (if the number did not suit you)<br/>
+   * <em>SEND_READY_NUMBER</em> - Report that SMS has been sent (optional)
+   * </p>
+   * <p>
+   * To activate with status READY:<br/>
+   * <em>CANCEL</em> - Cancel activation
+   * </p>
+   * <p>
+   * Immediately after receiving the code:<br/>
+   * <em>REQUEST_ONE_MORE_CODE</em> - Request another SMS<br/>
+   * <em>FINISH</em> - Confirm SMS code and complete activation
+   * </p>
+   * <p>
+   * To activate with status RETRY_GET:<br/>
+   * <em>FINISH</em> - Confirm SMS code and complete activation
+   * </p>
    *
-   * @param id     id to set activation status (not be null).
-   * @param status value to establish (not be null).
-   *               <p>
-   *               Get number using getNumber method after that the following actions are available:<br/>
-   *               <em>CANCEL</em> - Cancel activation (if the number did not suit you)<br/>
-   *               <em>SEND_READY_NUMBER</em> - Report that SMS has been sent (optional)
-   *               </p>
-   *               <p>
-   *               To activate with status READY:<br/>
-   *               <em>CANCEL</em> - Cancel activation
-   *               </p>
-   *               <p>
-   *               Immediately after receiving the code:<br/>
-   *               <em>REQUEST_ONE_MORE_CODE</em> - Request another SMS<br/>
-   *               <em>FINISH</em> - Confirm SMS code and complete activation
-   *               </p>
-   *               <p>
-   *               To activate with status RETRY_GET:<br/>
-   *               <em>FINISH</em> - Confirm SMS code and complete activation
-   *               </p>
-   * @return access status activation.
+   * @param id      id to set activation status (not be null).
+   * @param status  value to establish (not be null).
+   * @return access activation.
    * @throws SMSActivateWrongParameterException if one of parameters is incorrect.
    * @throws SMSActivateUnknownException        if error type not documented.
    *                                            <p>
@@ -526,8 +559,8 @@ public class SMSActivateApi {
    *                                            </p>
    */
   @NotNull
-  public SMSActivateSetStatusResponse setStatus(int id, @NotNull SMSActivateSetStatusRequest status) throws SMSActivateBaseException {
-    return setStatus(id, status, false);
+  public SMSActivateSetStatusResponse setStatus(int id, @NotNull SMSActivateSetStatusRequest status)  throws SMSActivateBaseException {
+    return setStatusWithForwardPhone(id, status, null);
   }
 
   /**
@@ -553,7 +586,7 @@ public class SMSActivateApi {
    *
    * @param id      id to set activation status (not be null).
    * @param status  value to establish (not be null).
-   * @param forward number is forwarding.
+   * @param forwardPhone number phone for forward.
    * @return access activation.
    * @throws SMSActivateWrongParameterException if one of parameters is incorrect.
    * @throws SMSActivateUnknownException        if error type not documented.
@@ -573,15 +606,15 @@ public class SMSActivateApi {
    *                                            </p>
    */
   @NotNull
-  public SMSActivateSetStatusResponse setStatus(
+  public SMSActivateSetStatusResponse setStatusWithForwardPhone(
     int id,
     @NotNull SMSActivateSetStatusRequest status,
-    boolean forward
+    @Nullable Long forwardPhone
   ) throws SMSActivateBaseException {
     SMSActivateURLBuilder smsActivateURLBuilder = new SMSActivateURLBuilder(apiKey, SMSActivateAction.SET_STATUS);
     smsActivateURLBuilder.append(SMSActivateURLKey.STATUS, String.valueOf(status.getId()))
       .append(SMSActivateURLKey.ID, String.valueOf(id))
-      .append(SMSActivateURLKey.FORWARD, forward ? "1" : "0");
+      .append(SMSActivateURLKey.FORWARD, String.valueOf(forwardPhone));
 
     String data = new SMSActivateWebClient().getOrThrowCommonException(smsActivateURLBuilder, validator);
 
@@ -640,7 +673,7 @@ public class SMSActivateApi {
   }
 
   /**
-   * Returns the full text sms.
+   * Returns the specified object from server with text sms.
    *
    * @param id id activation.
    * @return full text sms with status:

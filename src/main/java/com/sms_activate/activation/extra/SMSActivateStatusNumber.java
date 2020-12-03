@@ -91,7 +91,7 @@ public enum SMSActivateStatusNumber {
     }
 
     for (SMSActivateStatusNumber type : values()) {
-      if (type.getResponse().startsWith(name)) {
+      if (type.getResponse().equals(name)) {
         return type;
       }
     }
