@@ -2,6 +2,7 @@ package example.api.multithread;
 
 import com.sms_activate.SMSActivateApi;
 import com.sms_activate.activation.SMSActivateActivation;
+import com.sms_activate.activation.SMSActivateGetCurrentActivationsResponse;
 import com.sms_activate.activation.set_status.SMSActivateSetStatusRequest;
 import com.sms_activate.error.base.SMSActivateBaseException;
 import com.sms_activate.error.wrong_parameter.SMSActivateWrongParameterException;
@@ -51,7 +52,7 @@ public class ActivationRun {
         thread.start();
       }
 
-      /*new Thread(() -> {
+      new Thread(() -> {
         try {
           do {
             SMSActivateGetCurrentActivationsResponse currentActivations = smsActivateApi.getCurrentActivations();
@@ -65,8 +66,7 @@ public class ActivationRun {
                 }).start();
 
                 smsActivateApi.setStatus(activation.getId(), SMSActivateSetStatusRequest.CANCEL);
-              } catch (SMSActivateBaseException e) {
-                e.printStackTrace();
+              } catch (SMSActivateBaseException ignored) {
               }
             });
 
@@ -79,7 +79,7 @@ public class ActivationRun {
         }
 
         System.out.println("Hello world");
-      }).start()*/;
+      }).start();
     }).start();
 
     System.in.read();
