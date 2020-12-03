@@ -15,7 +15,6 @@ enum SMSActivateAction {
   GET_COUNTRIES("getCountries"),
   GET_QIWI_REQUISITES("getQiwiRequisites"),
   GET_ADDITIONAL_SERVICE("getAdditionalService"),
-  GET_CURRENT_ACTIVATION("getCurrentActivationsDataTables"),
   GET_RENT_SERVICES_AND_COUNTRIES("getRentServicesAndCountries"),
   GET_RENT_NUMBER("getRentNumber"),
   GET_RENT_STATUS("getRentStatus"),
