@@ -11,7 +11,7 @@ public class SMSActivateGetRentNumber {
   /**
    * Phone number.
    */
-  private String number;
+  private long number;
 
   /**
    * End date of rent.
@@ -33,7 +33,7 @@ public class SMSActivateGetRentNumber {
    * @return phone number
    */
   @NotNull
-  public String getNumber() {
+  public long getNumber() {
     return number;
   }
 

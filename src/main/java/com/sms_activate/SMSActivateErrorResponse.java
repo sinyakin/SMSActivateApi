@@ -2,7 +2,7 @@ package com.sms_activate;
 
 import org.jetbrains.annotations.NotNull;
 
-class SMSActivateResponse {
+class SMSActivateErrorResponse {
   /**
    * Status request.
    */
@@ -11,7 +11,7 @@ class SMSActivateResponse {
   /**
    * Message about error.
    */
-  private String msg;
+  private String message;
 
   /**
    * Returns the error status.
@@ -30,6 +30,6 @@ class SMSActivateResponse {
    */
   @NotNull
   public String getMessage() {
-    return msg;
+    return message;
   }
 }

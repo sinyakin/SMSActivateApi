@@ -25,6 +25,10 @@ public class SMSActivateGetQiwiRequisitesResponse {
    */
   private String upToDate;
 
+  private SMSActivateGetQiwiRequisitesResponse() {
+
+  }
+
   /**
    * Returns the status qiwi wallet.
    *

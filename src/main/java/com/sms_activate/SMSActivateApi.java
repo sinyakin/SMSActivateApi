@@ -2,7 +2,10 @@ package com.sms_activate;
 
 import com.google.gson.reflect.TypeToken;
 import com.sms_activate.activation.*;
-import com.sms_activate.activation.extra.*;
+import com.sms_activate.activation.extra.SMSActivateCountryInfo;
+import com.sms_activate.activation.extra.SMSActivateGetPriceInfo;
+import com.sms_activate.activation.extra.SMSActivateGetStatusActivation;
+import com.sms_activate.activation.extra.SMSActivateStatusNumber;
 import com.sms_activate.activation.set_status.SMSActivateAccessStatus;
 import com.sms_activate.activation.set_status.SMSActivateSetStatusRequest;
 import com.sms_activate.activation.set_status.SMSActivateSetStatusResponse;
@@ -14,9 +17,9 @@ import com.sms_activate.error.wrong_parameter.SMSActivateWrongParameter;
 import com.sms_activate.error.wrong_parameter.SMSActivateWrongParameterException;
 import com.sms_activate.qiwi.SMSActivateGetQiwiRequisitesResponse;
 import com.sms_activate.rent.SMSActivateGetRentListResponse;
-import com.sms_activate.rent.SMSActivateGetRentNumberResponse;
 import com.sms_activate.rent.SMSActivateGetRentServicesAndCountriesResponse;
 import com.sms_activate.rent.SMSActivateGetRentStatusResponse;
+import com.sms_activate.rent.extra.SMSActivateGetRentNumber;
 import com.sms_activate.rent.set_rent_status.SMSActivateRentStatus;
 import com.sms_activate.rent.set_rent_status.SMSActivateSetRentStatusRequest;
 import org.jetbrains.annotations.NotNull;
@@ -357,7 +360,7 @@ public class SMSActivateApi {
     try {
       String[] parts = data.split(":");
 
-      String number = parts[2];
+      long number = Long.parseLong(parts[2]);
       int id = new BigDecimal(parts[1]).intValue();
 
       return new SMSActivateActivation(id, number, service);
@@ -750,11 +753,11 @@ public class SMSActivateApi {
     String data = new SMSActivateWebClient().getOrThrowCommonException(smsActivateURLBuilder, validator);
     SMSActivateJsonParser jsonParser = new SMSActivateJsonParser();
 
-    Map<Integer, Map<String, SMSActivateGetPriceInfo>> stringSMSActivateGetPricesResponseMap = jsonParser.tryParseJson(data,
-      new TypeToken<Map<String, Map<String, SMSActivateGetPriceInfo>>>() {
+    Map<Integer, Map<String, SMSActivateGetPriceInfo>> response = jsonParser.tryParseJson(data,
+      new TypeToken<Map<Integer, Map<String, SMSActivateGetPriceInfo>>>() {
       }.getType(), validator);
 
-    return new SMSActivateGetPricesResponse(stringSMSActivateGetPricesResponseMap);
+    return new SMSActivateGetPricesResponse(response);
   }
 
   /**
@@ -866,7 +869,7 @@ public class SMSActivateApi {
 
     if (data.contains(SMSActivateMagicKey.ADDITIONAL)) {
       String[] parts = data.split(":");
-      String number = parts[2];
+      long number = Long.parseLong(parts[2]);
       id = new BigDecimal(parts[1]).intValue();
 
       return new SMSActivateActivation(id, number, service);
@@ -1082,7 +1085,7 @@ public class SMSActivateApi {
    *                                            </p>
    */
   @NotNull
-  public SMSActivateGetRentNumberResponse getRentNumber(@NotNull String service) throws SMSActivateBaseException {
+  public SMSActivateGetRentNumber getRentNumber(@NotNull String service) throws SMSActivateBaseException {
     return getRentNumber(0, service, null, MINIMAL_RENT_TIME, null);
   }
 
@@ -1118,7 +1121,7 @@ public class SMSActivateApi {
    *                                            </p>
    */
   @NotNull
-  public SMSActivateGetRentNumberResponse getRentNumber(
+  public SMSActivateGetRentNumber getRentNumber(
     int countryId,
     @NotNull String service,
     @Nullable String operator,
@@ -1145,15 +1148,16 @@ public class SMSActivateApi {
     String data = new SMSActivateWebClient().getOrThrowCommonException(smsActivateURLBuilder, validator);
     SMSActivateJsonParser jsonParser = new SMSActivateJsonParser();
 
-    SMSActivateResponse errorResponse = jsonParser.tryParseJson(data, new TypeToken<SMSActivateResponse>() {
-    }.getType(), validator);
+    if (!validator.containsSuccessStatus(data)) {
+      SMSActivateErrorResponse errorResponse = jsonParser.tryParseJson(data, new TypeToken<SMSActivateErrorResponse>() {
+      }.getType(), validator);
 
-    if (!validator.isSuccessStatus(errorResponse.getStatus())) {
       throw validator.getBaseExceptionByErrorNameOrUnknown(errorResponse.getMessage(), null);
     }
 
-    return jsonParser.tryParseJson(data, new TypeToken<SMSActivateGetRentNumberResponse>() {
+    SMSActivateGetRentNumberResponse response = jsonParser.tryParseJson(data, new TypeToken<SMSActivateGetRentNumberResponse>() {
     }.getType(), validator);
+    return response.getRentPhone();
   }
 
   /**
@@ -1191,10 +1195,9 @@ public class SMSActivateApi {
     String data = new SMSActivateWebClient().getOrThrowCommonException(smsActivateURLBuilder, validator);
     SMSActivateJsonParser jsonParser = new SMSActivateJsonParser();
 
-    SMSActivateResponse errorResponse = jsonParser.tryParseJson(data, new TypeToken<SMSActivateResponse>() {
-    }.getType(), validator);
-
-    if (!validator.isSuccessStatus(errorResponse.getStatus())) {
+    if (!validator.containsSuccessStatus(data)) {
+      SMSActivateErrorResponse errorResponse = jsonParser.tryParseJson(data, new TypeToken<SMSActivateErrorResponse>() {
+      }.getType(), validator);
       throw validator.getBaseExceptionByErrorNameOrUnknown(errorResponse.getMessage(), null);
     }
 
@@ -1242,10 +1245,9 @@ public class SMSActivateApi {
     String data = new SMSActivateWebClient().getOrThrowCommonException(smsActivateURLBuilder, validator);
     SMSActivateJsonParser jsonParser = new SMSActivateJsonParser();
 
-    SMSActivateResponse response = jsonParser.tryParseJson(data, new TypeToken<SMSActivateResponse>() {
-    }.getType(), validator);
-
-    if (!validator.isSuccessStatus(response.getStatus())) {
+    if (!validator.containsSuccessStatus(data)) {
+      SMSActivateErrorResponse response = jsonParser.tryParseJson(data, new TypeToken<SMSActivateErrorResponse>() {
+      }.getType(), validator);
       throw validator.getBaseExceptionByErrorNameOrUnknown(response.getMessage(), null);
     }
 
@@ -1282,11 +1284,10 @@ public class SMSActivateApi {
 
     String data = new SMSActivateWebClient().getOrThrowCommonException(smsActivateURLBuilder, validator);
 
-    SMSActivateResponse smsActivateResponse = jsonParser.tryParseJson(data, new TypeToken<SMSActivateResponse>() {
-    }.getType(), validator);
-
-    if (!validator.isSuccessStatus(smsActivateResponse.getStatus())) {
-      throw validator.getBaseExceptionByErrorNameOrUnknown(smsActivateResponse.getMessage(), null);
+    if (!validator.containsSuccessStatus(data)) {
+      SMSActivateErrorResponse smsActivateErrorResponse = jsonParser.tryParseJson(data, new TypeToken<SMSActivateErrorResponse>() {
+      }.getType(), validator);
+      throw validator.getBaseExceptionByErrorNameOrUnknown(smsActivateErrorResponse.getMessage(), null);
     }
 
     return jsonParser.tryParseJson(data, new TypeToken<SMSActivateGetRentListResponse>() {

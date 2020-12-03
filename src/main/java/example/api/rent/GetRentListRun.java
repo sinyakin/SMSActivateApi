@@ -16,10 +16,11 @@ public class GetRentListRun {
         System.out.println("Number: " + activateRentNumber.getNumber());
         System.out.println("========================================");
       });
-    }catch (SMSActivateWrongParameterException e) {
+    } catch (SMSActivateWrongParameterException e) {
       if (e.getWrongParameter() == SMSActivateWrongParameter.BAD_ACTION) {
         System.out.println("Contact support.");
-      } if (e.getWrongParameter() == SMSActivateWrongParameter.BAD_KEY) {
+      }
+      if (e.getWrongParameter() == SMSActivateWrongParameter.BAD_KEY) {
         System.out.println("Your api-key is incorrect.");
       } else {
         // todo check other wrong parameter

@@ -6,24 +6,25 @@ import com.sms_activate.error.base.SMSActivateBaseException;
 import com.sms_activate.error.base.SMSActivateBaseTypeError;
 import com.sms_activate.error.wrong_parameter.SMSActivateWrongParameter;
 import com.sms_activate.error.wrong_parameter.SMSActivateWrongParameterException;
-import com.sms_activate.rent.SMSActivateGetRentNumberResponse;
+import com.sms_activate.rent.extra.SMSActivateGetRentNumber;
 
 public class GetRentNumberRun {
   public static void main(String[] args) {
     try {
       SMSActivateApi smsActivateApi = new SMSActivateApi("API_KEY");
       // request rent for vk
-      // you can set rent (default is 4 hour)
-      SMSActivateGetRentNumberResponse smsActivateGetRentNumberResponse = smsActivateApi.getRentNumber("vk");
+      // you can set rent time
+      SMSActivateGetRentNumber smsActivateGetRentNumberResponse = smsActivateApi.getRentNumber("vk");
 
       // print info about rent
-      System.out.println(">> ID: " + smsActivateGetRentNumberResponse.getRentPhone().getId());
-      System.out.println(">> Number: " + smsActivateGetRentNumberResponse.getRentPhone().getNumber());
-      System.out.println(">> End date: " + smsActivateGetRentNumberResponse.getRentPhone().getEndDate());
+      System.out.println(">> ID: " + smsActivateGetRentNumberResponse.getId());
+      System.out.println(">> Number: " + smsActivateGetRentNumberResponse.getNumber());
+      System.out.println(">> End date: " + smsActivateGetRentNumberResponse.getEndDate());
     } catch (SMSActivateWrongParameterException e) {
       if (e.getWrongParameter() == SMSActivateWrongParameter.BAD_ACTION) {
         System.out.println("Contact support.");
-      } if (e.getWrongParameter() == SMSActivateWrongParameter.BAD_KEY) {
+      }
+      if (e.getWrongParameter() == SMSActivateWrongParameter.BAD_KEY) {
         System.out.println("Your api-key is incorrect.");
       } else {
         // todo check other wrong parameter

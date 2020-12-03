@@ -16,12 +16,12 @@ public class SMSActivateCurrentActivation {
   /**
    * Phone number.
    */
-  private String number;
+  private long phone;
 
   /**
    * Short service name.
    */
-  private String serviceName;
+  private String service;
 
   /**
    * Country id.
@@ -35,6 +35,9 @@ public class SMSActivateCurrentActivation {
    */
   public int getId() {
     return id;
+  }
+
+  private SMSActivateCurrentActivation() {
   }
 
   /**
@@ -51,9 +54,8 @@ public class SMSActivateCurrentActivation {
    *
    * @return phone number.
    */
-  @NotNull
-  public String getNumber() {
-    return number;
+  public long getNumber() {
+    return phone;
   }
 
   /**
@@ -63,7 +65,7 @@ public class SMSActivateCurrentActivation {
    */
   @NotNull
   public String getServiceName() {
-    return serviceName;
+    return service;
   }
 
   /**

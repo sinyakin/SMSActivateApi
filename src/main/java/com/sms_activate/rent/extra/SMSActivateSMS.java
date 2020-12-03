@@ -6,33 +6,19 @@ public class SMSActivateSMS {
   /**
    * Phone where the sms came from.
    */
-  private final String phoneFrom;
+  private long phoneFrom;
 
   /**
    * Text sms.
    */
-  private final String text;
+  private String text;
 
   /**
    * SMS arrival date.
    */
-  private final String date;
+  private String date;
 
-  /**
-   * Constructor sms with phone, text, date.
-   *
-   * @param phoneFrom phone from such a sms came (not be null).
-   * @param text      text sms (not be null).
-   * @param date      sms arrival date (not be null).
-   */
-  public SMSActivateSMS(
-    @NotNull String phoneFrom,
-    @NotNull String text,
-    @NotNull String date
-  ) {
-    this.phoneFrom = phoneFrom;
-    this.text = text;
-    this.date = date;
+  private SMSActivateSMS() {
   }
 
   /**
@@ -40,8 +26,7 @@ public class SMSActivateSMS {
    *
    * @return phone from such a sms came.
    */
-  @NotNull
-  public String getPhoneFrom() {
+  public long getPhoneFrom() {
     return phoneFrom;
   }
 

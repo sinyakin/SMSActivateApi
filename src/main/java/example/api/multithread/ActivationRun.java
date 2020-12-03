@@ -12,7 +12,7 @@ import java.util.List;
 public class ActivationRun {
   public static void main(String[] args) throws SMSActivateWrongParameterException, IOException {
     final int COUNT_THREAD = 20;
-    SMSActivateApi smsActivateApi = new SMSActivateApi("9A34fbf73d52752607e37ebA26f6f0bf");
+    SMSActivateApi smsActivateApi = new SMSActivateApi("API_KEY");
 
     long start = System.currentTimeMillis();
     List<Thread> threadGetNumberList = new ArrayList<>();

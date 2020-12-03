@@ -13,12 +13,12 @@ public class GetCountriesRun {
       SMSActivateApi smsActivateApi = new SMSActivateApi("API_KEY");
       SMSActivateGetCountriesResponse smsActivateGetCountriesResponse = smsActivateApi.getCountries();
 
-      // print info about all countries
-      smsActivateGetCountriesResponse.getSMSActivateGetCountryResponseList().forEach(GetCountriesRun::printInfo);
-
       // 0 (id) - Russia
       // id is needed for request when you need to specify a specific country
       printInfo(smsActivateGetCountriesResponse.get(0));
+
+      // print info about all countries
+      smsActivateGetCountriesResponse.getSMSActivateGetCountryResponseList().forEach(GetCountriesRun::printInfo);
     } catch (SMSActivateWrongParameterException e) {
       System.out.println(e.getWrongParameter());
     } catch (SMSActivateBaseException e) {

@@ -43,6 +43,9 @@ public class SMSActivateCountryInfo {
    */
   private int multiService;
 
+  private SMSActivateCountryInfo() {
+  }
+
   /**
    * Returns the country id.
    *

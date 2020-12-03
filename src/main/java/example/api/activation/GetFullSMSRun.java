@@ -18,9 +18,10 @@ public class GetFullSMSRun {
     try {
       SMSActivateApi smsActivateApi = new SMSActivateApi("API_KEY");
 
-      SMSActivateActivation activation = smsActivateApi.getNumber(0, "tg");
+      SMSActivateActivation activation = smsActivateApi.getNumber(0, "vk");
       // the number must be used on the service for which you took it, else SMS will not come to it
       System.out.println("Please use your activation " + activation.getNumber() + " with ID " + activation.getId());
+      smsActivateApi.setStatus(activation.getId(), SMSActivateSetStatusRequest.SEND_READY_NUMBER);
       Scanner scanner = new Scanner(System.in);
 
       while (true) {

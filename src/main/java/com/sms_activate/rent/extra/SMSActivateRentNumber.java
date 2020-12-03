@@ -1,27 +1,17 @@
 package com.sms_activate.rent.extra;
 
-import org.jetbrains.annotations.NotNull;
-
 public class SMSActivateRentNumber {
   /**
    * Id rent.
    */
-  private final int id;
+  private int id;
 
   /**
    * Phone number.
    */
-  private final String phone;
+  private long phone;
 
-  /**
-   * Constructor rent with id and number.
-   *
-   * @param id    id rent.
-   * @param phone phone number.
-   */
-  public SMSActivateRentNumber(int id, @NotNull String phone) {
-    this.id = id;
-    this.phone = phone;
+  private SMSActivateRentNumber() {
   }
 
   /**
@@ -38,8 +28,7 @@ public class SMSActivateRentNumber {
    *
    * @return phone number.
    */
-  @NotNull
-  public String getNumber() {
+  public long getNumber() {
     return phone;
   }
 }

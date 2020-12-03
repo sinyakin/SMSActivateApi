@@ -21,7 +21,7 @@ public class GetNumbersStatusRun {
 
         more info about short name service: https://sms-activate.ru/ru/api2#quantity
        */
-      SMSActivateServiceInfo go = smsActivateGetNumbersStatusResponse.get("go_0"); // google
+      SMSActivateServiceInfo go = smsActivateGetNumbersStatusResponse.get("go_0"); // google with not forward
       printInfo(go);
 
       Thread.sleep(1500);

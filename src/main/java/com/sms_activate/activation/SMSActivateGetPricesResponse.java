@@ -11,7 +11,7 @@ public class SMSActivateGetPricesResponse {
   /**
    * Map prices where key is country id and short name service.
    */
-  private Map<Integer, Map<String, SMSActivateGetPriceInfo>> smsActivateGetPriceMap;
+  private final Map<Integer, Map<String, SMSActivateGetPriceInfo>> smsActivateGetPriceMap;
 
   /**
    * Constructor response getPrices with data from server.
@@ -49,7 +49,7 @@ public class SMSActivateGetPricesResponse {
    * @throws SMSActivateWrongParameterException if country id is incorrect.
    */
   @NotNull
-  public Map<String, SMSActivateGetPriceInfo> getSmsActivateGetPriceMap(int countryId) throws SMSActivateWrongParameterException {
+  public Map<String, SMSActivateGetPriceInfo> getSmsActivateGetPriceMap(@NotNull Integer countryId) throws SMSActivateWrongParameterException {
     Map<String, SMSActivateGetPriceInfo> smsActivateGetPriceInfoMap = smsActivateGetPriceMap.get(countryId);
 
     if (smsActivateGetPriceInfoMap == null) {
@@ -77,7 +77,7 @@ public class SMSActivateGetPricesResponse {
    * @throws SMSActivateWrongParameterException if country id is incorrect.
    */
   @NotNull
-  public Set<String> getServicesByCountryId(int countryId) throws SMSActivateWrongParameterException {
+  public Set<String> getServicesByCountryId(@NotNull Integer countryId) throws SMSActivateWrongParameterException {
     return new HashSet<>(this.getSmsActivateGetPriceMap(countryId).keySet());
   }
 }

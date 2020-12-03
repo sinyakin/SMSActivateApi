@@ -22,6 +22,9 @@ public class SMSActivateGetRentServicesAndCountriesResponse {
    */
   private Map<String, SMSActivateRentService> services;
 
+  private SMSActivateGetRentServicesAndCountriesResponse() {
+  }
+
   /**
    * Returns the service rent by name.
    *

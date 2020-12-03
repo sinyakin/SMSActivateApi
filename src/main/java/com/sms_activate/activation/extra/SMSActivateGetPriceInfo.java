@@ -14,10 +14,13 @@ public class SMSActivateGetPriceInfo {
    */
   private int count;
 
+  private SMSActivateGetPriceInfo() {
+  }
+
   /**
-   * Returns the service cost.
+   * Returns the service cost in ruble.
    *
-   * @return service cost.
+   * @return service cost in ruble.
    */
   @NotNull
   public BigDecimal getCost() {

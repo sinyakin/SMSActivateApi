@@ -2,7 +2,7 @@ package example.api.multithread;
 
 import com.sms_activate.SMSActivateApi;
 import com.sms_activate.error.base.SMSActivateBaseException;
-import com.sms_activate.rent.SMSActivateGetRentNumberResponse;
+import com.sms_activate.rent.extra.SMSActivateGetRentNumber;
 import com.sms_activate.rent.set_rent_status.SMSActivateSetRentStatusRequest;
 
 import java.util.ArrayList;
@@ -19,7 +19,7 @@ public class RentRun {
     for (int i = 0; i < COUNT_THREAD; i++) {
       threadList.add(new Thread(() -> {
         try {
-          SMSActivateGetRentNumberResponse gt = smsActivateApi.getRentNumber("gt");
+          SMSActivateGetRentNumber gt = smsActivateApi.getRentNumber("gt");
           new Thread(() -> {
             /*try {
               //smsActivateApi.setRentStatus(gt.getId(), SMSActivateSetRentStatusRequest.CANCEL);

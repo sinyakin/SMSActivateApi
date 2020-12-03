@@ -11,7 +11,7 @@ public class SMSActivateActivation {
   /**
    * Phone number.
    */
-  private final String phone;
+  private final long phone;
 
   /**
    * The name of the service for which the activation was purchased.
@@ -27,14 +27,13 @@ public class SMSActivateActivation {
    */
   public SMSActivateActivation(
     int id,
-    @NotNull String number,
+    long number,
     @NotNull String service
   ) {
     this.activation = id;
     this.phone = number;
     this.service = service;
   }
-
 
   /**
    * Returns the id activation.
@@ -51,7 +50,7 @@ public class SMSActivateActivation {
    * @return phone number.
    */
   @NotNull
-  public String getNumber() {
+  public long getNumber() {
     return phone;
   }
 

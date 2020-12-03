@@ -15,6 +15,10 @@ public class SMSActivateRentService {
    */
   private int count;
 
+  private SMSActivateRentService() {
+
+  }
+
   /**
    * Returns the cost number by service.
    *

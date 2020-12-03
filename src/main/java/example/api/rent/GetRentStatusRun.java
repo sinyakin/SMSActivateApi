@@ -6,14 +6,14 @@ import com.sms_activate.error.base.SMSActivateBaseTypeError;
 import com.sms_activate.error.wrong_parameter.SMSActivateWrongParameter;
 import com.sms_activate.error.wrong_parameter.SMSActivateWrongParameterException;
 import com.sms_activate.rent.SMSActivateGetRentStatusResponse;
+import com.sms_activate.rent.set_rent_status.SMSActivateSetRentStatusRequest;
 
 public class GetRentStatusRun {
   public static void main(String[] args) {
     try {
       SMSActivateApi smsActivateApi = new SMSActivateApi("API_KEY");
-
       // ID rent for check status rent
-      SMSActivateGetRentStatusResponse smsActivateGetRentStatusResponse = smsActivateApi.getRentStatus(454313);
+      SMSActivateGetRentStatusResponse smsActivateGetRentStatusResponse = smsActivateApi.getRentStatus(000);
 
       // count sms in rent
       System.out.println("Count sms: " + smsActivateGetRentStatusResponse.getCountSms());

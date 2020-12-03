@@ -31,7 +31,7 @@ public class GetCurrentActivationRun {
             smsActivateGetCurrentActivationsResponse = smsActivateApi.getCurrentActivations(batch++, countStringInBatch, SMSActivateOrderBy.ASC);
           } while (smsActivateGetCurrentActivationsResponse.isExistNextBatch());
         } else {
-          System.out.printf("Count your activation is %d: %n", smsActivateGetCurrentActivationsResponse.getTotalCount());
+          System.out.printf("Count your activation is: %d", smsActivateGetCurrentActivationsResponse.getTotalCount());
           smsActivateGetCurrentActivationsResponse.getAllActivation().forEach(GetCurrentActivationRun::printInfoActivation);
         }
       } else {

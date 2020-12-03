@@ -99,4 +99,8 @@ class SMSActivateValidator {
   public boolean isSuccessStatus(@NotNull String status) {
     return SUCCESS_STATUS.equalsIgnoreCase(status);
   }
+
+  public boolean containsSuccessStatus(@NotNull String data) {
+    return data.toLowerCase().contains(SUCCESS_STATUS);
+  }
 }

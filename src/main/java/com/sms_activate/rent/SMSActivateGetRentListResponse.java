@@ -11,15 +11,9 @@ public class SMSActivateGetRentListResponse {
   /**
    * Map current rents where key is id rent.
    */
-  private final Map<Integer, SMSActivateRentNumber> values;
+  private Map<Integer, SMSActivateRentNumber> values;
 
-  /**
-   * Constructor response getRentList with list current rents.
-   *
-   * @param smsActivateRentNumberMap Map current rents.
-   */
-  public SMSActivateGetRentListResponse(@NotNull Map<Integer, SMSActivateRentNumber> smsActivateRentNumberMap) {
-    this.values = smsActivateRentNumberMap;
+  private SMSActivateGetRentListResponse() {
   }
 
   /**
