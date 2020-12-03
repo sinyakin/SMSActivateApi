@@ -31,6 +31,10 @@ public class GetCountriesRun {
     System.out.println("Russian name: " + smsActivateCountryInfo.getRussianName());
     System.out.println("English name: " + smsActivateCountryInfo.getEnglishName());
     System.out.println("Chinese name: " + smsActivateCountryInfo.getChineseName());
+    System.out.println("Support multi-service: " + (smsActivateCountryInfo.isSupportMultiService() ? "yes" : "no"));
+    System.out.println("Support retry: " + (smsActivateCountryInfo.isSupportRetry() ? "yes" : "no"));
+    System.out.println("Visible in site: " + (smsActivateCountryInfo.isVisible() ? "yes" : "no"));
+    System.out.println("Support rent: " + (smsActivateCountryInfo.isSupportRent() ? "yes" : "no"));
     System.out.println("====================================================");
   }
 }

@@ -16,7 +16,6 @@ public class SMSActivateRentService {
   private int count;
 
   private SMSActivateRentService() {
-
   }
 
   /**

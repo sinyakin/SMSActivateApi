@@ -53,6 +53,6 @@ public class SMSActivateGetBalanceAndCashBackResponse {
    */
   @NotNull
   public BigDecimal getBalanceAndCashBack() {
-    return getBalance().add(cashBack);
+    return balance.add(cashBack);
   }
 }

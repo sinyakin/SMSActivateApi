@@ -13,7 +13,7 @@ public class GetRentStatusRun {
     try {
       SMSActivateApi smsActivateApi = new SMSActivateApi("API_KEY");
       // ID rent for check status rent
-      SMSActivateGetRentStatusResponse smsActivateGetRentStatusResponse = smsActivateApi.getRentStatus(000);
+      SMSActivateGetRentStatusResponse smsActivateGetRentStatusResponse = smsActivateApi.getRentStatus(457724);
 
       // count sms in rent
       System.out.println("Count sms: " + smsActivateGetRentStatusResponse.getCountSms());

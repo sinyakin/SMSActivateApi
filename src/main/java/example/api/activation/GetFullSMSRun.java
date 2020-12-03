@@ -18,10 +18,10 @@ public class GetFullSMSRun {
     try {
       SMSActivateApi smsActivateApi = new SMSActivateApi("API_KEY");
 
-      SMSActivateActivation activation = smsActivateApi.getNumber(0, "vk");
+      //SMSActivateActivation activation = smsActivateApi.getNumber(0, "vk");
       // the number must be used on the service for which you took it, else SMS will not come to it
-      System.out.println("Please use your activation " + activation.getNumber() + " with ID " + activation.getId());
-      smsActivateApi.setStatus(activation.getId(), SMSActivateSetStatusRequest.SEND_READY_NUMBER);
+      //System.out.println("Please use your activation " + activation.getNumber() + " with ID " + activation.getId());
+      //smsActivateApi.setStatus(activation.getId(), SMSActivateSetStatusRequest.SEND_READY_NUMBER);
       Scanner scanner = new Scanner(System.in);
 
       while (true) {
@@ -31,16 +31,16 @@ public class GetFullSMSRun {
         if (response.equals("q")) {
           break;
         } else if (response.equals("ch")) {
-          SMSActivateGetFullSmsResponse smsActivateGetFullSmsResponse = smsActivateApi.getFullSms(activation.getId());
+          SMSActivateGetFullSmsResponse smsActivateGetFullSmsResponse = smsActivateApi.getFullSms(353147512);
 
           // if SMS arrived, the activation status will be FULL_SMS
           if (smsActivateGetFullSmsResponse.getSmsActivateGetFullTypeResponse() == SMSActivateStatusNumber.FULL_SMS) {
             System.out.println(smsActivateGetFullSmsResponse.getText());
-            smsActivateApi.setStatus(activation.getId(), SMSActivateSetStatusRequest.FINISH);
+            smsActivateApi.setStatus(353136785, SMSActivateSetStatusRequest.FINISH);
             break;
           }
           System.out.println(smsActivateGetFullSmsResponse.getSmsActivateGetFullTypeResponse().getMessage());
-          System.out.println("Please use your activation " + activation.getNumber() + " with ID " + activation.getId());
+          //System.out.println("Please use your activation " + activation.getNumber() + " with ID " + activation.getId());
         }
       }
     }  catch (SMSActivateWrongParameterException e) {

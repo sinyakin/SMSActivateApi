@@ -13,12 +13,12 @@ public class SetRentStatusRun {
     try {
       SMSActivateApi smsActivateApi = new SMSActivateApi("API_KEY");
       // request rent number
-      SMSActivateGetRentNumber response = smsActivateApi.getRentNumber("fb");
+      //SMSActivateGetRentNumber response = smsActivateApi.getRentNumber("fb");
       /*
         set status for rent
         example: CANCEL
         */
-      SMSActivateRentStatus smsActivateSetRentStatusResponse = smsActivateApi.setRentStatus(response.getId(), SMSActivateSetRentStatusRequest.CANCEL);
+      SMSActivateRentStatus smsActivateSetRentStatusResponse = smsActivateApi.setRentStatus(457724, SMSActivateSetRentStatusRequest.CANCEL);
 
       // print desc about new status
       System.out.println("Description of the current lease status: " + smsActivateSetRentStatusResponse.getMessage());

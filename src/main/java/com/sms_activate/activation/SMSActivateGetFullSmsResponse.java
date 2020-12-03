@@ -20,9 +20,9 @@ public class SMSActivateGetFullSmsResponse {
    * @param text                    text sms.
    * @param smsActivateStatusNumber status activation.
    */
-  public SMSActivateGetFullSmsResponse(@NotNull String text, @NotNull SMSActivateStatusNumber smsActivateStatusNumber) {
-    this.text = text;
+  public SMSActivateGetFullSmsResponse(@NotNull SMSActivateStatusNumber smsActivateStatusNumber, @NotNull String text) {
     this.smsActivateStatusNumber = smsActivateStatusNumber;
+    this.text = text;
   }
 
   /**

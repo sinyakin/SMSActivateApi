@@ -18,15 +18,14 @@ public class SMSActivateGetRentListResponse {
   /**
    * Returns the rent by index.
    *
-   * @param id index rent.
+   * @param idRent index rent.
    * @return rent object.
    * @throws SMSActivateBaseException if index incorrect.
    */
   @NotNull
-  public SMSActivateRentNumber get(int id) throws SMSActivateBaseException {
-
+  public SMSActivateRentNumber get(int idRent) throws SMSActivateBaseException {
     for (SMSActivateRentNumber activateRentNumber : values.values()) {
-      if (activateRentNumber.getId() == id) {
+      if (activateRentNumber.getId() == idRent) {
         return activateRentNumber;
       }
     }

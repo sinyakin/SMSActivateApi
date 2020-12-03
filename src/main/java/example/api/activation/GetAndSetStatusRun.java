@@ -12,9 +12,14 @@ public class GetAndSetStatusRun {
     try {
       SMSActivateApi smsActivateApi = new SMSActivateApi("API_KEY");
       SMSActivateActivation smsActivateActivation = smsActivateApi.getNumber(0, "av", true);
+      SMSActivateActivation smsActivateActivation1 = smsActivateApi.getNumber(0, "av", true);
       // print info about activation
       System.out.println("Id: " + smsActivateActivation.getId());
       System.out.println("Number: " + smsActivateActivation.getNumber());
+
+      // print info about activation
+      System.out.println("Id: " + smsActivateActivation1.getId());
+      System.out.println("Number: " + smsActivateActivation1.getNumber());
       // check: https://sms-activate.ru/ru/getNumber
 
       //Thread.sleep(10000);
@@ -27,8 +32,8 @@ public class GetAndSetStatusRun {
         System.out.println("Code from sms: " + smsActivateGetStatusResponse.getCodeFromSMS());
       }
 
-      SMSActivateSetStatusResponse smsActivateSetStatusResponse = smsActivateApi.setStatus(smsActivateActivation.getId(),
-        SMSActivateSetStatusRequest.CANCEL);
+      SMSActivateSetStatusResponse smsActivateSetStatusResponse = smsActivateApi.setStatusWithForwardPhone(smsActivateActivation.getId(),
+        SMSActivateSetStatusRequest.SEND_READY_NUMBER, smsActivateActivation1.getNumber());
 
       // check: https://sms-activate.ru/ru/getNumber
 

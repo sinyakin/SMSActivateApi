@@ -1,7 +1,6 @@
 package com.sms_activate.activation;
 
 import com.sms_activate.activation.extra.SMSActivateCountryInfo;
-import com.sms_activate.error.wrong_parameter.SMSActivateWrongParameter;
 import com.sms_activate.error.wrong_parameter.SMSActivateWrongParameterException;
 import org.jetbrains.annotations.NotNull;
 
@@ -25,19 +24,19 @@ public class SMSActivateGetCountriesResponse {
   /**
    * Returns the country info by id.
    *
-   * @param id country id.
+   * @param idCountry country id.
    * @return country info.
    * @throws SMSActivateWrongParameterException if id is incorrect.
    */
   @NotNull
-  public SMSActivateCountryInfo get(int id) throws SMSActivateWrongParameterException {
+  public SMSActivateCountryInfo get(int idCountry) throws SMSActivateWrongParameterException {
     for (SMSActivateCountryInfo smsActivateCountryInfo : this.smsActivateCountryInfoList) {
-      if (smsActivateCountryInfo.getId() == id) {
+      if (smsActivateCountryInfo.getId() == idCountry) {
         return smsActivateCountryInfo;
       }
     }
 
-    throw new SMSActivateWrongParameterException(SMSActivateWrongParameter.INVALID_PHONE);
+    throw new SMSActivateWrongParameterException("Wrong country id.", "Некорректный id страны.");
   }
 
   /**

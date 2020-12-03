@@ -14,7 +14,13 @@ public class GetRentNumberRun {
       SMSActivateApi smsActivateApi = new SMSActivateApi("API_KEY");
       // request rent for vk
       // you can set rent time
-      SMSActivateGetRentNumber smsActivateGetRentNumberResponse = smsActivateApi.getRentNumber("vk");
+      SMSActivateGetRentNumber smsActivateGetRentNumberResponse = smsActivateApi.getRentNumber(
+        "vk",
+          0,
+        "mts",
+        SMSActivateApi.MINIMAL_RENT_TIME,
+        "https://google.com/webhook.php"
+        );
 
       // print info about rent
       System.out.println(">> ID: " + smsActivateGetRentNumberResponse.getId());

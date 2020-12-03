@@ -86,13 +86,13 @@ public enum SMSActivateStatusNumber {
   public static SMSActivateStatusNumber getStatusByName(@NotNull String name) {
     name = name.toUpperCase();
 
-    if (FULL_SMS.getResponse().startsWith(name)) {
+    if (name.startsWith(FULL_SMS.getResponse())) {
       return FULL_SMS;
     }
 
-    for (SMSActivateStatusNumber type : values()) {
-      if (type.getResponse().equals(name)) {
-        return type;
+    for (SMSActivateStatusNumber statusNumber : values()) {
+      if (name.contains(statusNumber.getResponse())) {
+        return statusNumber;
       }
     }
 

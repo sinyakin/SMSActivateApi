@@ -34,7 +34,7 @@ import java.util.stream.Collectors;
  * Before starting work, you must have an API key and a referral link to use all the API capabilities.</p>
  *
  * <p>All methods and constructor for this class throw SMSActivateWrongParameterException</p>
- * <p>Before req</p>
+ * <p>Before request set referral link</p>
  *
  * @see SMSActivateWrongParameterException
  * @see SMSActivateBaseException
@@ -46,6 +46,11 @@ public class SMSActivateApi {
    * The minimal rent time.
    */
   public static final int MINIMAL_RENT_TIME = 4;
+
+  /**
+   * The maximum count string in batch.
+   */
+  public static final int MAX_COUNT_STRING_IN_BATCH = 10;
 
   /**
    * Regular expression for numbers.
@@ -168,7 +173,7 @@ public class SMSActivateApi {
   }
 
   /**
-   * Returns the available services.
+   * Returns the available services from setting site.
    *
    * @return the available services.
    * @throws SMSActivateWrongParameterException if one of parameters is incorrect.
@@ -190,7 +195,7 @@ public class SMSActivateApi {
    *                                            </p>
    */
   @NotNull
-  public SMSActivateGetNumbersStatusResponse getNumbersStatus() throws SMSActivateBaseException {
+  public SMSActivateGetNumbersStatusResponse getNumbersStatusByDefaultSettingFromSite() throws SMSActivateBaseException {
     return getNumbersStatus(null, null);
   }
 
@@ -237,8 +242,11 @@ public class SMSActivateApi {
     }
 
     SMSActivateURLBuilder smsActivateURLBuilder = new SMSActivateURLBuilder(apiKey, SMSActivateAction.GET_NUMBERS_STATUS);
-    smsActivateURLBuilder.append(SMSActivateURLKey.COUNTRY, (countryId == null) ? null : String.valueOf(countryId))
-      .append(SMSActivateURLKey.OPERATOR, operator);
+    smsActivateURLBuilder.append(SMSActivateURLKey.OPERATOR, operator);
+
+    if (countryId != null) {
+      smsActivateURLBuilder.append(SMSActivateURLKey.COUNTRY, String.valueOf(countryId));
+    }
 
     String data = new SMSActivateWebClient().getOrThrowCommonException(smsActivateURLBuilder, validator);
     SMSActivateJsonParser jsonParser = new SMSActivateJsonParser();
@@ -291,7 +299,7 @@ public class SMSActivateApi {
    */
   @NotNull
   public SMSActivateActivation getNumber(int countryId, @NotNull String service) throws SMSActivateBaseException {
-    return getNumber(countryId, service,false);
+    return getNumber(countryId, service, false);
   }
 
   /**
@@ -494,27 +502,23 @@ public class SMSActivateApi {
   ) throws SMSActivateBaseException {
     multiServiceSet.removeIf(String::isEmpty);
 
-    if (countryId < 0) {
-      throw new SMSActivateWrongParameterException("Wrong ID country.", "Неверный ID страны.");
-    }
-
     if (multiServiceSet.isEmpty()) {
       throw new SMSActivateBaseException("Set multi-service can't be empty.", "Set мультисервисов не может быть пустой.");
+    }
+
+    if (countryId < 0) {
+      throw new SMSActivateWrongParameterException("Wrong ID country.", "Неверный ID страны.");
     }
 
     String strMultiService = String.join(",", multiServiceSet);
     String strOperators = null;
     String strMultiForward = null;
 
-    if (multiForwardList != null && !multiForwardList.isEmpty()) {
-      multiForwardList.removeIf(Objects::isNull);
-
-      if (!multiForwardList.isEmpty()) {
-        strMultiForward = multiForwardList.stream()
-          .filter(forward -> !Objects.isNull(forward))
-          .map(forward -> forward ? "1" : "0")
-          .collect(Collectors.joining(","));
-      }
+    if (multiForwardList != null) {
+      strMultiForward = multiForwardList.stream()
+        .filter(forward -> !Objects.isNull(forward))
+        .map(forward -> forward ? "1" : "0")
+        .collect(Collectors.joining(","));
     }
 
     if (operatorSet != null) {
@@ -563,8 +567,8 @@ public class SMSActivateApi {
    * <em>FINISH</em> - Confirm SMS code and complete activation
    * </p>
    *
-   * @param id      id to set activation status (not be null).
-   * @param status  value to establish (not be null).
+   * @param idActivation     id to set activation status (not be null).
+   * @param status value to establish (not be null).
    * @return access activation.
    * @throws SMSActivateWrongParameterException if one of parameters is incorrect.
    * @throws SMSActivateUnknownException        if error type not documented.
@@ -584,8 +588,8 @@ public class SMSActivateApi {
    *                                            </p>
    */
   @NotNull
-  public SMSActivateSetStatusResponse setStatus(int id, @NotNull SMSActivateSetStatusRequest status)  throws SMSActivateBaseException {
-    return setStatusWithForwardPhone(id, status, null);
+  public SMSActivateSetStatusResponse setStatus(int idActivation, @NotNull SMSActivateSetStatusRequest status) throws SMSActivateBaseException {
+    return setStatusWithForwardPhone(idActivation, status, null);
   }
 
   /**
@@ -609,8 +613,8 @@ public class SMSActivateApi {
    * <em>FINISH</em> - Confirm SMS code and complete activation
    * </p>
    *
-   * @param id      id to set activation status (not be null).
-   * @param status  value to establish (not be null).
+   * @param idActivation           id to set activation status (not be null).
+   * @param status       value to establish (not be null).
    * @param forwardPhone number phone for forward.
    * @return access activation.
    * @throws SMSActivateWrongParameterException if one of parameters is incorrect.
@@ -632,13 +636,20 @@ public class SMSActivateApi {
    */
   @NotNull
   public SMSActivateSetStatusResponse setStatusWithForwardPhone(
-    int id,
+    int idActivation,
     @NotNull SMSActivateSetStatusRequest status,
     @Nullable Long forwardPhone
   ) throws SMSActivateBaseException {
+    if (forwardPhone != null && forwardPhone <= 0) {
+      throw new SMSActivateWrongParameterException(
+        "Phone number for forwarding must be positive.",
+        "Телефон для переадресации должен быть положительный."
+      );
+    }
+
     SMSActivateURLBuilder smsActivateURLBuilder = new SMSActivateURLBuilder(apiKey, SMSActivateAction.SET_STATUS);
     smsActivateURLBuilder.append(SMSActivateURLKey.STATUS, String.valueOf(status.getId()))
-      .append(SMSActivateURLKey.ID, String.valueOf(id))
+      .append(SMSActivateURLKey.ID, String.valueOf(idActivation))
       .append(SMSActivateURLKey.FORWARD, String.valueOf(forwardPhone));
 
     String data = new SMSActivateWebClient().getOrThrowCommonException(smsActivateURLBuilder, validator);
@@ -647,15 +658,15 @@ public class SMSActivateApi {
 
     if (smsActivateAccessStatus != SMSActivateAccessStatus.UNKNOWN) {
       return new SMSActivateSetStatusResponse(smsActivateAccessStatus);
-    } else {
-      throw validator.getBaseExceptionByErrorNameOrUnknown(data, null);
     }
+
+    throw validator.getBaseExceptionByErrorNameOrUnknown(data, null);
   }
 
   /**
    * Returns the state by id activation.
    *
-   * @param id to get activation state.
+   * @param idActivation id activation to get activation state.
    * @return state activation.
    * @throws SMSActivateWrongParameterException if one of parameters is incorrect.
    * @throws SMSActivateUnknownException        if error type not documented.
@@ -674,9 +685,9 @@ public class SMSActivateApi {
    *                                            </p>
    */
   @NotNull
-  public SMSActivateGetStatusResponse getStatus(int id) throws SMSActivateBaseException {
+  public SMSActivateGetStatusResponse getStatus(int idActivation) throws SMSActivateBaseException {
     SMSActivateURLBuilder smsActivateURLBuilder = new SMSActivateURLBuilder(apiKey, SMSActivateAction.GET_STATUS);
-    smsActivateURLBuilder.append(SMSActivateURLKey.ID, String.valueOf(id));
+    smsActivateURLBuilder.append(SMSActivateURLKey.ID, String.valueOf(idActivation));
 
     String code = null;
     String data = new SMSActivateWebClient().getOrThrowCommonException(smsActivateURLBuilder, validator);
@@ -692,15 +703,15 @@ public class SMSActivateApi {
 
     if (status != SMSActivateGetStatusActivation.UNKNOWN) {
       return new SMSActivateGetStatusResponse(status, code);
-    } else {
-      throw validator.getBaseExceptionByErrorNameOrUnknown(data, null);
     }
+
+    throw validator.getBaseExceptionByErrorNameOrUnknown(data, null);
   }
 
   /**
    * Returns the specified object from server with text sms.
    *
-   * @param id id activation.
+   * @param idActivation id activation.
    * @return full text sms with status:
    * <p>
    *   <ul>
@@ -729,9 +740,9 @@ public class SMSActivateApi {
    *                                            </p>
    */
   @NotNull
-  public SMSActivateGetFullSmsResponse getFullSms(int id) throws SMSActivateBaseException {
+  public SMSActivateGetFullSmsResponse getFullSms(int idActivation) throws SMSActivateBaseException {
     SMSActivateURLBuilder smsActivateURLBuilder = new SMSActivateURLBuilder(apiKey, SMSActivateAction.GET_FULL_SMS);
-    smsActivateURLBuilder.append(SMSActivateURLKey.ID, String.valueOf(id));
+    smsActivateURLBuilder.append(SMSActivateURLKey.ID, String.valueOf(idActivation));
 
     String data = new SMSActivateWebClient().getOrThrowCommonException(smsActivateURLBuilder, validator);
 
@@ -741,10 +752,10 @@ public class SMSActivateApi {
       String message = "";
 
       if (smsActivateStatusNumber == SMSActivateStatusNumber.FULL_SMS) {
-        message = data.split(":")[1];
+        message = data.split(":", 2)[1];
       }
 
-      return new SMSActivateGetFullSmsResponse(message, smsActivateStatusNumber);
+      return new SMSActivateGetFullSmsResponse(smsActivateStatusNumber, message);
     }
 
     throw validator.getBaseExceptionByErrorNameOrUnknown(data, null);
@@ -839,10 +850,10 @@ public class SMSActivateApi {
    * @param countryId        id number (default 0).
    * @param serviceShortName service for needed price list (default null).
    *                         <pre>
-   *                         {@code null, null -> all service and all country
-   *                         null, serviceShortName -> all country by service
-   *                          countryId, null -> all service in country}
-   *                         </pre>
+   *                                                 {@code null, null -> all service and all country
+   *                                                 null, serviceShortName -> all country by service
+   *                                                  countryId, null -> all service in country}
+   *                                                 </pre>
    * @return price list country.
    * @throws SMSActivateWrongParameterException if one of parameters is incorrect.
    * @throws SMSActivateUnknownException        if error type not documented.
@@ -1009,9 +1020,9 @@ public class SMSActivateApi {
         long number = Long.parseLong(parts[2]);
 
         return new SMSActivateActivation(childId, number, service);
-      } else {
-        throw validator.getBaseExceptionByErrorNameOrUnknown(data, null);
       }
+
+      throw validator.getBaseExceptionByErrorNameOrUnknown(data, null);
     } catch (NumberFormatException e) {
       throw new SMSActivateUnknownException(data, "Error formatting to number.");
     }
@@ -1135,7 +1146,7 @@ public class SMSActivateApi {
    */
   @NotNull
   public SMSActivateGetRentNumber getRentNumber(@NotNull String service) throws SMSActivateBaseException {
-    return getRentNumber(0, service, null, MINIMAL_RENT_TIME, null);
+    return getRentNumber(service, 0, null, MINIMAL_RENT_TIME, null);
   }
 
   /**
@@ -1171,19 +1182,25 @@ public class SMSActivateApi {
    */
   @NotNull
   public SMSActivateGetRentNumber getRentNumber(
-    int countryId,
     @NotNull String service,
+    int countryId,
     @Nullable String operator,
     int time,
     @Nullable String urlWebhook
   ) throws SMSActivateBaseException {
     if (countryId < 0) {
       throw new SMSActivateWrongParameterException("Wrong ID country.", "Неверный ID страны.");
-    }
-    if (time < MINIMAL_RENT_TIME) {
+    } if (time < MINIMAL_RENT_TIME) {
       throw new SMSActivateWrongParameterException(
         String.format("The rental time cannot be less than %d.", MINIMAL_RENT_TIME),
         String.format("Время аренды не может быть меньше чем %d.", MINIMAL_RENT_TIME)
+      );
+    } if (operator != null && operator.isEmpty()) {
+      throw new SMSActivateWrongParameterException(SMSActivateWrongParameter.WRONG_OPERATOR);
+    } if (urlWebhook != null && urlWebhook.isEmpty()) {
+      throw new SMSActivateWrongParameterException(
+        "Parameter urlwebhook can't be empty.",
+        "Параметер urlwebhook can't be empty."
       );
     }
 
@@ -1212,7 +1229,7 @@ public class SMSActivateApi {
   /**
    * Returns the list sms.
    *
-   * @param id id received in response when ordering a number.
+   * @param idRent id received in response when ordering a number.
    * @return list sms.
    * @throws SMSActivateWrongParameterException if one of parameters is incorrect.
    * @throws SMSActivateUnknownException        if error type not documented.
@@ -1237,9 +1254,9 @@ public class SMSActivateApi {
    *                                            </p>
    */
   @NotNull
-  public SMSActivateGetRentStatusResponse getRentStatus(int id) throws SMSActivateBaseException {
+  public SMSActivateGetRentStatusResponse getRentStatus(int idRent) throws SMSActivateBaseException {
     SMSActivateURLBuilder smsActivateURLBuilder = new SMSActivateURLBuilder(apiKey, SMSActivateAction.GET_RENT_STATUS);
-    smsActivateURLBuilder.append(SMSActivateURLKey.ID, String.valueOf(id));
+    smsActivateURLBuilder.append(SMSActivateURLKey.ID, String.valueOf(idRent));
 
     String data = new SMSActivateWebClient().getOrThrowCommonException(smsActivateURLBuilder, validator);
     SMSActivateJsonParser jsonParser = new SMSActivateJsonParser();
@@ -1257,7 +1274,7 @@ public class SMSActivateApi {
   /**
    * Sets the status on rent.
    *
-   * @param id     id activation for set status rent.
+   * @param idRent     id activation for set status rent.
    * @param status status rent.
    * @return response status from server.
    * @throws SMSActivateWrongParameterException if one of parameters is incorrect.
@@ -1285,10 +1302,10 @@ public class SMSActivateApi {
    *                                            </p>
    */
   @NotNull
-  public SMSActivateRentStatus setRentStatus(int id, @NotNull SMSActivateSetRentStatusRequest status)
+  public SMSActivateRentStatus setRentStatus(int idRent, @NotNull SMSActivateSetRentStatusRequest status)
     throws SMSActivateBaseException {
     SMSActivateURLBuilder smsActivateURLBuilder = new SMSActivateURLBuilder(apiKey, SMSActivateAction.SET_RENT_STATUS);
-    smsActivateURLBuilder.append(SMSActivateURLKey.ID, String.valueOf(id))
+    smsActivateURLBuilder.append(SMSActivateURLKey.ID, String.valueOf(idRent))
       .append(SMSActivateURLKey.STATUS, String.valueOf(status.getId()));
 
     String data = new SMSActivateWebClient().getOrThrowCommonException(smsActivateURLBuilder, validator);
@@ -1340,6 +1357,86 @@ public class SMSActivateApi {
     }
 
     return jsonParser.tryParseJson(data, new TypeToken<SMSActivateGetRentListResponse>() {
+    }.getType(), validator);
+  }
+
+  /**
+   * Returns the first {@value MAX_COUNT_STRING_IN_BATCH} current activation.
+   * If your count of activations is < {@value MAX_COUNT_STRING_IN_BATCH}, then return only the existing ones,
+   * else they will return in batches of first {@value MAX_COUNT_STRING_IN_BATCH} activations.
+   *
+   * @return if you not have activation returns empty list else list with your activations.
+   * @throws SMSActivateWrongParameterException if one of parameters is incorrect.
+   * @throws SMSActivateUnknownException        if error type not documented.
+   *                                            <p>
+   *                                            Types errors:
+   *                                            <p>
+   *                                            Base type error in this method:
+   *                                               <ul>
+   *                                                 <li>ERROR_SQL - if error happened in sql-server;</li>
+   *                                               </ul>
+   *                                             </p>
+   *                                             <p>
+   *                                              Wrong parameter error types in this method:
+   *                                               <ul>
+   *                                                 <li>BAD_KEY - if your api-key is incorrect;</li>
+   *                                               </ul>
+   *                                             </p>
+   *                                            </p>
+   */
+  @NotNull
+  public SMSActivateGetCurrentActivationsResponse getCurrentActivations() throws SMSActivateBaseException {
+    return getCurrentActivations(1, MAX_COUNT_STRING_IN_BATCH);
+  }
+
+  /**
+   * Returns the list current activation where contains by {@value MAX_COUNT_STRING_IN_BATCH} activation.
+   * If your count of activations is < {@value MAX_COUNT_STRING_IN_BATCH}, then return only the existing ones,
+   * else they will return in batches of {@value MAX_COUNT_STRING_IN_BATCH} activations in each response.
+   *
+   * @param batch              number requested batch (default 1).
+   * @param countStringInBatch count string in current batch.
+   * @return if you not have activation returns empty list else list with your activations.
+   * @throws SMSActivateWrongParameterException if one of parameters is incorrect.
+   * @throws SMSActivateUnknownException        if error type not documented.
+   *                                            <p>
+   *                                            Types errors:
+   *                                            <p>
+   *                                            Base type error in this method:
+   *                                               <ul>
+   *                                                 <li>ERROR_SQL - if error happened in sql-server;</li>
+   *                                               </ul>
+   *                                             </p>
+   *                                             <p>
+   *                                              Wrong parameter error types in this method:
+   *                                               <ul>
+   *                                                 <li>BAD_KEY - if your api-key is incorrect;</li>
+   *                                               </ul>
+   *                                             </p>
+   *                                            </p>
+   */
+  @NotNull
+  public SMSActivateGetCurrentActivationsResponse getCurrentActivations(int batch, int countStringInBatch)
+    throws SMSActivateBaseException {
+    if (batch <= 0) {
+      throw new SMSActivateWrongParameterException("Number page must be positive.", "Номер страницы должен быть положиельным.");
+    }
+    if (countStringInBatch <= 0 || countStringInBatch > MAX_COUNT_STRING_IN_BATCH) {
+      throw new SMSActivateWrongParameterException(
+        String.format("The maximum number of requested lines is not more than %d.", MAX_COUNT_STRING_IN_BATCH),
+        String.format("Максимальное число запрашиваемых строк не более %d.", MAX_COUNT_STRING_IN_BATCH)
+      );
+    }
+
+    int len = batch * countStringInBatch;
+    SMSActivateURLBuilder smsActivateURLBuilder = new SMSActivateURLBuilder(apiKey, SMSActivateAction.GET_CURRENT_ACTIVATIONS);
+    smsActivateURLBuilder.append(SMSActivateURLKey.START, String.valueOf(len - countStringInBatch))
+      .append(SMSActivateURLKey.LENGTH, String.valueOf(len));
+
+    String data = new SMSActivateWebClient().getOrThrowCommonException(smsActivateURLBuilder, validator);
+    SMSActivateJsonParser jsonParser = new SMSActivateJsonParser();
+
+    return jsonParser.tryParseJson(data, new TypeToken<SMSActivateGetCurrentActivationsResponse>() {
     }.getType(), validator);
   }
 

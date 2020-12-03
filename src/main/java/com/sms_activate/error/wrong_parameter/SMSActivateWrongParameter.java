@@ -7,7 +7,7 @@ public enum SMSActivateWrongParameter {
   BAD_SERVICE("BAD_SERVICE", "Некорректное наименование сервиса.", "Wrong name service."),
   BAD_KEY("BAD_KEY", "Неверный API-ключ.", "Wrong api-key."),
   BAD_STATUS("BAD_STATUS", "Попытка установить несуществующий статус.", "An attempt to setup a non-existent status."),
-  WRONG_OPERATOR("WRONG_OPERATOR", "Некорректный оператор.", "Wrong operator"),
+  WRONG_OPERATOR("WRONG_OPERATOR", "Некорректный оператор.", "Wrong operator."),
   WRONG_EXCEPTION_PHONE("WRONG_EXCEPTION_PHONE", "Некорректные исключающие префиксы.", "Wrong exception prefix."),
   WRONG_SERVICE("WRONG_SERVICE", "Некорректные сервисы.", "Wrong services."),
   WRONG_ACTIVATION_ID("WRONG_ACTIVATION_ID", "Неверный ID родительской активации.", "Wrong ID parent activation."),
@@ -40,14 +40,14 @@ public enum SMSActivateWrongParameter {
   /**
    * Constructor WrongParameter with multi-lang.
    *
+   * @param response       response from server.
    * @param russianMessage error Description on russian.
    * @param englishMessage error Description on english.
-   * @param response       response from server.
    */
   SMSActivateWrongParameter(@NotNull String response, @NotNull String russianMessage, @NotNull String englishMessage) {
+    this.response = response;
     this.russianMessage = russianMessage;
     this.englishMessage = englishMessage;
-    this.response = response;
   }
 
   /**

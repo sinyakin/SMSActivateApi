@@ -24,14 +24,14 @@ public class SMSActivateGetMultiServiceNumberResponse {
   /**
    * Returns the activations by specified Id.
    *
-   * @param id id activation.
+   * @param idActivation id activation.
    * @return activation.
    * @throws SMSActivateWrongParameter if id is incorrect.
    */
   @NotNull
-  public SMSActivateActivation get(int id) throws SMSActivateWrongParameterException {
+  public SMSActivateActivation get(int idActivation) throws SMSActivateWrongParameterException {
     for (SMSActivateActivation activateActivation : this.smsActivateActivationList) {
-      if (activateActivation.getId() == id) {
+      if (activateActivation.getId() == idActivation) {
         return activateActivation;
       }
     }
