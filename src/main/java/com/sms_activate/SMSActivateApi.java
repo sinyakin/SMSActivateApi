@@ -246,23 +246,8 @@ public class SMSActivateApi {
 
     Map<String, Integer> serviceMap = jsonParser.tryParseJson(data, new TypeToken<Map<String, Integer>>() {
     }.getType(), validator);
-    Map<String, SMSActivateServiceInfo> smsActivateGetNumbersStatusResponseMap = new HashMap<>();
 
-    try {
-      serviceMap.forEach((key, value) -> {
-        String[] partsKey = key.split("_");
-
-        smsActivateGetNumbersStatusResponseMap.put(partsKey[0], new SMSActivateServiceInfo(
-          partsKey[1].contains("1"),
-          value,
-          partsKey[0]
-        ));
-      });
-    } catch (NumberFormatException e) {
-      throw new SMSActivateUnknownException(data, "Error formatting to number.");
-    }
-
-    return new SMSActivateGetNumbersStatusResponse(smsActivateGetNumbersStatusResponseMap);
+    return new SMSActivateGetNumbersStatusResponse(serviceMap);
   }
 
   /**

@@ -21,12 +21,8 @@ public class GetNumbersStatusRun {
 
         more info about short name service: https://sms-activate.ru/ru/api2#quantity
        */
-      SMSActivateServiceInfo go = smsActivateGetNumbersStatusResponse.get("go"); // google
-
-      // if this service is exists
-      if (go != null) {
-        printInfo(go);
-      }
+      SMSActivateServiceInfo go = smsActivateGetNumbersStatusResponse.get("go_0"); // google
+      printInfo(go);
 
       Thread.sleep(1500);
 
@@ -39,9 +35,10 @@ public class GetNumbersStatusRun {
     }
   }
 
-  private static void printInfo(@NotNull SMSActivateServiceInfo smsActivateServiceInfo) {
-    System.out.println("Short name service: " + smsActivateServiceInfo.getShortName());
-    System.out.println("Count numbers: " + smsActivateServiceInfo.getCountNumber());
+  private static void printInfo(@NotNull SMSActivateServiceInfo serviceInfo) {
+    System.out.println("Short name service: " + serviceInfo.getShortName());
+    System.out.println("Count numbers: " + serviceInfo.getCountNumber());
+    System.out.println("Supported: " + (serviceInfo.isForward() ? "yes" : "no"));
     System.out.println("=============================================");
   }
 }

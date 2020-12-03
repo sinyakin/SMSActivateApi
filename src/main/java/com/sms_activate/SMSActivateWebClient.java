@@ -1,5 +1,6 @@
 package com.sms_activate;
 
+import com.sms_activate.error.SMSActivateUnknownException;
 import com.sms_activate.error.base.SMSActivateBaseException;
 import com.sms_activate.error.wrong_parameter.SMSActivateWrongParameterException;
 import org.jetbrains.annotations.NotNull;
@@ -19,7 +20,8 @@ class SMSActivateWebClient {
    * @param validator             data validator.
    * @return load data from url.
    * @throws SMSActivateWrongParameterException if one of parameters is incorrect.
-   * @throws SMSActivateBaseException           if error happened on position SMSActivate.
+   * @throws SMSActivateBaseException           if error happened by base type.
+   * @throws SMSActivateUnknownException        if error not documented.
    */
   @NotNull
   public String getOrThrowCommonException(@NotNull SMSActivateURLBuilder smsActivateURLBuilder, @NotNull SMSActivateValidator validator)
@@ -34,7 +36,7 @@ class SMSActivateWebClient {
 
       return data;
     } catch (IOException e) {
-      throw new SMSActivateBaseException("Problems with network connection.", "Проблемы с сетевым подключением.");
+      throw new SMSActivateUnknownException("Problems with network connection.", e.getMessage());
     }
   }
 

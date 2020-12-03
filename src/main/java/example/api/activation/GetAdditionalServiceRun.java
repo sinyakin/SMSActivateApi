@@ -12,7 +12,7 @@ import com.sms_activate.error.wrong_parameter.SMSActivateWrongParameterException
 public class GetAdditionalServiceRun {
   public static void main(String[] args) {
     try {
-      // create SMSActivateApi object for
+      // create SMSActivateApi object for requests
       SMSActivateApi smsActivateApi = new SMSActivateApi("API_KEY");
 
       // request activation

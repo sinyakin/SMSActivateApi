@@ -16,6 +16,16 @@ class SMSActivateValidator {
   private static final String SUCCESS_STATUS = "success";
 
   /**
+   * Banned status.
+   */
+  public static final String BANNED = "BANNED";
+
+  /**
+   * Status sql error.
+   */
+  public static final String SQL = "SQL";
+
+  /**
    * Throws WrongParameterException if name contains in wrong parameter.
    *
    * @param name name parameter.
@@ -41,7 +51,7 @@ class SMSActivateValidator {
     throws SMSActivateBaseException {
     throwWrongParameterExceptionByName(name);
 
-    if (name.toUpperCase().contains("SQL")) {
+    if (name.toUpperCase().contains(SQL)) {
       throw new SMSActivateBaseException("Error SQL-server.", "Ошибка SQL-сервера.");
     }
   }
@@ -57,8 +67,8 @@ class SMSActivateValidator {
   public void throwExceptionWithBan(@NotNull String name) throws SMSActivateBaseException {
     throwCommonExceptionByName(name);
 
-    if (name.toUpperCase().contains("BANNED")) {
-      throw new SMSActivateBannedException("Your account has been banned", "Ваш акаунт был забанен", name.split(":")[1]);
+    if (name.toUpperCase().contains(BANNED)) {
+      throw new SMSActivateBannedException("Your account has been banned", "Ваш акаунт был забанен", name.split(BANNED + ":")[1]);
     }
   }
 

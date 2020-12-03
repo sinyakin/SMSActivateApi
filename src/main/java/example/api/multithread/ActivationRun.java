@@ -2,7 +2,6 @@ package example.api.multithread;
 
 import com.sms_activate.SMSActivateApi;
 import com.sms_activate.activation.SMSActivateActivation;
-import com.sms_activate.activation.SMSActivateGetCurrentActivationsResponse;
 import com.sms_activate.activation.set_status.SMSActivateSetStatusRequest;
 import com.sms_activate.error.base.SMSActivateBaseException;
 import com.sms_activate.error.wrong_parameter.SMSActivateWrongParameterException;
@@ -13,19 +12,30 @@ import java.util.List;
 
 public class ActivationRun {
   public static void main(String[] args) throws SMSActivateWrongParameterException, IOException {
-    final int COUNT_THREAD = 100;
+    final int COUNT_THREAD = 20;
     SMSActivateApi smsActivateApi = new SMSActivateApi("API_KEY");
 
     long start = System.currentTimeMillis();
-    List<SMSActivateActivation> smsActivateActivationList = new ArrayList<>();
     List<Thread> threadGetNumberList = new ArrayList<>();
-
 
     for (int i = 0; i < COUNT_THREAD; i++) {
       threadGetNumberList.add(new Thread(() -> {
         try {
-          SMSActivateActivation activateActivation = smsActivateApi.getNumber(0, "tn");
-          smsActivateActivationList.add(activateActivation);
+          List<SMSActivateActivation> smsActivateActivationList = new ArrayList<>();
+          for (int j = 0; j < 5; j++) {
+            SMSActivateActivation activateActivation = smsActivateApi.getNumber(0, "tn");
+            smsActivateActivationList.add(activateActivation);
+          }
+
+          new Thread(() -> {
+            for (SMSActivateActivation activateActivation : smsActivateActivationList) {
+              try {
+                smsActivateApi.setStatus(activateActivation.getId(), SMSActivateSetStatusRequest.CANCEL);
+              } catch (SMSActivateBaseException e) {
+                e.printStackTrace();
+              }
+            }
+          }).start();
         } catch (SMSActivateWrongParameterException e) {
           System.out.println(e.getWrongParameter());
           System.out.println(e.getMessage());
@@ -41,7 +51,7 @@ public class ActivationRun {
         thread.start();
       }
 
-      new Thread(() -> {
+      /*new Thread(() -> {
         try {
           do {
             SMSActivateGetCurrentActivationsResponse currentActivations = smsActivateApi.getCurrentActivations();
@@ -69,7 +79,7 @@ public class ActivationRun {
         }
 
         System.out.println("Hello world");
-      }).start();
+      }).start()*/;
     }).start();
 
     System.in.read();
