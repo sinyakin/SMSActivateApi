@@ -3,9 +3,7 @@ package example.api.activation;
 import com.sms_activate.SMSActivateApi;
 import com.sms_activate.activation.SMSActivateGetPricesResponse;
 import com.sms_activate.activation.extra.SMSActivateGetPriceInfo;
-import com.sms_activate.error.SMSActivateBannedException;
 import com.sms_activate.error.base.SMSActivateBaseException;
-import com.sms_activate.error.base.SMSActivateBaseTypeError;
 import com.sms_activate.error.wrong_parameter.SMSActivateWrongParameter;
 import com.sms_activate.error.wrong_parameter.SMSActivateWrongParameterException;
 
@@ -15,9 +13,11 @@ public class GetPricesRun {
   public static void main(String[] args) {
     try {
       SMSActivateApi smsActivateApi = new SMSActivateApi("API_KEY");
-      SMSActivateGetPricesResponse smsActivateGetPricesResponse = smsActivateApi.getPrices(
-        0, "vk"// comment this parameter and you get all data.
+      SMSActivateGetPricesResponse smsActivateGetPricesResponse = smsActivateApi.getPricesByCountryIdAndServiceShortName(
+        0, "vk"
       );
+
+      // getAllPrices - returns full price list.
 
       SMSActivateGetPriceInfo vk = smsActivateGetPricesResponse.getPriceInfo(0, "vk");
       //print info about vk

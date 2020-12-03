@@ -30,7 +30,7 @@ public enum SMSActivateBaseTypeError {
   private final String response;
 
   /**
-   * Constructor SMSActivateMainStatusResponse with multilang and specified name.
+   * Constructor SMSActivateMainStatusResponse with multi-lang and specified name.
    *
    * @param response       response from server.
    * @param russianMessage message on russian.

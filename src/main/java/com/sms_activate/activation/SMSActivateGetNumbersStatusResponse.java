@@ -8,53 +8,51 @@ import org.jetbrains.annotations.NotNull;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
-import java.util.Set;
 
 public class SMSActivateGetNumbersStatusResponse {
   /**
    * Map services where key is short name service.
    */
-  private final Map<String, Integer> smsActivateGetNumberStatusResponseMap;
+  private final Map<String, SMSActivateServiceInfo> smsActivateServiceInfoMap;
 
   /**
    * Constructor response getNumbersStatus with services.
    *
-   * @param smsActivateGetNumberStatusResponseMap map services where key is short name service.
+   * @param smsActivateServiceInfoMap map services where key is short name service.
    */
-  public SMSActivateGetNumbersStatusResponse(@NotNull Map<String, Integer> smsActivateGetNumberStatusResponseMap) {
-    this.smsActivateGetNumberStatusResponseMap = smsActivateGetNumberStatusResponseMap;
+  public SMSActivateGetNumbersStatusResponse(@NotNull Map<String, SMSActivateServiceInfo> smsActivateServiceInfoMap) {
+    this.smsActivateServiceInfoMap = smsActivateServiceInfoMap;
   }
 
   /**
    * Returns the service by shortName.
    *
    * @param serviceName service short name.
-   * @return if serviceName not contains in map then returns null else service object.
+   * @return SMSActivateServiceInfo object.
    */
   @NotNull
-  public SMSActivateServiceInfo get(@NotNull String serviceName) throws SMSActivateWrongParameterException {
-    Integer countNumber = smsActivateGetNumberStatusResponseMap.get(serviceName);
-
-    if (countNumber == null) {
-      throw new SMSActivateWrongParameterException(SMSActivateWrongParameter.WRONG_SERVICE);
-    }
-
-    return new SMSActivateServiceInfo(
-      serviceName.contains("1"),
-      countNumber,
-      serviceName
-    );
+  public SMSActivateServiceInfo getSMSActivateServiceInfoByShortName(@NotNull String serviceName) throws SMSActivateWrongParameterException {
+    return getSMSActivateServiceInfoByShortNameAndForward(serviceName, false);
   }
 
   /**
-   * Returns the service name set (name_1 - 1 is forward.).
+   * Returns the service by shortName and forward.
    *
-   * @return service name set (name_1 - 1 is forward.).
+   * @param serviceName service short name.
+   * @param forward service support forward.
+   * @return SMSActivateServiceInfo object.
    */
   @NotNull
-  public Set<String> getServiceNameSet() {
-    return smsActivateGetNumberStatusResponseMap.keySet();
+  public SMSActivateServiceInfo getSMSActivateServiceInfoByShortNameAndForward(@NotNull String serviceName, boolean forward) throws SMSActivateWrongParameterException {
+    SMSActivateServiceInfo smsActivateServiceInfo = smsActivateServiceInfoMap.get(serviceName + "_" + (forward ? "1" : "0"));
+
+    if (smsActivateServiceInfo == null) {
+      throw new SMSActivateWrongParameterException(SMSActivateWrongParameter.WRONG_SERVICE);
+    }
+
+    return smsActivateServiceInfo;
   }
+
 
   /**
    * Returns the all services.
@@ -62,19 +60,7 @@ public class SMSActivateGetNumbersStatusResponse {
    * @return all services.
    */
   @NotNull
-  public List<SMSActivateServiceInfo> getSMSActivateGetNumberStatusResponseList() {
-    List<SMSActivateServiceInfo> smsActivateServiceInfoList = new ArrayList<>();
-
-    for (Map.Entry<String, Integer> entry : smsActivateGetNumberStatusResponseMap.entrySet()) {
-      String serviceName = entry.getKey();
-
-      smsActivateServiceInfoList.add(new SMSActivateServiceInfo(
-        serviceName.contains("1"),
-        entry.getValue(),
-        serviceName
-      ));
-    }
-
-    return smsActivateServiceInfoList;
+  public List<SMSActivateServiceInfo> getAllServiceInfoList() {
+    return new ArrayList<>(smsActivateServiceInfoMap.values());
   }
 }

@@ -10,7 +10,7 @@ public class SMSActivateBannedException extends SMSActivateBaseException {
   private final String endDate;
 
   /**
-   * Constructor sms activate banned exception with multilang, endDate.
+   * Constructor sms activate banned exception with multi-lang, endDate.
    *
    * @param englishMessage message on english language.
    * @param russianMessage message on russian language.

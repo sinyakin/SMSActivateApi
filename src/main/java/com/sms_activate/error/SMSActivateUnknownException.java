@@ -11,7 +11,7 @@ public class SMSActivateUnknownException extends SMSActivateBaseException {
   private final String messageUnknownError;
 
   /**
-   * Constructor unknown sms activate exception with multilang.
+   * Constructor unknown sms activate exception with multi-lang.
    *
    * @param error name not documented error.
    */

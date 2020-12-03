@@ -2,10 +2,7 @@ package com.sms_activate;
 
 import com.google.gson.reflect.TypeToken;
 import com.sms_activate.activation.*;
-import com.sms_activate.activation.extra.SMSActivateCountryInfo;
-import com.sms_activate.activation.extra.SMSActivateGetPriceInfo;
-import com.sms_activate.activation.extra.SMSActivateGetStatusActivation;
-import com.sms_activate.activation.extra.SMSActivateStatusNumber;
+import com.sms_activate.activation.extra.*;
 import com.sms_activate.activation.set_status.SMSActivateAccessStatus;
 import com.sms_activate.activation.set_status.SMSActivateSetStatusRequest;
 import com.sms_activate.activation.set_status.SMSActivateSetStatusResponse;
@@ -50,12 +47,7 @@ public class SMSActivateApi {
   public static final int MINIMAL_RENT_TIME = 4;
 
   /**
-   * Maximum string in each batch.
-   */
-  public static final int MAX_COUNT_STRING_IN_BATCH = 10;
-
-  /**
-   * Numbers reg expression.
+   * Regular expression for numbers.
    */
   private static final Pattern patternDigit = Pattern.compile("\\d+(?:[\\.,]\\d+)?");
 
@@ -247,10 +239,22 @@ public class SMSActivateApi {
     String data = new SMSActivateWebClient().getOrThrowCommonException(smsActivateURLBuilder, validator);
     SMSActivateJsonParser jsonParser = new SMSActivateJsonParser();
 
-    Map<String, Integer> serviceMap = jsonParser.tryParseJson(data, new TypeToken<Map<String, Integer>>() {
+    Map<String, Integer> responseMap = jsonParser.tryParseJson(data, new TypeToken<Map<String, Integer>>() {
     }.getType(), validator);
+    Map<String, SMSActivateServiceInfo> serviceInfoMap = new HashMap<>();
 
-    return new SMSActivateGetNumbersStatusResponse(serviceMap);
+    for (Map.Entry<String, Integer> entry : responseMap.entrySet()) {
+      String serviceName = entry.getKey();
+      String[] parts = serviceName.split("_");
+
+      serviceInfoMap.put(serviceName, new SMSActivateServiceInfo(
+        parts[1].equals("1"),
+        entry.getValue(),
+        parts[0]
+      ));
+    }
+
+    return new SMSActivateGetNumbersStatusResponse(serviceInfoMap);
   }
 
   /**
@@ -354,14 +358,14 @@ public class SMSActivateApi {
     String data = new SMSActivateWebClient().getOrThrowCommonException(smsActivateURLBuilder, validator);
     validator.throwExceptionWithBan(data);
 
-    if (!data.contains(SMSActivateMagicKey.ACCESS)) {
+    if (!data.startsWith(SMSActivateMagicKey.ACCESS)) {
       throw validator.getBaseExceptionByErrorNameOrUnknown(data, null);
     }
+
     try {
       String[] parts = data.split(":");
-
+      int id = Integer.parseInt(parts[1]);
       long number = Long.parseLong(parts[2]);
-      int id = new BigDecimal(parts[1]).intValue();
 
       return new SMSActivateActivation(id, number, service);
     } catch (NumberFormatException e) {
@@ -676,18 +680,20 @@ public class SMSActivateApi {
     SMSActivateStatusNumber smsActivateStatusNumber = SMSActivateStatusNumber.getStatusByName(data);
 
     if (smsActivateStatusNumber != SMSActivateStatusNumber.UNKNOWN) {
+      String message = "";
+
       if (smsActivateStatusNumber == SMSActivateStatusNumber.FULL_SMS) {
-        return new SMSActivateGetFullSmsResponse(data.split(":")[1], smsActivateStatusNumber);
-      } else {
-        return new SMSActivateGetFullSmsResponse("", smsActivateStatusNumber);
+        message = data.split(":")[1];
+        return new SMSActivateGetFullSmsResponse(message, smsActivateStatusNumber);
       }
-    } else {
-      throw validator.getBaseExceptionByErrorNameOrUnknown(data, null);
+      return new SMSActivateGetFullSmsResponse(message, smsActivateStatusNumber);
     }
+
+    throw validator.getBaseExceptionByErrorNameOrUnknown(data, null);
   }
 
   /**
-   * Returns the all actual prices by country.
+   * Returns the all actual prices in all countries and all services.
    *
    * @return price list country.
    * @throws SMSActivateWrongParameterException if one of parameters is incorrect.
@@ -709,16 +715,76 @@ public class SMSActivateApi {
    *                                            </p>
    */
   @NotNull
-  public SMSActivateGetPricesResponse getPrices() throws SMSActivateBaseException {
-    return getPrices(null, null);
+  public SMSActivateGetPricesResponse getAllPrices() throws SMSActivateBaseException {
+    return getPricesByCountryIdAndServiceShortName(null, null);
   }
 
   /**
-   * Returns the actual rent prices by country.
+   * Returns the all actual price services by country id.
    *
-   * @param countryId id number (default 0).
-   * @param service   service for needed price list (default null).
-   *                  <pre>{@code null, null -> all service and all country.}</pre>
+   * @param countryId id country.
+   * @return all actual price services by country id.
+   * @throws SMSActivateWrongParameterException if one of parameters is incorrect.
+   * @throws SMSActivateUnknownException        if error type not documented.
+   *                                            <p>
+   *                                            Types errors:
+   *                                            <p>
+   *                                            Base type error in this method:
+   *                                               <ul>
+   *                                                 <li>ERROR_SQL - if error happened in sql-server.</li>
+   *                                               </ul>
+   *                                             </p>
+   *                                             <p>
+   *                                              Wrong parameter error types in this method:
+   *                                               <ul>
+   *                                                 <li>BAD_KEY - if your api-key is incorrect;</li>
+   *                                               </ul>
+   *                                             </p>
+   *                                            </p>
+   */
+  @NotNull
+  public SMSActivateGetPricesResponse getPricesAllServicesByCountryId(int countryId) throws SMSActivateBaseException {
+    return getPricesByCountryIdAndServiceShortName(countryId, null);
+  }
+
+  /**
+   * Returns the all actual price services by country id.
+   *
+   * @param serviceShortName short name service.
+   * @return all actual price services by country id.
+   * @throws SMSActivateWrongParameterException if one of parameters is incorrect.
+   * @throws SMSActivateUnknownException        if error type not documented.
+   *                                            <p>
+   *                                            Types errors:
+   *                                            <p>
+   *                                            Base type error in this method:
+   *                                               <ul>
+   *                                                 <li>ERROR_SQL - if error happened in sql-server.</li>
+   *                                               </ul>
+   *                                             </p>
+   *                                             <p>
+   *                                              Wrong parameter error types in this method:
+   *                                               <ul>
+   *                                                 <li>BAD_KEY - if your api-key is incorrect;</li>
+   *                                               </ul>
+   *                                             </p>
+   *                                            </p>
+   */
+  @NotNull
+  public SMSActivateGetPricesResponse getPricesAllCountryByServiceShortName(@NotNull String serviceShortName) throws SMSActivateBaseException {
+    return getPricesByCountryIdAndServiceShortName(null, serviceShortName);
+  }
+
+  /**
+   * Returns the actual rent prices by country and service short name.
+   *
+   * @param countryId        id number (default 0).
+   * @param serviceShortName service for needed price list (default null).
+   *                         <pre>
+   *                         {@code null, null -> all service and all country
+   *                         null, serviceShortName -> all country by service
+   *                          countryId, null -> all service in country}
+   *                         </pre>
    * @return price list country.
    * @throws SMSActivateWrongParameterException if one of parameters is incorrect.
    * @throws SMSActivateUnknownException        if error type not documented.
@@ -741,14 +807,18 @@ public class SMSActivateApi {
    *                                            </p>
    */
   @NotNull
-  public SMSActivateGetPricesResponse getPrices(@Nullable Integer countryId, @Nullable String service) throws SMSActivateBaseException {
-    if (countryId != null && countryId < 0) {
-      throw new SMSActivateWrongParameterException("Wrong ID country.", "Неверный ID страны.");
-    }
-
+  public SMSActivateGetPricesResponse getPricesByCountryIdAndServiceShortName(@Nullable Integer countryId, @Nullable String serviceShortName)
+    throws SMSActivateBaseException {
     SMSActivateURLBuilder smsActivateURLBuilder = new SMSActivateURLBuilder(apiKey, SMSActivateAction.GET_PRICES);
-    smsActivateURLBuilder.append(SMSActivateURLKey.SERVICE, service)
-      .append(SMSActivateURLKey.COUNTRY, countryId != null ? String.valueOf(countryId) : "");
+    smsActivateURLBuilder.append(SMSActivateURLKey.SERVICE, serviceShortName);
+
+    if (countryId != null) {
+      if (countryId < 0) {
+        throw new SMSActivateWrongParameterException("Wrong ID country.", "Неверный ID страны.");
+      }
+
+      smsActivateURLBuilder.append(SMSActivateURLKey.COUNTRY, String.valueOf(countryId));
+    }
 
     String data = new SMSActivateWebClient().getOrThrowCommonException(smsActivateURLBuilder, validator);
     SMSActivateJsonParser jsonParser = new SMSActivateJsonParser();
@@ -867,108 +937,19 @@ public class SMSActivateApi {
 
     String data = new SMSActivateWebClient().getOrThrowCommonException(smsActivateURLBuilder, validator);
 
-    if (data.contains(SMSActivateMagicKey.ADDITIONAL)) {
-      String[] parts = data.split(":");
-      long number = Long.parseLong(parts[2]);
-      id = new BigDecimal(parts[1]).intValue();
+    try {
+      if (data.startsWith(SMSActivateMagicKey.ADDITIONAL)) {
+        String[] parts = data.split(":");
+        int childId = Integer.parseInt(parts[1]);
+        long number = Long.parseLong(parts[2]);
 
-      return new SMSActivateActivation(id, number, service);
-    } else {
-      throw validator.getBaseExceptionByErrorNameOrUnknown(data, null);
+        return new SMSActivateActivation(childId, number, service);
+      } else {
+        throw validator.getBaseExceptionByErrorNameOrUnknown(data, null);
+      }
+    } catch (NumberFormatException e) {
+      throw new SMSActivateUnknownException(data, "Error formatting to number.");
     }
-  }
-
-  /**
-   * Returns the first {@value MAX_COUNT_STRING_IN_BATCH} current activation.
-   * If your count of activations is < {@value MAX_COUNT_STRING_IN_BATCH}, then return only the existing ones,
-   * else they will return in batches of first {@value MAX_COUNT_STRING_IN_BATCH} activations.
-   *
-   * @return if you not have activation returns empty list else list with your activations.
-   * @throws SMSActivateWrongParameterException if one of parameters is incorrect.
-   * @throws SMSActivateUnknownException        if error type not documented.
-   *                                            <p>
-   *                                            Types errors:
-   *                                            <p>
-   *                                            Base type error in this method:
-   *                                               <ul>
-   *                                                 <li>ERROR_SQL - if error happened in sql-server;</li>
-   *                                               </ul>
-   *                                             </p>
-   *                                             <p>
-   *                                              Wrong parameter error types in this method:
-   *                                               <ul>
-   *                                                 <li>BAD_KEY - if your api-key is incorrect;</li>
-   *                                               </ul>
-   *                                             </p>
-   *                                            </p>
-   */
-  @NotNull
-  public SMSActivateGetCurrentActivationsResponse getCurrentActivations() throws SMSActivateBaseException {
-    return getCurrentActivations(1, MAX_COUNT_STRING_IN_BATCH, SMSActivateOrderBy.ASC);
-  }
-
-  /**
-   * Returns the list current activation where contains by {@value MAX_COUNT_STRING_IN_BATCH} activation.
-   * If your count of activations is < {@value MAX_COUNT_STRING_IN_BATCH}, then return only the existing ones,
-   * else they will return in batches of {@value MAX_COUNT_STRING_IN_BATCH} activations in each response.
-   *
-   * @param batch              number requested batch (default 1).
-   * @param countStringInBatch count string in current batch.
-   * @param smsActivateOrderBy type sort.
-   * @return if you not have activation returns empty list else list with your activations.
-   * @throws SMSActivateWrongParameterException if one of parameters is incorrect.
-   * @throws SMSActivateUnknownException        if error type not documented.
-   *                                            <p>
-   *                                            Types errors:
-   *                                            <p>
-   *                                            Base type error in this method:
-   *                                               <ul>
-   *                                                 <li>ERROR_SQL - if error happened in sql-server;</li>
-   *                                               </ul>
-   *                                             </p>
-   *                                             <p>
-   *                                              Wrong parameter error types in this method:
-   *                                               <ul>
-   *                                                 <li>BAD_KEY - if your api-key is incorrect;</li>
-   *                                               </ul>
-   *                                             </p>
-   *                                            </p>
-   */
-  @NotNull
-  public SMSActivateGetCurrentActivationsResponse getCurrentActivations(int batch, int countStringInBatch, @NotNull SMSActivateOrderBy smsActivateOrderBy)
-    throws SMSActivateBaseException {
-    if (batch <= 0) {
-      throw new SMSActivateWrongParameterException("Number page must be positive.", "Номер страницы должен быть положиельным.");
-    }
-    if (countStringInBatch <= 0 || countStringInBatch > MAX_COUNT_STRING_IN_BATCH) {
-      throw new SMSActivateWrongParameterException(
-        String.format("The maximum number of requested lines is not more than %d.", MAX_COUNT_STRING_IN_BATCH),
-        String.format("Максимальное число запрашиваемых строк не более %d.", MAX_COUNT_STRING_IN_BATCH)
-      );
-    }
-
-    int len = batch * countStringInBatch;
-    SMSActivateURLBuilder smsActivateURLBuilder = new SMSActivateURLBuilder(apiKey, SMSActivateAction.GET_CURRENT_ACTIVATION);
-    smsActivateURLBuilder.append(SMSActivateURLKey.START, String.valueOf(len - countStringInBatch))
-      .append(SMSActivateURLKey.LENGTH, String.valueOf(len))
-      .append(SMSActivateURLKey.ORDER, SMSActivateURLKey.ID.getName())
-      .append(SMSActivateURLKey.ORDER_BY, smsActivateOrderBy.getSortType());
-
-    String data = new SMSActivateWebClient().getOrThrowCommonException(smsActivateURLBuilder, validator);
-    SMSActivateJsonParser jsonParser = new SMSActivateJsonParser();
-
-    SMSActivateGetCurrentActivationTempResponse temp = jsonParser.tryParseJson(data, new TypeToken<SMSActivateGetCurrentActivationTempResponse>() {
-    }.getType(), validator);
-
-    if (!validator.isSuccessStatus(temp.getStatus())) {
-      return new SMSActivateGetCurrentActivationsResponse(new ArrayList<>(), false, 0);
-    }
-
-    return new SMSActivateGetCurrentActivationsResponse(
-      temp.getArray(),
-      temp.getQuant() > len,
-      temp.getQuant()
-    );
   }
 
   /**

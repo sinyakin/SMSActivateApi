@@ -9,7 +9,7 @@ import org.jetbrains.annotations.NotNull;
 public class GetNumbersStatusRun {
   public static void main(String[] args) {
     try {
-      SMSActivateApi smsActivateApi = new SMSActivateApi("API_KEY");
+      SMSActivateApi smsActivateApi = new SMSActivateApi("9A34fbf73d52752607e37ebA26f6f0bf");
       System.out.println("Your api-key: " + smsActivateApi.getApiKey());
 
       // request count available numbers
@@ -21,17 +21,16 @@ public class GetNumbersStatusRun {
 
         more info about short name service: https://sms-activate.ru/ru/api2#quantity
        */
-      SMSActivateServiceInfo go = smsActivateGetNumbersStatusResponse.get("go_0"); // google with not forward
+      SMSActivateServiceInfo go = smsActivateGetNumbersStatusResponse.getSMSActivateServiceInfoByShortName("go"); // google
       printInfo(go);
 
-      Thread.sleep(1500);
+      //Thread.sleep(1500);
 
       // print info about all available services
-      smsActivateGetNumbersStatusResponse.getSMSActivateGetNumberStatusResponseList().forEach(GetNumbersStatusRun::printInfo);
+      smsActivateGetNumbersStatusResponse.getAllServiceInfoList().forEach(GetNumbersStatusRun::printInfo);
     } catch (SMSActivateBaseException e) {
       System.out.println(e.getTypeError());
       System.out.println(e.getMessage());
-    } catch (InterruptedException ignored) {
     }
   }
 

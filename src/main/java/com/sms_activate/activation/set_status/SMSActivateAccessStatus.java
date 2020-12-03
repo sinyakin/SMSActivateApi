@@ -25,7 +25,7 @@ public enum SMSActivateAccessStatus {
   private final String englishMessage;
 
   /**
-   * Constructor AccessStatusActivation with multilang.
+   * Constructor AccessStatusActivation with multi-lang.
    *
    * @param russianMessage message on russian.
    * @param englishMessage message on english.

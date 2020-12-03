@@ -24,15 +24,16 @@ public enum SMSActivateStatusNumber {
   private final String englishMessage;
 
   /**
-   * Constructor status for method getStatus with multilang.
+   * Constructor status for method getStatus with multi-lang.
    *
+   * @param response       response from server.
    * @param russianMessage message on russian.
    * @param englishMessage message on english.
    */
   SMSActivateStatusNumber(@NotNull String response, @NotNull String russianMessage, @NotNull String englishMessage) {
+    this.response = response;
     this.russianMessage = russianMessage;
     this.englishMessage = englishMessage;
-    this.response = response;
   }
 
   /**
@@ -85,8 +86,12 @@ public enum SMSActivateStatusNumber {
   public static SMSActivateStatusNumber getStatusByName(@NotNull String name) {
     name = name.toUpperCase();
 
+    if (FULL_SMS.getResponse().startsWith(name)) {
+      return FULL_SMS;
+    }
+
     for (SMSActivateStatusNumber type : values()) {
-      if (type.getResponse().contains(name)) {
+      if (type.getResponse().startsWith(name)) {
         return type;
       }
     }

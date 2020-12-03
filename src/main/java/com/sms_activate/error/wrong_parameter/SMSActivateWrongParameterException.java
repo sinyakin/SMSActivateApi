@@ -10,7 +10,7 @@ public class SMSActivateWrongParameterException extends SMSActivateBaseException
   private SMSActivateWrongParameter wrongParameter = SMSActivateWrongParameter.UNKNOWN;
 
   /**
-   * Constructor wrong parameter exception with multilang.
+   * Constructor wrong parameter exception with multi-lang.
    *
    * @param smsActivateWrongParameter specified constant with description.
    */
@@ -20,7 +20,7 @@ public class SMSActivateWrongParameterException extends SMSActivateBaseException
   }
 
   /**
-   * Constructor wrong parameter exception with multilang.
+   * Constructor wrong parameter exception with multi-lang.
    *
    * @param englishMessage message on english language.
    * @param russianMessage message on russian language.

@@ -6,7 +6,7 @@ import java.util.List;
 
 public class SMSActivateGetMultiServiceNumberResponse {
   /**
-   * List multiservice activations.
+   * List multi-service activations.
    */
   private final List<SMSActivateActivation> smsActivateActivationList;
 
@@ -31,9 +31,9 @@ public class SMSActivateGetMultiServiceNumberResponse {
   }
 
   /**
-   * Returns the list multiservice activations.
+   * Returns the list multi-service activations.
    *
-   * @return list multiservice activations.
+   * @return list multi-service activations.
    */
   @NotNull
   public List<SMSActivateActivation> getSMSActivateActivationList() {
