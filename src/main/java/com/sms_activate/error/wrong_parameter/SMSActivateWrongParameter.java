@@ -15,7 +15,7 @@ public enum SMSActivateWrongParameter {
   NOT_AVAILABLE("NOT_AVAILABLE ", "Для страны, которую вы используете, недоступна покупка мультисервисов.", "Country does not supported multiservice."),
   WRONG_ADDITIONAL_SERVICE("WRONG_ADDITIONAL_SERVICE", "Неверный дополнительный сервис (допустимы только сервисы для переадресации).", "Invalid additional service (only services for forwarding are allowed)."),
   REPEAT_ADDITIONAL_SERVICE("REPEAT_ADDITIONAL_SERVICE", "Ошибка возникает при попытке заказать купленный сервис еще раз.", "The error occurs when you try to order the purchased service again."),
-  INCORECT_STATUS("INCORECT_STATUS", "Отсутствует или неправильно указан статус.", "Missing or incorrect status."),
+  INCORRECT_STATUS("INCORECT_STATUS", "Отсутствует или неправильно указан статус.", "Missing or incorrect status."),
   NO_ID_RENT("NO_ID_RENT", "Не указан ID аренды.", "No rent Id."),
   INVALID_PHONE("INVALID_PHONE", "Номер арендован не вами (неправильный id аренды).", "Number was not rented by you (incorrect id rent)."),
   EMPTY_KEY("EMPTY_KEY", "API ключ не может быть пустым.", "API-key can't be empty."),
@@ -77,7 +77,7 @@ public enum SMSActivateWrongParameter {
    */
   @NotNull
   public String getMessage() {
-    return String.join("|", englishMessage, russianMessage);
+    return String.join(" | ", englishMessage, russianMessage);
   }
 
   /**

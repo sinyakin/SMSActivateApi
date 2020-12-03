@@ -5,23 +5,23 @@ import com.sms_activate.error.base.SMSActivateBaseException;
 import com.sms_activate.error.base.SMSActivateBaseTypeError;
 import com.sms_activate.error.wrong_parameter.SMSActivateWrongParameterException;
 import com.sms_activate.rent.SMSActivateGetRentNumberResponse;
+import com.sms_activate.rent.set_rent_status.SMSActivateRentStatus;
 import com.sms_activate.rent.set_rent_status.SMSActivateSetRentStatusRequest;
-import com.sms_activate.rent.set_rent_status.SMSActivateSetRentStatusResponse;
 
 public class SetRentStatusRun {
   public static void main(String[] args) {
     try {
       SMSActivateApi smsActivateApi = new SMSActivateApi("API_KEY");
       // request rent number
-      SMSActivateGetRentNumberResponse number = smsActivateApi.getRentNumber("vk");
+      SMSActivateGetRentNumberResponse response = smsActivateApi.getRentNumber("fb");
       /*
         set status for rent
         example: CANCEL
         */
-      SMSActivateSetRentStatusResponse smsActivateSetRentStatusResponse = smsActivateApi.setRentStatus(number.getId()  + 5, SMSActivateSetRentStatusRequest.CANCEL);
+      SMSActivateRentStatus smsActivateSetRentStatusResponse = smsActivateApi.setRentStatus(response.getRentPhone().getId(), SMSActivateSetRentStatusRequest.CANCEL);
 
       // print desc about new status
-      System.out.println("Description of the current lease status: " + smsActivateSetRentStatusResponse.getStatus().getMessage());
+      System.out.println("Description of the current lease status: " + smsActivateSetRentStatusResponse.getMessage());
     } catch (SMSActivateWrongParameterException e) {
       e.printStackTrace();
     } catch (SMSActivateBaseException e) {

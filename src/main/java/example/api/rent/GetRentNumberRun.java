@@ -17,10 +17,9 @@ public class GetRentNumberRun {
       SMSActivateGetRentNumberResponse smsActivateGetRentNumberResponse = smsActivateApi.getRentNumber("vk");
 
       // print info about rent
-      System.out.println(">> ID: " + smsActivateGetRentNumberResponse.getId());
-      System.out.println(">> Number: " + smsActivateGetRentNumberResponse.getNumber());
-      System.out.println(">> Service: " + smsActivateGetRentNumberResponse.getServiceName());
-      System.out.println(">> End date: " + smsActivateGetRentNumberResponse.getEndDate());
+      System.out.println(">> ID: " + smsActivateGetRentNumberResponse.getRentPhone().getId());
+      System.out.println(">> Number: " + smsActivateGetRentNumberResponse.getRentPhone().getNumber());
+      System.out.println(">> End date: " + smsActivateGetRentNumberResponse.getRentPhone().getEndDate());
     } catch (SMSActivateWrongParameterException e) {
       if (e.getWrongParameter() == SMSActivateWrongParameter.BAD_ACTION) {
         System.out.println("Contact support.");

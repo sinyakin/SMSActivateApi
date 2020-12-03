@@ -24,8 +24,7 @@ public class GetRentServicesAndCountriesRun {
       );
 
       System.out.println("Services: ");
-      smsActivateGetRentServicesAndCountriesResponse.getAllServices().forEach(smsActivateRentService -> {
-        System.out.println(">> Short name service: " + smsActivateRentService.getName());
+      smsActivateGetRentServicesAndCountriesResponse.getAllRentServices().forEach(smsActivateRentService -> {
         System.out.println(">> Count numbers: " + smsActivateRentService.getCount());
         System.out.println(">> Cost: " + smsActivateRentService.getCost());
         System.out.println("====================================");
@@ -36,14 +35,14 @@ public class GetRentServicesAndCountriesRun {
 
       System.out.println("Operators: ");
       smsActivateGetRentServicesAndCountriesResponse.getOperatorNameSet()
-        .forEach(x -> System.out.println(">> name: " + x));
+        .forEach(operatorName -> System.out.println(">> name: " + operatorName));
 
       System.out.println();
       System.out.println();
 
       System.out.println("Countries supported rent: ");
       smsActivateGetRentServicesAndCountriesResponse.getCountryIdSet()
-        .forEach(x -> System.out.println(">> id: " + x));
+        .forEach(countryId -> System.out.println(">> id: " + countryId));
     } catch (SMSActivateWrongParameterException e) {
       if (e.getWrongParameter() == SMSActivateWrongParameter.BAD_ACTION) {
         System.out.println("Contact support.");

@@ -34,7 +34,7 @@ class SMSActivateWebClient {
 
       return data;
     } catch (IOException e) {
-      throw new SMSActivateBaseException("Problem with network connection.", "Проблемы с сетевым подключением.");
+      throw new SMSActivateBaseException("Problems with network connection.", "Проблемы с сетевым подключением.");
     }
   }
 

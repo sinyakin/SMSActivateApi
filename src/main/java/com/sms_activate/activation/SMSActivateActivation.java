@@ -6,42 +6,33 @@ public class SMSActivateActivation {
   /**
    * Id activation.
    */
-  private final int id;
-
-  /**
-   * Is forward number.
-   */
-  private final boolean forward;
+  private final int activation;
 
   /**
    * Phone number.
    */
-  private final String number;
+  private final String phone;
 
   /**
    * The name of the service for which the activation was purchased.
    */
-  private final String serviceName;
+  private final String service;
 
   /**
    * Constructor activation
    *
-   *
-   * @param id          id activation.
-   * @param number      phone number.
-   * @param serviceName name of the service for which the activation was purchased.
-   * @param forward     is forward.
+   * @param id      id activation.
+   * @param number  phone number.
+   * @param service service name.
    */
   public SMSActivateActivation(
     int id,
     @NotNull String number,
-    @NotNull String serviceName,
-    boolean forward
+    @NotNull String service
   ) {
-    this.id = id;
-    this.number = number;
-    this.serviceName = serviceName;
-    this.forward = forward;
+    this.activation = id;
+    this.phone = number;
+    this.service = service;
   }
 
 
@@ -51,16 +42,7 @@ public class SMSActivateActivation {
    * @return id activation.
    */
   public int getId() {
-    return id;
-  }
-
-  /**
-   * Returns the is forward activation.
-   *
-   * @return is forward activation.
-   */
-  public boolean isForward() {
-    return forward;
+    return activation;
   }
 
   /**
@@ -70,7 +52,7 @@ public class SMSActivateActivation {
    */
   @NotNull
   public String getNumber() {
-    return number;
+    return phone;
   }
 
   /**
@@ -80,6 +62,6 @@ public class SMSActivateActivation {
    */
   @NotNull
   public String getShortName() {
-    return serviceName;
+    return service;
   }
 }

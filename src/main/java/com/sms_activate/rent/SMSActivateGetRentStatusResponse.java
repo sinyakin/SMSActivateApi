@@ -3,29 +3,25 @@ package com.sms_activate.rent;
 import com.sms_activate.rent.extra.SMSActivateSMS;
 import org.jetbrains.annotations.NotNull;
 
+import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 
 public class SMSActivateGetRentStatusResponse {
   /**
    * Count sms.
    */
-  private final int countSms;
+  private int quantity;
+
+  /**
+   * Service name.
+   */
+  private String service;
 
   /**
    * SMS list from server.
    */
-  private final List<SMSActivateSMS> smsActivateSMSList;
-
-  /**
-   * Constructor response getRentStatusResponse with data from server.
-   *
-   * @param countSms           count sms.
-   * @param smsActivateSMSList list sms from server.
-   */
-  public SMSActivateGetRentStatusResponse(int countSms, @NotNull List<SMSActivateSMS> smsActivateSMSList) {
-    this.countSms = countSms;
-    this.smsActivateSMSList = smsActivateSMSList;
-  }
+  private Map<Integer, SMSActivateSMS> values;
 
   /**
    * Returns the count sms.
@@ -33,7 +29,7 @@ public class SMSActivateGetRentStatusResponse {
    * @return count sms.
    */
   public int getCountSms() {
-    return countSms;
+    return quantity;
   }
 
   /**
@@ -43,6 +39,16 @@ public class SMSActivateGetRentStatusResponse {
    */
   @NotNull
   public List<SMSActivateSMS> getSmsActivateSMSList() {
-    return smsActivateSMSList;
+    return new ArrayList<>(values.values());
+  }
+
+  /**
+   * Returns the service name.
+   *
+   * @return service name
+   */
+  @NotNull
+  public String getService() {
+    return service;
   }
 }

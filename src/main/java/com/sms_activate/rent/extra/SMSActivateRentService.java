@@ -6,42 +6,14 @@ import java.math.BigDecimal;
 
 public class SMSActivateRentService {
   /**
-   * Service short name.
-   */
-  private final String name;
-
-  /**
    * Cost by service.
    */
-  private final BigDecimal cost;
+  private BigDecimal cost;
 
   /**
    * Count number in service.
    */
-  private final int count;
-
-  /**
-   * Constructor rent service with data from server.
-   *
-   * @param name  short name service.
-   * @param cost  cost number by service.
-   * @param count count number in service.
-   */
-  public SMSActivateRentService(@NotNull String name, @NotNull BigDecimal cost, int count) {
-    this.name = name;
-    this.cost = cost;
-    this.count = count;
-  }
-
-  /**
-   * Returns the short service name.
-   *
-   * @return short service name.
-   */
-  @NotNull
-  public String getName() {
-    return name;
-  }
+  private int count;
 
   /**
    * Returns the cost number by service.

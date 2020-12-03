@@ -11,9 +11,9 @@ public class GetRentListRun {
     try {
       SMSActivateApi smsActivateApi = new SMSActivateApi("API_KEY");
       SMSActivateGetRentListResponse smsActivateGetRentListResponse = smsActivateApi.getRentList();
-      smsActivateGetRentListResponse.getSmsActivateGetRentResponseList().forEach(x -> {
-        System.out.println("ID: " + x.getId());
-        System.out.println("Number: " + x.getNumber());
+      smsActivateGetRentListResponse.getSmsActivateGetRentResponseList().forEach(activateRentNumber -> {
+        System.out.println("ID: " + activateRentNumber.getId());
+        System.out.println("Number: " + activateRentNumber.getNumber());
         System.out.println("========================================");
       });
     }catch (SMSActivateWrongParameterException e) {

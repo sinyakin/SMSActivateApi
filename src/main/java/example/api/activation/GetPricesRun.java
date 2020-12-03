@@ -9,28 +9,34 @@ import com.sms_activate.error.base.SMSActivateBaseTypeError;
 import com.sms_activate.error.wrong_parameter.SMSActivateWrongParameter;
 import com.sms_activate.error.wrong_parameter.SMSActivateWrongParameterException;
 
+import java.util.Set;
+
 public class GetPricesRun {
   public static void main(String[] args) {
     try {
-      SMSActivateApi smsActivateApi = new SMSActivateApi("9A34fbf73d52752607e37ebA26f6f0bf");
+      SMSActivateApi smsActivateApi = new SMSActivateApi("API_KEY");
       SMSActivateGetPricesResponse smsActivateGetPricesResponse = smsActivateApi.getPrices(
         0, "vk"// comment this parameter and you get all data.
       );
-/*
-      SMSActivateGetPriceInfo smsActivateGetPriceInfo = smsActivateGetPricesResponse.get(0, "vk");
-      System.out.println(">>> Cost: " + smsActivateGetPriceInfo.getCost());
-      System.out.println(">>> Count number: " + smsActivateGetPriceInfo.getCount());
-*/
-      // output all
-      /*smsActivateGetPricesResponse.getSmsActivateGetPriceMap().forEach((countryId, value) -> {
-        System.out.println("> Country id: " + countryId);
 
-        value.forEach((serviceName, smsActivateGetPriceResponse) -> {
-          System.out.println(">>> Cost: " + smsActivateGetPriceResponse.getCost());
-          System.out.println(">>> Count number: " + smsActivateGetPriceResponse.getCount());
-        });
-        System.out.println("===================================================");
-      });*/
+      SMSActivateGetPriceInfo vk = smsActivateGetPricesResponse.getPriceInfo(0, "vk");
+      //print info about vk
+      System.out.println(">>> Cost: " + vk.getCost());
+      System.out.println(">>> Count number: " + vk.getCount());
+
+      // output all services
+      for (Integer countryId : smsActivateGetPricesResponse.getCountryIdSet()) {
+        Set<String> servicesByCountryId = smsActivateGetPricesResponse.getServicesByCountryId(countryId);
+
+        for (String shortName : servicesByCountryId) {
+          SMSActivateGetPriceInfo priceInfo = smsActivateGetPricesResponse.getPriceInfo(countryId, shortName);
+
+          System.out.println(">>> Service shortname: " + shortName);
+          System.out.println(">>> Cost: " + priceInfo.getCost());
+          System.out.println(">>> Count number: " + priceInfo.getCount());
+          System.out.println("==========================================================================");
+        }
+      }
     } catch (SMSActivateWrongParameterException e) {
       if (e.getWrongParameter() == SMSActivateWrongParameter.BAD_ACTION) {
         System.out.println("Contact support.");

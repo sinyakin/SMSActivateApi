@@ -27,12 +27,12 @@ public class GetCurrentActivationRun {
           int batch = 1;
 
           do {
-            smsActivateGetCurrentActivationsResponse.getSMSActivateGetCurrentActivationResponseSet().forEach(GetCurrentActivationRun::printInfoActivation);
-            smsActivateGetCurrentActivationsResponse = smsActivateApi.getCurrentActivations(batch, countStringInBatch, SMSActivateOrderBy.ASC);
+            smsActivateGetCurrentActivationsResponse.getAllActivation().forEach(GetCurrentActivationRun::printInfoActivation);
+            smsActivateGetCurrentActivationsResponse = smsActivateApi.getCurrentActivations(batch++, countStringInBatch, SMSActivateOrderBy.ASC);
           } while (smsActivateGetCurrentActivationsResponse.isExistNextBatch());
         } else {
           System.out.printf("Count your activation is %d: %n", smsActivateGetCurrentActivationsResponse.getTotalCount());
-          smsActivateGetCurrentActivationsResponse.getSMSActivateGetCurrentActivationResponseSet().forEach(GetCurrentActivationRun::printInfoActivation);
+          smsActivateGetCurrentActivationsResponse.getAllActivation().forEach(GetCurrentActivationRun::printInfoActivation);
         }
       } else {
         System.out.println("No activation.");

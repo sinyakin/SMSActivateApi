@@ -11,17 +11,17 @@ public class SMSActivateRentNumber {
   /**
    * Phone number.
    */
-  private final String number;
+  private final String phone;
 
   /**
    * Constructor rent with id and number.
    *
-   * @param id     id rent.
-   * @param number phone number.
+   * @param id    id rent.
+   * @param phone phone number.
    */
-  public SMSActivateRentNumber(int id, @NotNull String number) {
+  public SMSActivateRentNumber(int id, @NotNull String phone) {
     this.id = id;
-    this.number = number;
+    this.phone = phone;
   }
 
   /**
@@ -40,6 +40,6 @@ public class SMSActivateRentNumber {
    */
   @NotNull
   public String getNumber() {
-    return number;
+    return phone;
   }
 }

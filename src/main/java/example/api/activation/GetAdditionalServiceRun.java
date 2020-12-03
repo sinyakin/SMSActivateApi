@@ -23,10 +23,9 @@ public class GetAdditionalServiceRun {
       System.out.println(parentActivation.getNumber());
 
       /*
-        if service is ot then need set status
+        if service is "ot" then need set status
         smsActivateApi.setStatus(parentActivation.getId(), SMSActivateSetStatusRequest.SEND_READY_NUMBER);
        */
-      //smsActivateApi.setStatus(parentActivation.getId(), SMSActivateSetStatusRequest.SEND_READY_NUMBER);
 
       // check: https://sms-activate.ru/ru/getNumber
 

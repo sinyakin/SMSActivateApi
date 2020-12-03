@@ -21,11 +21,11 @@ public class RentRun {
         try {
           SMSActivateGetRentNumberResponse gt = smsActivateApi.getRentNumber("gt");
           new Thread(() -> {
-            try {
-              smsActivateApi.setRentStatus(gt.getId(), SMSActivateSetRentStatusRequest.CANCEL);
+            /*try {
+              //smsActivateApi.setRentStatus(gt.getId(), SMSActivateSetRentStatusRequest.CANCEL);
             } catch (SMSActivateBaseException e) {
               e.printStackTrace();
-            }
+            }*/
           }).start();
         } catch (SMSActivateBaseException e) {
           e.printStackTrace();

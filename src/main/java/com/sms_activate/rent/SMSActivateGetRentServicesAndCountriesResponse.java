@@ -1,46 +1,26 @@
 package com.sms_activate.rent;
 
+import com.sms_activate.error.wrong_parameter.SMSActivateWrongParameterException;
 import com.sms_activate.rent.extra.SMSActivateRentService;
 import org.jetbrains.annotations.NotNull;
-import org.jetbrains.annotations.Nullable;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
+import java.util.*;
 
 public class SMSActivateGetRentServicesAndCountriesResponse {
   /**
    * Set with name operators.
    */
-  private final Set<String> operatorNameSet;
+  private Map<Integer, String> operators;
 
   /**
    * Set with id countries.
    */
-  private final Set<Integer> countryIdSet;
+  private Map<Integer, Integer> countries;
 
   /**
    * Map rent services where key is short name service.
    */
-  private final Map<String, SMSActivateRentService> smsActivateRentServiceMap;
-
-  /**
-   * Constructor response getRentServiceAndCountries with data from server.
-   *
-   * @param operatorNameSet           set with name operators.
-   * @param countryIdSet              set with id countries.
-   * @param smsActivateRentServiceMap map rent services where key is short name service.
-   */
-  public SMSActivateGetRentServicesAndCountriesResponse(
-      @NotNull Set<String> operatorNameSet,
-      @NotNull Set<Integer> countryIdSet,
-      @NotNull Map<String, SMSActivateRentService> smsActivateRentServiceMap
-  ) {
-    this.countryIdSet = countryIdSet;
-    this.operatorNameSet = operatorNameSet;
-    this.smsActivateRentServiceMap = smsActivateRentServiceMap;
-  }
+  private Map<String, SMSActivateRentService> services;
 
   /**
    * Returns the service rent by name.
@@ -48,9 +28,25 @@ public class SMSActivateGetRentServicesAndCountriesResponse {
    * @param name short service name.
    * @return service rent.
    */
-  @Nullable
-  public SMSActivateRentService getService(@NotNull String name) {
-    return smsActivateRentServiceMap.get(name);
+  @NotNull
+  public SMSActivateRentService getRentService(@NotNull String name) throws SMSActivateWrongParameterException {
+    SMSActivateRentService rentService = services.get(name);
+
+    if (rentService == null) {
+      throw new SMSActivateWrongParameterException("Service name is incorrect", "Неккоректное имя сервиса.");
+    }
+
+    return rentService;
+  }
+
+  /**
+   * Returns the all rent services.
+   *
+   * @return all rent services.
+   */
+  @NotNull
+  public List<SMSActivateRentService> getAllRentServices() {
+    return new ArrayList<>(services.values());
   }
 
   /**
@@ -59,8 +55,8 @@ public class SMSActivateGetRentServicesAndCountriesResponse {
    * @return list rent services.
    */
   @NotNull
-  public List<SMSActivateRentService> getAllServices() {
-    return new ArrayList<>(smsActivateRentServiceMap.values());
+  public Set<String> getRentServices() {
+    return services.keySet();
   }
 
   /**
@@ -70,7 +66,7 @@ public class SMSActivateGetRentServicesAndCountriesResponse {
    */
   @NotNull
   public Set<Integer> getCountryIdSet() {
-    return countryIdSet;
+    return new HashSet<>(countries.values());
   }
 
   /**
@@ -80,6 +76,6 @@ public class SMSActivateGetRentServicesAndCountriesResponse {
    */
   @NotNull
   public Set<String> getOperatorNameSet() {
-    return operatorNameSet;
+    return new HashSet<>(operators.values());
   }
 }

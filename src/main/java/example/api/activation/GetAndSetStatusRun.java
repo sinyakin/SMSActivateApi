@@ -11,17 +11,7 @@ public class GetAndSetStatusRun {
   public static void main(String[] args) {
     try {
       SMSActivateApi smsActivateApi = new SMSActivateApi("API_KEY");
-      SMSActivateActivation smsActivateActivation = smsActivateApi.getNumber(
-        0,
-        "vk"/*,
-          new HashSet<String>(){{
-            add("7918");
-          }},
-          new HashSet<String>(){{
-            add("mts");
-            add("tele2");
-          }},
-          false*/);
+      SMSActivateActivation smsActivateActivation = smsActivateApi.getNumber(0, "vk");
       // print info about activation
       System.out.println("Id: " + smsActivateActivation.getId());
       System.out.println("Number: " + smsActivateActivation.getNumber());
@@ -34,7 +24,7 @@ public class GetAndSetStatusRun {
       System.out.println("Description of the current lease status: " + smsActivateGetStatusResponse.getMessage());
 
       SMSActivateSetStatusResponse smsActivateSetStatusResponse = smsActivateApi.setStatus(smsActivateActivation.getId(),
-        SMSActivateSetStatusRequest.SEND_READY_NUMBER);
+        SMSActivateSetStatusRequest.CANCEL);
 
       // check: https://sms-activate.ru/ru/getNumber
 

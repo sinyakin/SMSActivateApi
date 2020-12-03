@@ -8,22 +8,11 @@ public class SMSActivateGetPriceInfo {
   /**
    * Service cost.
    */
-  private final BigDecimal cost;
+  private BigDecimal cost;
   /**
    * Count number.
    */
-  private final int count;
-
-  /**
-   * Constructor SMSActivateGetPriceResponse with name, cost, count.
-   *
-   * @param cost  cost service.
-   * @param count count number service.
-   */
-  public SMSActivateGetPriceInfo(@NotNull BigDecimal cost, int count) {
-    this.cost = cost;
-    this.count = count;
-  }
+  private int count;
 
   /**
    * Returns the service cost.

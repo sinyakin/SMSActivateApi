@@ -19,28 +19,20 @@ public class SMSActivateSMS {
   private final String date;
 
   /**
-   * Service short name.
-   */
-  private final String service;
-
-  /**
    * Constructor sms with phone, text, date.
    *
    * @param phoneFrom phone from such a sms came (not be null).
    * @param text      text sms (not be null).
    * @param date      sms arrival date (not be null).
-   * @param service   short service name (not be null).
    */
   public SMSActivateSMS(
     @NotNull String phoneFrom,
     @NotNull String text,
-    @NotNull String date,
-    @NotNull String service
+    @NotNull String date
   ) {
     this.phoneFrom = phoneFrom;
     this.text = text;
     this.date = date;
-    this.service = service;
   }
 
   /**
@@ -73,13 +65,4 @@ public class SMSActivateSMS {
     return date;
   }
 
-  /**
-   * Returns the short service name.
-   *
-   * @return short service name.
-   */
-  @NotNull
-  public String getService() {
-    return service;
-  }
 }

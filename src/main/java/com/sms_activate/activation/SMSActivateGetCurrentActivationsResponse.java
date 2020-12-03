@@ -1,40 +1,40 @@
 package com.sms_activate.activation;
 
 import com.sms_activate.activation.extra.SMSActivateCurrentActivation;
+import com.sms_activate.error.wrong_parameter.SMSActivateWrongParameterException;
 import org.jetbrains.annotations.NotNull;
-import org.jetbrains.annotations.Nullable;
 
-import java.util.HashSet;
-import java.util.Map;
-import java.util.Set;
+import java.util.List;
 
 public class SMSActivateGetCurrentActivationsResponse {
   /**
    * Map current Activation where key is id activation.
    */
-  private final Map<Integer, SMSActivateCurrentActivation> smsActivateGetCurrentActivationResponseMap;
+  private final List<SMSActivateCurrentActivation> smsActivateCurrentActivationList;
 
   /**
-   * True if count activation > 10 else false.
+   * Mark to re-request.
    */
   private final boolean existNext;
 
   /**
-   *
+   * Total count activations.
    */
   private final int totalCount;
 
   /**
    * Constructor response getCurrentActivation with data from server.
    *
-   * @param smsActivateGetCurrentActivationResponseMap map current activation where key is idActivation.
+   * @param smsActivateCurrentActivationList map current activation where key is idActivation.
+   * @param totalCount                       total count activations.
+   * @param existNext                        mark to re-request.
    */
   public SMSActivateGetCurrentActivationsResponse(
-    @NotNull Map<Integer, SMSActivateCurrentActivation> smsActivateGetCurrentActivationResponseMap,
+    @NotNull List<SMSActivateCurrentActivation> smsActivateCurrentActivationList,
     boolean existNext,
     int totalCount
   ) {
-    this.smsActivateGetCurrentActivationResponseMap = smsActivateGetCurrentActivationResponseMap;
+    this.smsActivateCurrentActivationList = smsActivateCurrentActivationList;
     this.existNext = existNext;
     this.totalCount = totalCount;
   }
@@ -61,30 +61,25 @@ public class SMSActivateGetCurrentActivationsResponse {
    * Returns the current activation by id.
    *
    * @return current activation.
+   * @throws SMSActivateWrongParameterException if index is incorrect.
    */
-  @Nullable
-  public SMSActivateCurrentActivation get(int idActivation) {
-    return smsActivateGetCurrentActivationResponseMap.get(idActivation);
+  @NotNull
+  public SMSActivateCurrentActivation get(int index) throws SMSActivateWrongParameterException {
+    if (index >= smsActivateCurrentActivationList.size()) {
+      throw new SMSActivateWrongParameterException("Index exceeds the number of your activations.", "Индекс превышает число ваших активаций.");
+    }
+
+    return smsActivateCurrentActivationList.get(index);
   }
 
   /**
-   * Returns the all id.
+   * Returns the all current activations.
    *
-   * @return all id.
+   * @return all current activations
    */
   @NotNull
-  public Set<Integer> getIdSet() {
-    return smsActivateGetCurrentActivationResponseMap.keySet();
-  }
-
-  /**
-   * Returns the set all current activations.
-   *
-   * @return set all current activations.
-   */
-  @NotNull
-  public Set<SMSActivateCurrentActivation> getSMSActivateGetCurrentActivationResponseSet() {
-    return new HashSet<>(smsActivateGetCurrentActivationResponseMap.values());
+  public List<SMSActivateCurrentActivation> getAllActivation() {
+    return this.smsActivateCurrentActivationList;
   }
 
   /**
@@ -93,6 +88,6 @@ public class SMSActivateGetCurrentActivationsResponse {
    * @return true if activations is exists else false.
    */
   public boolean isExistActivation() {
-    return !smsActivateGetCurrentActivationResponseMap.isEmpty();
+    return !smsActivateCurrentActivationList.isEmpty();
   }
 }

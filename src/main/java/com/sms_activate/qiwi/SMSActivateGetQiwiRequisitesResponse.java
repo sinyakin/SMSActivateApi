@@ -1,5 +1,6 @@
 package com.sms_activate.qiwi;
 
+import com.sms_activate.error.SMSActivateUnknownException;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -30,8 +31,13 @@ public class SMSActivateGetQiwiRequisitesResponse {
    * @return staus qiwi wallet.
    */
   @NotNull
-  public SMSActivateQiwiStatus getStatus() {
-    return SMSActivateQiwiStatus.getStatusByName(status);
+  public SMSActivateQiwiStatus getStatus() throws SMSActivateUnknownException {
+    SMSActivateQiwiStatus status = SMSActivateQiwiStatus.getStatusByName(this.status);
+    if (status == SMSActivateQiwiStatus.UNKNOWN) {
+      throw new SMSActivateUnknownException("Unknown status of qiwi wallet.", this.status);
+    }
+
+    return status;
   }
 
   /**

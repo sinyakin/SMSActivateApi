@@ -6,27 +6,27 @@ public class SMSActivateCurrentActivation {
   /**
    * Id activation.
    */
-  private final int id;
+  private int id;
 
   /**
    * Activation is forward.
    */
-  private final boolean forward;
+  private int forward;
 
   /**
    * Phone number.
    */
-  private final String number;
+  private String number;
 
   /**
    * Short service name.
    */
-  private final String serviceName;
+  private String serviceName;
 
   /**
    * Country id.
    */
-  private final int countryId;
+  private int countryId;
 
   /**
    * Constructor activation with info.
@@ -45,7 +45,7 @@ public class SMSActivateCurrentActivation {
     @NotNull String serviceName
   ) {
     this.id = id;
-    this.forward = forward;
+    this.forward = 1;
     this.number = number;
     this.serviceName = serviceName;
     this.countryId = countryId;
@@ -66,7 +66,7 @@ public class SMSActivateCurrentActivation {
    * @return true if activation is forwarding else false.
    */
   public boolean isForward() {
-    return forward;
+    return forward == 1;
   }
 
   /**

@@ -1,7 +1,6 @@
 package com.sms_activate.qiwi;
 
 import org.jetbrains.annotations.NotNull;
-import org.jetbrains.annotations.Nullable;
 
 public enum SMSActivateQiwiStatus {
   UNKNOWN("UNKNOWN", "", ""),
@@ -63,7 +62,7 @@ public enum SMSActivateQiwiStatus {
    */
   @NotNull
   public String getMessage() {
-    return String.join("|", englishMessage, russianMessage);
+    return String.join(" | ", englishMessage, russianMessage);
   }
 
   /**

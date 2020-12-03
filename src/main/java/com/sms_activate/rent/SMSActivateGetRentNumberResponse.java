@@ -1,79 +1,36 @@
 package com.sms_activate.rent;
 
+import com.sms_activate.rent.extra.SMSActivateGetRentNumber;
 import org.jetbrains.annotations.NotNull;
 
 public class SMSActivateGetRentNumberResponse {
   /**
-   * Id rent.
+   * Status.
    */
-  private final int id;
+  private String status;
 
   /**
-   * Phone number.
+   * Rent phone.
    */
-  private final String number;
+  private SMSActivateGetRentNumber phone;
 
   /**
-   * End date of rent.
-   */
-  private final String endDate;
-
-  /**
-   * Service short name.
-   */
-  private final String serviceName;
-
-  /**
-   * Constructor response getRentNumber with data from server.
+   * Returns the rent phone.
    *
-   * @param id          id rent.
-   * @param number      phone number.
-   * @param endDate     end date of rent.
-   * @param serviceName service short name.
-   */
-  public SMSActivateGetRentNumberResponse(int id, @NotNull String number, @NotNull String endDate, @NotNull String serviceName) {
-    this.id = id;
-    this.number = number;
-    this.endDate = endDate;
-    this.serviceName = serviceName;
-  }
-
-  /**
-   * Returns the id rent.
-   *
-   * @return id rent.
-   */
-  public int getId() {
-    return id;
-  }
-
-  /**
-   * Returns the phone number.
-   *
-   * @return phone number
+   * @return rent phone.
    */
   @NotNull
-  public String getNumber() {
-    return number;
+  public SMSActivateGetRentNumber getRentPhone() {
+    return phone;
   }
 
   /**
-   * Returns the end date of rent.
+   * Returns the status response.
    *
-   * @return end date of rent.
+   * @return status response.
    */
   @NotNull
-  public String getEndDate() {
-    return endDate;
-  }
-
-  /**
-   * Returns the service short name.
-   *
-   * @return service short name.
-   */
-  @NotNull
-  public String getServiceName() {
-    return serviceName;
+  public String getStatus() {
+    return status;
   }
 }

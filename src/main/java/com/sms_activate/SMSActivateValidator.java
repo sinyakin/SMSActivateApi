@@ -13,7 +13,7 @@ class SMSActivateValidator {
   /**
    * Success value status.
    */
-  private static final String SUCCESS_NAME_STATUS = "success";
+  private static final String SUCCESS_STATUS = "success";
 
   /**
    * Throws WrongParameterException if name contains in wrong parameter.
@@ -87,6 +87,6 @@ class SMSActivateValidator {
    * @return true if status is success else false.
    */
   public boolean isSuccessStatus(@NotNull String status) {
-    return SUCCESS_NAME_STATUS.equalsIgnoreCase(status);
+    return SUCCESS_STATUS.equalsIgnoreCase(status);
   }
 }
