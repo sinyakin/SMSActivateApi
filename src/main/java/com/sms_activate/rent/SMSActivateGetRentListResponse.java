@@ -1,7 +1,6 @@
 package com.sms_activate.rent;
 
-import com.sms_activate.error.wrong_parameter.SMSActivateWrongParameter;
-import com.sms_activate.error.wrong_parameter.SMSActivateWrongParameterException;
+import com.sms_activate.error.base.SMSActivateBaseException;
 import com.sms_activate.rent.extra.SMSActivateRentNumber;
 import org.jetbrains.annotations.NotNull;
 
@@ -19,29 +18,36 @@ public class SMSActivateGetRentListResponse {
   /**
    * Returns the rent by index.
    *
-   * @param index index rent.
+   * @param id index rent.
    * @return rent object.
-   * @throws SMSActivateWrongParameter if index incorrect.
+   * @throws SMSActivateBaseException if index incorrect.
    */
   @NotNull
-  public SMSActivateRentNumber get(int index) throws SMSActivateWrongParameterException {
-    SMSActivateRentNumber smsActivateRentNumber = this.values.get(index);
+  public SMSActivateRentNumber get(int id) throws SMSActivateBaseException {
 
-    if (smsActivateRentNumber == null) {
-      throw new SMSActivateWrongParameterException(SMSActivateWrongParameter.INVALID_PHONE);
+    for (SMSActivateRentNumber activateRentNumber : values.values()) {
+      if (activateRentNumber.getId() == id) {
+        return activateRentNumber;
+      }
     }
 
-    return smsActivateRentNumber;
+    throw new SMSActivateBaseException("Rent id is incorrect.", "Некорректный индентификатор аренды");
   }
 
   /**
-   * Returns the all index your rent.
+   * Returns the set ids rent.
    *
-   * @return all index your rent.
+   * @return set ids rent.
    */
   @NotNull
-  public SortedSet<Integer> getIndexSet() {
-    return new TreeSet<>(this.values.keySet());
+  public SortedSet<Integer> getIdSet() {
+    SortedSet<Integer> idSet = new TreeSet<>();
+
+    for (SMSActivateRentNumber activateRentNumber : values.values()) {
+      idSet.add(activateRentNumber.getId());
+    }
+
+    return idSet;
   }
 
   /**

@@ -20,6 +20,7 @@ enum SMSActivateAction {
   GET_RENT_STATUS("getRentStatus"),
   SET_RENT_STATUS("setRentStatus"),
   GET_RENT_LIST("getRentList"),
+  GET_CURRENT_ACTIVATIONS("getListOfActiveActivations")
   ;
 
   /**

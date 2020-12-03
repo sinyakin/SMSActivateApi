@@ -29,10 +29,23 @@ public class SMSActivateGetNumbersStatusResponse {
    *
    * @param serviceName service short name.
    * @return SMSActivateServiceInfo object.
+   * @throws SMSActivateWrongParameterException if serviceName is incorrect.
    */
   @NotNull
   public SMSActivateServiceInfo getSMSActivateServiceInfoByShortName(@NotNull String serviceName) throws SMSActivateWrongParameterException {
     return getSMSActivateServiceInfoByShortNameAndForward(serviceName, false);
+  }
+
+  /**
+   * Returns the service by shortName.
+   *
+   * @param serviceName service short name.
+   * @return SMSActivateServiceInfo object.
+   * @throws SMSActivateWrongParameterException if serviceName is incorrect.
+   */
+  @NotNull
+  public SMSActivateServiceInfo getSMSActivateServiceForwardInfoByShortName(@NotNull String serviceName) throws SMSActivateWrongParameterException {
+    return getSMSActivateServiceInfoByShortNameAndForward(serviceName, true);
   }
 
   /**
@@ -41,13 +54,14 @@ public class SMSActivateGetNumbersStatusResponse {
    * @param serviceName service short name.
    * @param forward service support forward.
    * @return SMSActivateServiceInfo object.
+   * @throws SMSActivateWrongParameterException if serviceName is incorrect.
    */
   @NotNull
-  public SMSActivateServiceInfo getSMSActivateServiceInfoByShortNameAndForward(@NotNull String serviceName, boolean forward) throws SMSActivateWrongParameterException {
+  private SMSActivateServiceInfo getSMSActivateServiceInfoByShortNameAndForward(@NotNull String serviceName, boolean forward) throws SMSActivateWrongParameterException {
     SMSActivateServiceInfo smsActivateServiceInfo = smsActivateServiceInfoMap.get(serviceName + "_" + (forward ? "1" : "0"));
 
     if (smsActivateServiceInfo == null) {
-      throw new SMSActivateWrongParameterException(SMSActivateWrongParameter.WRONG_SERVICE);
+      throw new SMSActivateWrongParameterException("Wrong service short name.", "Неккоректное короткое имя сервиса.");
     }
 
     return smsActivateServiceInfo;

@@ -49,7 +49,6 @@ public class SMSActivateActivation {
    *
    * @return phone number.
    */
-  @NotNull
   public long getNumber() {
     return phone;
   }

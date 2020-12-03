@@ -18,6 +18,9 @@ public class SMSActivateGetRentNumber {
    */
   private String endDate;
 
+  private SMSActivateGetRentNumber() {
+  }
+
   /**
    * Returns the id rent.
    *
@@ -32,7 +35,6 @@ public class SMSActivateGetRentNumber {
    *
    * @return phone number
    */
-  @NotNull
   public long getNumber() {
     return number;
   }

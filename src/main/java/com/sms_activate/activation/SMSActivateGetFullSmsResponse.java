@@ -12,17 +12,17 @@ public class SMSActivateGetFullSmsResponse {
   /**
    * Status activation.
    */
-  private final com.sms_activate.activation.extra.SMSActivateStatusNumber SMSActivateStatusNumber;
+  private final SMSActivateStatusNumber smsActivateStatusNumber;
 
   /**
    * Constructor response getFullSMS with data from server.
    *
    * @param text                    text sms.
-   * @param SMSActivateStatusNumber status activation.
+   * @param smsActivateStatusNumber status activation.
    */
-  public SMSActivateGetFullSmsResponse(@NotNull String text, @NotNull SMSActivateStatusNumber SMSActivateStatusNumber) {
+  public SMSActivateGetFullSmsResponse(@NotNull String text, @NotNull SMSActivateStatusNumber smsActivateStatusNumber) {
     this.text = text;
-    this.SMSActivateStatusNumber = SMSActivateStatusNumber;
+    this.smsActivateStatusNumber = smsActivateStatusNumber;
   }
 
   /**
@@ -32,7 +32,7 @@ public class SMSActivateGetFullSmsResponse {
    */
   @NotNull
   public SMSActivateStatusNumber getSmsActivateGetFullTypeResponse() {
-    return SMSActivateStatusNumber;
+    return smsActivateStatusNumber;
   }
 
   /**

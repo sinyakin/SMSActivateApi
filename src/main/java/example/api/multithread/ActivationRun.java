@@ -8,19 +8,28 @@ import com.sms_activate.error.wrong_parameter.SMSActivateWrongParameterException
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.concurrent.Executor;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
+import java.util.concurrent.TimeUnit;
 
 public class ActivationRun {
-  public static void main(String[] args) throws SMSActivateWrongParameterException, IOException {
-    final int COUNT_THREAD = 20;
-    SMSActivateApi smsActivateApi = new SMSActivateApi("API_KEY");
-
+  public static void main(String[] args) throws SMSActivateWrongParameterException, IOException, InterruptedException {
+    final int COUNT_THREAD = 30;
+    SMSActivateApi smsActivateApi = new SMSActivateApi("9A34fbf73d52752607e37ebA26f6f0bf");
     long start = System.currentTimeMillis();
-    List<Thread> threadGetNumberList = new ArrayList<>();
 
+    try {
+      smsActivateApi.getNumber(0, "vk");
+    } catch (SMSActivateBaseException e) {
+      e.printStackTrace();
+    }
+
+    System.out.println(System.currentTimeMillis() - start);
+
+/*    ExecutorService pool = Executors.newFixedThreadPool(20);
     for (int i = 0; i < COUNT_THREAD; i++) {
-      int numberThread = i;
-
-      threadGetNumberList.add(new Thread(() -> {
+      pool.submit(() -> {
         try {
           smsActivateApi.setStatus(smsActivateApi.getNumber(0, "fu").getId(), SMSActivateSetStatusRequest.CANCEL);
         } catch (SMSActivateWrongParameterException e) {
@@ -30,18 +39,12 @@ public class ActivationRun {
           System.out.println(e.getTypeError());
           System.out.println(e.getMessage());
         }
-
-        System.out.println(numberThread + " hello world!");
-      }));
+      });
     }
 
-    new Thread(() -> {
-      for (Thread thread : threadGetNumberList) {
-        thread.start();
-      }
-    }).start();
-
-    System.in.read();
-    System.out.println("Time: " + (System.currentTimeMillis() - start));
+    pool.shutdown();
+    boolean win = pool.awaitTermination(20, TimeUnit.SECONDS);
+    win = true;
+ */
   }
 }

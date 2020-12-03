@@ -16,7 +16,7 @@ public class GetAdditionalServiceRun {
       SMSActivateApi smsActivateApi = new SMSActivateApi("API_KEY");
 
       // request activation
-      SMSActivateActivation parentActivation = smsActivateApi.getNumber(0, "av", null, null, true);
+      SMSActivateActivation parentActivation = smsActivateApi.getNumber(0, "av", true);
 
       // print info
       System.out.println(parentActivation.getId());

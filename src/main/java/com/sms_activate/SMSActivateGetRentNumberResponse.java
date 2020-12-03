@@ -15,7 +15,7 @@ class SMSActivateGetRentNumberResponse {
    * @return rent phone.
    */
   @NotNull
-  public SMSActivateGetRentNumber getRentPhone() {
+  public SMSActivateGetRentNumber getSMSmsActivateGetRentNumber() {
     return phone;
   }
 }

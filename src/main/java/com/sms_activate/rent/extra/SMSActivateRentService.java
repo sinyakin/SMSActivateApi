@@ -11,7 +11,7 @@ public class SMSActivateRentService {
   private BigDecimal cost;
 
   /**
-   * Count number in service.
+   * count phone numbers in service.
    */
   private int count;
 
@@ -30,9 +30,9 @@ public class SMSActivateRentService {
   }
 
   /**
-   * Returns the count number in service.
+   * Returns the count phone numbers in service.
    *
-   * @return count number in service.
+   * @return count phone numbers in service.
    */
   public int getCount() {
     return count;

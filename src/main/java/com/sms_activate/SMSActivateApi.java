@@ -34,6 +34,7 @@ import java.util.stream.Collectors;
  * Before starting work, you must have an API key and a referral link to use all the API capabilities.</p>
  *
  * <p>All methods and constructor for this class throw SMSActivateWrongParameterException</p>
+ * <p>Before req</p>
  *
  * @see SMSActivateWrongParameterException
  * @see SMSActivateBaseException
@@ -227,9 +228,12 @@ public class SMSActivateApi {
 
     String operator = null;
 
-    if (operatorSet != null && !operatorSet.isEmpty()) {
-      operatorSet.removeIf(op -> op == null || op.isEmpty());
-      operator = String.join(",", operatorSet);
+    if (operatorSet != null) {
+      operatorSet.removeIf(String::isEmpty);
+
+      if (!operatorSet.isEmpty()) {
+        operator = String.join(",", operatorSet);
+      }
     }
 
     SMSActivateURLBuilder smsActivateURLBuilder = new SMSActivateURLBuilder(apiKey, SMSActivateAction.GET_NUMBERS_STATUS);
@@ -239,18 +243,18 @@ public class SMSActivateApi {
     String data = new SMSActivateWebClient().getOrThrowCommonException(smsActivateURLBuilder, validator);
     SMSActivateJsonParser jsonParser = new SMSActivateJsonParser();
 
-    Map<String, Integer> responseMap = jsonParser.tryParseJson(data, new TypeToken<Map<String, Integer>>() {
+    Map<String, Integer> serviceMap = jsonParser.tryParseJson(data, new TypeToken<Map<String, Integer>>() {
     }.getType(), validator);
     Map<String, SMSActivateServiceInfo> serviceInfoMap = new HashMap<>();
 
-    for (Map.Entry<String, Integer> entry : responseMap.entrySet()) {
+    for (Map.Entry<String, Integer> entry : serviceMap.entrySet()) {
       String serviceName = entry.getKey();
       String[] parts = serviceName.split("_");
 
       serviceInfoMap.put(serviceName, new SMSActivateServiceInfo(
-        parts[1].equals("1"),
+        parts[0],
         entry.getValue(),
-        parts[0]
+        parts[1].equals("1")
       ));
     }
 
@@ -371,22 +375,29 @@ public class SMSActivateApi {
     String phoneException = null;
     String operator = null;
 
-    if (phoneExceptionSet != null && phoneExceptionSet.size() != 0) {
-      phoneExceptionSet.removeIf(phone -> phone == null || phone.isEmpty());
-      phoneException = String.join(",", phoneExceptionSet);
+    if (phoneExceptionSet != null) {
+      phoneExceptionSet.removeIf(String::isEmpty);
+
+      if (!phoneExceptionSet.isEmpty()) {
+        phoneException = String.join(",", phoneExceptionSet);
+      }
     }
-    if (operatorSet != null && operatorSet.size() != 0) {
-      operatorSet.removeIf(op -> op == null || op.isEmpty());
-      operator = String.join(",", operatorSet);
+
+    if (operatorSet != null) {
+      operatorSet.removeIf(String::isEmpty);
+
+      if (!operatorSet.isEmpty()) {
+        operator = String.join(",", operatorSet);
+      }
     }
 
     SMSActivateURLBuilder smsActivateURLBuilder = new SMSActivateURLBuilder(apiKey, SMSActivateAction.GET_NUMBER);
     smsActivateURLBuilder.append(SMSActivateURLKey.REF, ref)
-      .append(SMSActivateURLKey.SERVICE, service)
       .append(SMSActivateURLKey.COUNTRY, String.valueOf(countryId))
-      .append(SMSActivateURLKey.PHONE_EXCEPTION, phoneException)
+      .append(SMSActivateURLKey.SERVICE, service)
+      .append(SMSActivateURLKey.FORWARD, forward ? "1" : "0")
       .append(SMSActivateURLKey.OPERATOR, operator)
-      .append(SMSActivateURLKey.FORWARD, forward ? "1" : "0");
+      .append(SMSActivateURLKey.PHONE_EXCEPTION, phoneException);
 
     String data = new SMSActivateWebClient().getOrThrowCommonException(smsActivateURLBuilder, validator);
     validator.throwExceptionWithBan(data);
@@ -481,7 +492,15 @@ public class SMSActivateApi {
     @Nullable Set<String> operatorSet,
     @Nullable List<Boolean> multiForwardList
   ) throws SMSActivateBaseException {
-    multiServiceSet.removeIf(service -> service == null || service.isEmpty());
+    multiServiceSet.removeIf(String::isEmpty);
+
+    if (countryId < 0) {
+      throw new SMSActivateWrongParameterException("Wrong ID country.", "Неверный ID страны.");
+    }
+
+    if (multiServiceSet.isEmpty()) {
+      throw new SMSActivateBaseException("Set multi-service can't be empty.", "Set мультисервисов не может быть пустой.");
+    }
 
     String strMultiService = String.join(",", multiServiceSet);
     String strOperators = null;
@@ -489,15 +508,21 @@ public class SMSActivateApi {
 
     if (multiForwardList != null && !multiForwardList.isEmpty()) {
       multiForwardList.removeIf(Objects::isNull);
-      strMultiForward = multiForwardList.stream().map(forward -> forward ? "1" : "0").collect(Collectors.joining(","));
-    }
-    if (operatorSet != null && !operatorSet.isEmpty()) {
-      operatorSet.removeIf(service -> service == null || service.isEmpty());
-      strOperators = String.join(",", operatorSet);
+
+      if (!multiForwardList.isEmpty()) {
+        strMultiForward = multiForwardList.stream()
+          .filter(forward -> !Objects.isNull(forward))
+          .map(forward -> forward ? "1" : "0")
+          .collect(Collectors.joining(","));
+      }
     }
 
-    if (countryId < 0) {
-      throw new SMSActivateWrongParameterException("Wrong ID country.", "Неверный ID страны.");
+    if (operatorSet != null) {
+      operatorSet.removeIf(String::isEmpty);
+
+      if (!operatorSet.isEmpty()) {
+        strOperators = String.join(",", operatorSet);
+      }
     }
 
     SMSActivateURLBuilder smsActivateURLBuilder = new SMSActivateURLBuilder(apiKey, SMSActivateAction.GET_MULTI_SERVICE_NUMBER);
@@ -511,10 +536,10 @@ public class SMSActivateApi {
     SMSActivateJsonParser jsonParser = new SMSActivateJsonParser();
 
     validator.throwExceptionWithBan(data);
-    List<SMSActivateActivation> response = jsonParser.tryParseJson(data, new TypeToken<List<SMSActivateActivation>>() {
+    List<SMSActivateActivation> smsActivateActivationList = jsonParser.tryParseJson(data, new TypeToken<List<SMSActivateActivation>>() {
     }.getType(), validator);
 
-    return new SMSActivateGetMultiServiceNumberResponse(response);
+    return new SMSActivateGetMultiServiceNumberResponse(smsActivateActivationList);
   }
 
   /**
@@ -717,8 +742,8 @@ public class SMSActivateApi {
 
       if (smsActivateStatusNumber == SMSActivateStatusNumber.FULL_SMS) {
         message = data.split(":")[1];
-        return new SMSActivateGetFullSmsResponse(message, smsActivateStatusNumber);
       }
+
       return new SMSActivateGetFullSmsResponse(message, smsActivateStatusNumber);
     }
 
@@ -843,7 +868,14 @@ public class SMSActivateApi {
   public SMSActivateGetPricesResponse getPricesByCountryIdAndServiceShortName(@Nullable Integer countryId, @Nullable String serviceShortName)
     throws SMSActivateBaseException {
     SMSActivateURLBuilder smsActivateURLBuilder = new SMSActivateURLBuilder(apiKey, SMSActivateAction.GET_PRICES);
-    smsActivateURLBuilder.append(SMSActivateURLKey.SERVICE, serviceShortName);
+
+    if (serviceShortName != null) {
+      if (serviceShortName.length() != 2) {
+        throw new SMSActivateWrongParameterException("Wrong service short name.", "Некорректное короткое имя сервиса.");
+      }
+
+      smsActivateURLBuilder.append(SMSActivateURLKey.SERVICE, serviceShortName);
+    }
 
     if (countryId != null) {
       if (countryId < 0) {
@@ -856,11 +888,11 @@ public class SMSActivateApi {
     String data = new SMSActivateWebClient().getOrThrowCommonException(smsActivateURLBuilder, validator);
     SMSActivateJsonParser jsonParser = new SMSActivateJsonParser();
 
-    Map<Integer, Map<String, SMSActivateGetPriceInfo>> response = jsonParser.tryParseJson(data,
+    Map<Integer, Map<String, SMSActivateGetPriceInfo>> smsActivateGetPriceMap = jsonParser.tryParseJson(data,
       new TypeToken<Map<Integer, Map<String, SMSActivateGetPriceInfo>>>() {
       }.getType(), validator);
 
-    return new SMSActivateGetPricesResponse(response);
+    return new SMSActivateGetPricesResponse(smsActivateGetPriceMap);
   }
 
   /**
@@ -1054,9 +1086,12 @@ public class SMSActivateApi {
 
     String operator = null;
 
-    if (operatorSet != null && !operatorSet.isEmpty()) {
-      operatorSet.removeIf(op -> op == null || op.isEmpty());
-      operator = String.join(",", operatorSet);
+    if (operatorSet != null) {
+      operatorSet.removeIf(String::isEmpty);
+
+      if (!operatorSet.isEmpty()) {
+        operator = String.join(",", operatorSet);
+      }
     }
 
     SMSActivateURLBuilder smsActivateURLBuilder = new SMSActivateURLBuilder(apiKey, SMSActivateAction.GET_RENT_SERVICES_AND_COUNTRIES);
@@ -1169,9 +1204,9 @@ public class SMSActivateApi {
       throw validator.getBaseExceptionByErrorNameOrUnknown(errorResponse.getMessage(), null);
     }
 
-    SMSActivateGetRentNumberResponse response = jsonParser.tryParseJson(data, new TypeToken<SMSActivateGetRentNumberResponse>() {
+    SMSActivateGetRentNumberResponse smsActivateGetRentNumberResponse = jsonParser.tryParseJson(data, new TypeToken<SMSActivateGetRentNumberResponse>() {
     }.getType(), validator);
-    return response.getRentPhone();
+    return smsActivateGetRentNumberResponse.getSMSmsActivateGetRentNumber();
   }
 
   /**

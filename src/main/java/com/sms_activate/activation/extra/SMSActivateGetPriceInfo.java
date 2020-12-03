@@ -10,7 +10,7 @@ public class SMSActivateGetPriceInfo {
    */
   private BigDecimal cost;
   /**
-   * Count number.
+   * count phone numbers.
    */
   private int count;
 
@@ -28,9 +28,9 @@ public class SMSActivateGetPriceInfo {
   }
 
   /**
-   * Returns the count number.
+   * Returns the count phone numbers.
    *
-   * @return count number.
+   * @return count phone numbers.
    */
   public int getCount() {
     return count;
