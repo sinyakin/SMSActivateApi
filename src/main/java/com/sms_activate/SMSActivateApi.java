@@ -449,7 +449,7 @@ public class SMSActivateApi {
 
     if (multiForwardList != null && !multiForwardList.isEmpty()) {
       multiForwardList.removeIf(Objects::isNull);
-      strMultiForward = multiForwardList.stream().map(service -> service ? "1" : "0").collect(Collectors.joining(","));
+      strMultiForward = multiForwardList.stream().map(forward -> forward ? "1" : "0").collect(Collectors.joining(","));
     }
     if (operatorSet != null && !operatorSet.isEmpty()) {
       operatorSet.removeIf(service -> service == null || service.isEmpty());
