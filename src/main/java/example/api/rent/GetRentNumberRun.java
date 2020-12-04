@@ -11,7 +11,6 @@ import com.sms_activate.respone.rent.extra.SMSActivateGetRentNumber;
 public class GetRentNumberRun {
   public static void main(String[] args) {
     try {
-      final int REFERRAL_IDENTIFIER = 000;
       SMSActivateApi smsActivateApi = new SMSActivateApi("API_KEY");
       // request rent for vk
       // you can set rent time
@@ -22,8 +21,6 @@ public class GetRentNumberRun {
         SMSActivateApi.MINIMAL_RENT_TIME,
         "https://google.com/webhook.php"
         );
-
-      smsActivateApi.setRef(REFERRAL_IDENTIFIER);
 
       // print info about rent
       System.out.println(">> ID: " + smsActivateGetRentNumberResponse.getId());

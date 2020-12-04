@@ -19,7 +19,7 @@ public class SMSActivateGetRentListResponse {
    * Returns the rent by index.
    *
    * @param idRent index rent.
-   * @return rent object.
+   * @return rent.
    * @throws SMSActivateBaseException if index incorrect.
    */
   @NotNull
@@ -30,23 +30,23 @@ public class SMSActivateGetRentListResponse {
       }
     }
 
-    throw new SMSActivateBaseException("Rent id is incorrect.", "Некорректный индентификатор аренды");
+    throw new SMSActivateBaseException("Rent id is incorrect.", "Некорректный индентификатор аренды.");
   }
 
   /**
-   * Returns the set ids rent.
+   * Returns the set id rents.
    *
-   * @return set ids rent.
+   * @return set id rents.
    */
   @NotNull
-  public SortedSet<Integer> getIdSet() {
-    SortedSet<Integer> idSet = new TreeSet<>();
+  public SortedSet<Integer> getRentSet() {
+    SortedSet<Integer> idRentSet = new TreeSet<>();
 
     for (SMSActivateRentNumber activateRentNumber : values.values()) {
-      idSet.add(activateRentNumber.getId());
+      idRentSet.add(activateRentNumber.getId());
     }
 
-    return idSet;
+    return idRentSet;
   }
 
   /**
@@ -55,7 +55,7 @@ public class SMSActivateGetRentListResponse {
    * @return the list current rents.
    */
   @NotNull
-  public List<SMSActivateRentNumber> getSmsActivateGetRentResponseList() {
+  public List<SMSActivateRentNumber> getRentNumberList() {
     return new ArrayList<>(values.values());
   }
 }

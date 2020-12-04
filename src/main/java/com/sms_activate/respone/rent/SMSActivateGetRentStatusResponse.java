@@ -23,6 +23,9 @@ public class SMSActivateGetRentStatusResponse {
    */
   private Map<Integer, SMSActivateSMS> values;
 
+  private SMSActivateGetRentStatusResponse() {
+  }
+
   /**
    * Returns the count sms.
    *

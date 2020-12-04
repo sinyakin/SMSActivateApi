@@ -28,12 +28,12 @@ public class SMSActivateGetRentServicesAndCountriesResponse {
   /**
    * Returns the service rent by name.
    *
-   * @param name short service name.
+   * @param serviceShortName short service name.
    * @return service rent.
    */
   @NotNull
-  public SMSActivateRentService getRentService(@NotNull String name) throws SMSActivateWrongParameterException {
-    SMSActivateRentService rentService = services.get(name);
+  public SMSActivateRentService getRentServiceByShortName(@NotNull String serviceShortName) throws SMSActivateWrongParameterException {
+    SMSActivateRentService rentService = services.get(serviceShortName);
 
     if (rentService == null) {
       throw new SMSActivateWrongParameterException("Service name is incorrect", "Неккоректное имя сервиса.");

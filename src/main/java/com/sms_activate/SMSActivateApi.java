@@ -1294,7 +1294,7 @@ public class SMSActivateApi {
     if (urlWebhook != null && urlWebhook.isEmpty()) {
       throw new SMSActivateWrongParameterException(
         "Parameter urlwebhook can't be empty.",
-        "Параметер urlwebhook can't be empty."
+        "Параметер urlwebhook не может быть пустым."
       );
     }
 
