@@ -11,9 +11,10 @@ import java.util.concurrent.TimeUnit;
 public class RentRun {
   public static void main(String[] args) throws Exception {
     final int COUNT_THREAD = 30;
+    final int STEP = 3;
 
     SMSActivateApi smsActivateApi = new SMSActivateApi("API_KEY");
-    ExecutorService pool = Executors.newFixedThreadPool(10);
+    ExecutorService pool = Executors.newFixedThreadPool(COUNT_THREAD / STEP);
 
     for (int i = 0; i < COUNT_THREAD; i++) {
       pool.submit(() -> {

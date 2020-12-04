@@ -18,7 +18,7 @@ public class SMSActivateGetQiwiRequisitesResponse {
   /**
    * Number qiwi wallet.
    */
-  private String wallet;
+  private long wallet;
 
   /**
    * Date by which the details are relevant.
@@ -59,8 +59,7 @@ public class SMSActivateGetQiwiRequisitesResponse {
    *
    * @return wallet number.
    */
-  @Nullable
-  public String getWallet() {
+  public long getWallet() {
     return wallet;
   }
 

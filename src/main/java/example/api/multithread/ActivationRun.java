@@ -1,12 +1,11 @@
 package example.api.multithread;
 
 import com.sms_activate.SMSActivateApi;
-import com.sms_activate.respone.activation.SMSActivateActivation;
-import com.sms_activate.respone.activation.set_status.SMSActivateSetStatusRequest;
 import com.sms_activate.error.base.SMSActivateBaseException;
 import com.sms_activate.error.wrong_parameter.SMSActivateWrongParameterException;
+import com.sms_activate.respone.activation.SMSActivateActivation;
+import com.sms_activate.respone.activation.set_status.SMSActivateSetStatusRequest;
 
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.ExecutorService;
@@ -14,12 +13,14 @@ import java.util.concurrent.Executors;
 import java.util.concurrent.TimeUnit;
 
 public class ActivationRun {
-  public static void main(String[] args) throws SMSActivateWrongParameterException, IOException, InterruptedException {
+  public static void main(String[] args) throws SMSActivateWrongParameterException, InterruptedException {
     final int COUNT_THREAD = 30;
+    final int STEP = 3;
+
     SMSActivateApi smsActivateApi = new SMSActivateApi("API_KEY");
+    ExecutorService pool = Executors.newFixedThreadPool(COUNT_THREAD / STEP);
 
     System.out.println("Start!!!!!!!");
-    ExecutorService pool = Executors.newFixedThreadPool(30);
 
     for (int i = 0; i < COUNT_THREAD; i++) {
       pool.submit(() -> {

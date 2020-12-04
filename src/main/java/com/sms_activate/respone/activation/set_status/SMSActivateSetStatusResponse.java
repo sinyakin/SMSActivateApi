@@ -4,7 +4,7 @@ import org.jetbrains.annotations.NotNull;
 
 public class SMSActivateSetStatusResponse {
   /**
-   * Response status about activation from server.
+   * Status about activation from server.
    */
   private final SMSActivateAccessStatus smsActivateAccessStatus;
 
@@ -18,9 +18,9 @@ public class SMSActivateSetStatusResponse {
   }
 
   /**
-   * Returns the description about status.
+   * Returns the description about status activation.
    *
-   * @return description about status.
+   * @return description about status activation.
    */
   @NotNull
   public String getMessage() {
@@ -28,9 +28,9 @@ public class SMSActivateSetStatusResponse {
   }
 
   /**
-   * Returns the status about activation.
+   * Returns the status activation.
    *
-   * @return status about activation.
+   * @return status activation.
    */
   @NotNull
   public SMSActivateAccessStatus getSMSActivateAccessStatus() {
