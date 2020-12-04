@@ -77,6 +77,6 @@ public class SMSActivateGetCurrentActivationsResponse {
    * @return true if activations is exists else false.
    */
   public boolean isExistActivation() {
-    return quant == 0;
+    return quant != 0;
   }
 }

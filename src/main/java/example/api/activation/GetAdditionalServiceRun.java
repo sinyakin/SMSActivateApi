@@ -7,12 +7,15 @@ import com.sms_activate.error.base.SMSActivateBaseException;
 import com.sms_activate.error.base.SMSActivateBaseTypeError;
 import com.sms_activate.error.wrong_parameter.SMSActivateWrongParameter;
 import com.sms_activate.error.wrong_parameter.SMSActivateWrongParameterException;
+import com.sms_activate.respone.activation.set_status.SMSActivateSetStatusRequest;
 
 public class GetAdditionalServiceRun {
   public static void main(String[] args) {
     try {
+      final int REFERRAL_IDENTIFIER = 0;
       // create SMSActivateApi object for requests
       SMSActivateApi smsActivateApi = new SMSActivateApi("API_KEY");
+      smsActivateApi.setRef(REFERRAL_IDENTIFIER);
 
       // request activation
       SMSActivateActivation parentActivation = smsActivateApi.getNumber(0, "av", true);
@@ -21,17 +24,14 @@ public class GetAdditionalServiceRun {
       System.out.println(parentActivation.getId());
       System.out.println(parentActivation.getNumber());
 
-      /*
-        if service is "ot" then need set status
-        smsActivateApi.setStatus(parentActivation.getId(), SMSActivateSetStatusRequest.SEND_READY_NUMBER);
-       */
 
+      smsActivateApi.setStatus(parentActivation.getId(), SMSActivateSetStatusRequest.SEND_READY_NUMBER);
       // check: https://sms-activate.ru/ru/getNumber
 
       // request new activation for additional service
-      SMSActivateActivation childActivation = smsActivateApi.getAdditionalService(parentActivation.getId(), "av");
+      SMSActivateActivation childActivation = smsActivateApi.getAdditionalService(parentActivation.getId(), "ym");
 
-      // print info
+      // print info about additional activation
       System.out.println(childActivation.getId());
       System.out.println(childActivation.getNumber());
     } catch (SMSActivateWrongParameterException e) {

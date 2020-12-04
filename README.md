@@ -26,7 +26,7 @@ In these links your can get API-key and referral link.
 
 * [SMS-Activate API docs](https://sms-activate.ru/ru/api2)
   
-* [SMS-Activate referral link](https://sms-activate.ru/ru/pp)
+* [SMS-Activate referral identifier](https://sms-activate.ru/ru/pp)
   
 * [SMS-Activate API-Key](https://sms-activate.ru/ru/profile)
 

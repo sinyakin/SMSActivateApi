@@ -13,7 +13,7 @@ public class SMSActivateRentService {
   /**
    * Count phone numbers in service.
    */
-  private int count;
+  private int quant;
 
   private SMSActivateRentService() {
   }
@@ -33,7 +33,7 @@ public class SMSActivateRentService {
    *
    * @return count phone numbers in service.
    */
-  public int getCount() {
-    return count;
+  public int getCountPhoneNumbers() {
+    return quant;
   }
 }

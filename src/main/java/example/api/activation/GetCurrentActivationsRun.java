@@ -25,6 +25,7 @@ public class GetCurrentActivationsRun {
           // batch > 0!!!
           int batch = 1;
 
+          // print info about all current activations
           do {
             System.out.println("\n======= " + batch + " ========\n");
 

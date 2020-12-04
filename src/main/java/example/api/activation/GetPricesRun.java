@@ -22,7 +22,7 @@ public class GetPricesRun {
       SMSActivateGetPriceInfo vk = smsActivateGetPricesResponse.getPriceInfo(0, "vk");
       //print info about vk
       System.out.println(">>> Cost: " + vk.getCost());
-      System.out.println(">>> count phone numbers: " + vk.getCount());
+      System.out.println(">>> count phone numbers: " + vk.getCountPhoneNumbers());
 
       // output all services
       for (Integer countryId : smsActivateGetPricesResponse.getCountryIdSet()) {
@@ -33,7 +33,7 @@ public class GetPricesRun {
 
           System.out.println(">>> Service shortname: " + shortName);
           System.out.println(">>> Cost: " + priceInfo.getCost());
-          System.out.println(">>> count phone numbers: " + priceInfo.getCount());
+          System.out.println(">>> count phone numbers: " + priceInfo.getCountPhoneNumbers());
           System.out.println("==========================================================================");
         }
       }

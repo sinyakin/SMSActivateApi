@@ -11,8 +11,11 @@ import com.sms_activate.error.wrong_parameter.SMSActivateWrongParameterException
 public class GetNumberRun {
   public static void main(String[] args) {
     try {
-      final int REFERRAL_IDENTIFIER = 0000;
+      final int REFERRAL_IDENTIFIER = 0;
       SMSActivateApi smsActivateApi = new SMSActivateApi("API_KEY");
+      // before the request, you need to set the referral identifier
+      smsActivateApi.setRef(REFERRAL_IDENTIFIER);
+
       SMSActivateActivation smsActivateActivation = smsActivateApi.getNumber(
         0,
         "tn"
@@ -25,10 +28,9 @@ public class GetNumberRun {
           }},
           false*/);
 
-      smsActivateApi.setRef(REFERRAL_IDENTIFIER);
 
-      System.out.println(smsActivateActivation.getId());
-      System.out.println(smsActivateActivation.getNumber());
+      System.out.println("Id activation: " + smsActivateActivation.getId());
+      System.out.println("Phone number: " + smsActivateActivation.getNumber());
       // check: https://sms-activate.ru/ru/getNumber
     } catch (SMSActivateWrongParameterException e) {
       if (e.getWrongParameter() == SMSActivateWrongParameter.BAD_ACTION) {

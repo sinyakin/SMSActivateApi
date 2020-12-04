@@ -10,8 +10,8 @@ import java.util.concurrent.TimeUnit;
 
 public class RentRun {
   public static void main(String[] args) throws Exception {
-    final int COUNT_THREAD = 30;
-    final int STEP = 3;
+    final int COUNT_THREAD = 20;
+    final int STEP = 2;
 
     SMSActivateApi smsActivateApi = new SMSActivateApi("API_KEY");
     ExecutorService pool = Executors.newFixedThreadPool(COUNT_THREAD / STEP);
@@ -19,7 +19,7 @@ public class RentRun {
     for (int i = 0; i < COUNT_THREAD; i++) {
       pool.submit(() -> {
         try {
-          smsActivateApi.setRentStatus(smsActivateApi.getRentNumber("sd").getId(), SMSActivateSetRentStatusRequest.CANCEL);
+          smsActivateApi.setRentStatus(smsActivateApi.getRentNumberByCountryIdAndServiceShortName(0, "yw").getId(), SMSActivateSetRentStatusRequest.CANCEL);
         } catch (SMSActivateBaseException e) {
           e.printStackTrace();
         }

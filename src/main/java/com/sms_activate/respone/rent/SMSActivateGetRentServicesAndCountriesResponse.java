@@ -58,7 +58,7 @@ public class SMSActivateGetRentServicesAndCountriesResponse {
    * @return list rent services.
    */
   @NotNull
-  public Set<String> getRentServices() {
+  public Set<String> getRentServiceNameSet() {
     return services.keySet();
   }
 
@@ -68,8 +68,8 @@ public class SMSActivateGetRentServicesAndCountriesResponse {
    * @return set countries supported rent.
    */
   @NotNull
-  public Set<Integer> getCountryIdSet() {
-    return new HashSet<>(countries.values());
+  public SortedSet<Integer> getCountryIdSet() {
+    return new TreeSet<>(countries.values());
   }
 
   /**

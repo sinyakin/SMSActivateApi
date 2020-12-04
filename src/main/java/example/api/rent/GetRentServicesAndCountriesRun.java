@@ -23,7 +23,7 @@ public class GetRentServicesAndCountriesRun {
 
       System.out.println("Services: ");
       smsActivateGetRentServicesAndCountriesResponse.getAllRentServices().forEach(smsActivateRentService -> {
-        System.out.println(">> count phone numbers: " + smsActivateRentService.getCount());
+        System.out.println(">> count phone numbers: " + smsActivateRentService.getCountPhoneNumbers());
         System.out.println(">> Cost: " + smsActivateRentService.getCost());
         System.out.println("====================================");
       });

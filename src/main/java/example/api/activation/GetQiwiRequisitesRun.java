@@ -17,6 +17,8 @@ public class GetQiwiRequisitesRun {
         System.out.println("Comment: " + smsActivateGetQiwiRequisitesResponse.getComment());
         System.out.println("Wallet: " + smsActivateGetQiwiRequisitesResponse.getWallet());
         System.out.println("Up to date: " + smsActivateGetQiwiRequisitesResponse.getUpToDate());
+      } else {
+        System.out.println("Now payment of kiwi is not possible.");
       }
     } catch (SMSActivateWrongParameterException e) {
       if (e.getWrongParameter() == SMSActivateWrongParameter.BAD_ACTION) {

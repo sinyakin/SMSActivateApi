@@ -10,7 +10,10 @@ import com.sms_activate.error.base.SMSActivateBaseException;
 public class GetAndSetStatusRun {
   public static void main(String[] args) {
     try {
-      SMSActivateApi smsActivateApi = new SMSActivateApi("API_KEY");
+      final int REFERRAL_IDENTIFIER = 0;
+      SMSActivateApi smsActivateApi = new SMSActivateApi("rep");
+
+      smsActivateApi.setRef(REFERRAL_IDENTIFIER);
 
       SMSActivateActivation smsActivateActivation = smsActivateApi.getNumber(0, "av", true);
       // print info about activation
@@ -29,6 +32,8 @@ public class GetAndSetStatusRun {
         System.out.println("Code from sms: " + smsActivateGetStatusResponse.getCodeFromSMS());
       }
 
+      //we set the status that the activation is ready to receive
+      // SMS after which you can use the activation for your service
       SMSActivateSetStatusResponse smsActivateSetStatusResponse = smsActivateApi.setStatus(smsActivateActivation.getId(),
         SMSActivateSetStatusRequest.SEND_READY_NUMBER);
 
@@ -51,6 +56,10 @@ public class GetAndSetStatusRun {
           break;
       }
 
+      // uncomment this line if you need to cancel the activation, if you will not use it or wait 20 minutes.
+      // smsActivateApi.setStatus(smsActivateActivation.getId(), SMSActivateSetStatusRequest.CANCEL);
+
+      // check current status activation
       smsActivateGetStatusResponse = smsActivateApi.getStatus(smsActivateActivation.getId());
       System.out.println("Description of the current lease status: " + smsActivateGetStatusResponse.getMessage());
     } catch (SMSActivateBaseException e) {

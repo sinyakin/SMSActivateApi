@@ -32,7 +32,7 @@ public class SMSActivateGetPriceInfo {
    *
    * @return count phone numbers.
    */
-  public int getCount() {
+  public int getCountPhoneNumbers() {
     return count;
   }
 }

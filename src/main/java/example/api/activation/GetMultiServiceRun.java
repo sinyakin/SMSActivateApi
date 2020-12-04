@@ -14,7 +14,12 @@ import java.util.HashSet;
 public class GetMultiServiceRun {
   public static void main(String[] args) {
     try {
+      final int REFERRAL_IDENTIFIER = 0;
+
       SMSActivateApi smsActivateApi = new SMSActivateApi("API_KEY");
+      smsActivateApi.setRef(REFERRAL_IDENTIFIER);
+
+      // multi-service number is an activation that can be used for more than 1 service.
       SMSActivateGetMultiServiceNumberResponse smsActivateGetMultiServiceNumberResponse = smsActivateApi.getMultiServiceNumber(
         0,
         // services
@@ -29,7 +34,7 @@ public class GetMultiServiceRun {
         }}*/,
         // forward
         new ArrayList<Boolean>() {{
-          add(true); // go with forward
+          add(true); // av with forward
           add(false);
         }}
         //null
@@ -47,10 +52,10 @@ public class GetMultiServiceRun {
         System.out.println("Contact support.");
       } if (e.getWrongParameter() == SMSActivateWrongParameter.BAD_KEY) {
         System.out.println("Your api-key is incorrect.");
-      } else {
-        // todo check other wrong parameter
-        System.out.println(e.getMessage() + "  " + e.getMessage());
       }
+
+      // todo check other wrong parameter
+      System.out.println(e.getMessage() + "  " + e.getMessage());
     } catch (SMSActivateBannedException e) {
       System.out.println("Your account has been banned wait " + e.getEndDate());
     } catch (SMSActivateBaseException e) {
@@ -59,10 +64,10 @@ public class GetMultiServiceRun {
       }
       if (e.getTypeError() == SMSActivateBaseTypeError.NO_NUMBERS) {
         System.out.println("Send request later....");
-      } else {
-        // todo check other type error
-        System.out.println(e.getTypeError() + "  " + e.getMessage());
       }
+
+      // todo check other type error
+      System.out.println(e.getTypeError() + "  " + e.getMessage());
     }
   }
 }

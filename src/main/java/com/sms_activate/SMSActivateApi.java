@@ -1,17 +1,17 @@
 package com.sms_activate;
 
 import com.google.gson.reflect.TypeToken;
-import com.sms_activate.respone.activation.*;
-import com.sms_activate.respone.activation.extra.*;
-import com.sms_activate.respone.activation.set_status.SMSActivateAccessStatus;
-import com.sms_activate.respone.activation.set_status.SMSActivateSetStatusRequest;
-import com.sms_activate.respone.activation.set_status.SMSActivateSetStatusResponse;
 import com.sms_activate.error.SMSActivateBannedException;
 import com.sms_activate.error.SMSActivateUnknownException;
 import com.sms_activate.error.base.SMSActivateBaseException;
 import com.sms_activate.error.base.SMSActivateBaseTypeError;
 import com.sms_activate.error.wrong_parameter.SMSActivateWrongParameter;
 import com.sms_activate.error.wrong_parameter.SMSActivateWrongParameterException;
+import com.sms_activate.respone.activation.*;
+import com.sms_activate.respone.activation.extra.*;
+import com.sms_activate.respone.activation.set_status.SMSActivateAccessStatus;
+import com.sms_activate.respone.activation.set_status.SMSActivateSetStatusRequest;
+import com.sms_activate.respone.activation.set_status.SMSActivateSetStatusResponse;
 import com.sms_activate.respone.qiwi.SMSActivateGetQiwiRequisitesResponse;
 import com.sms_activate.respone.rent.SMSActivateGetRentListResponse;
 import com.sms_activate.respone.rent.SMSActivateGetRentServicesAndCountriesResponse;
@@ -220,6 +220,7 @@ public class SMSActivateApi {
    *                                            Wrong parameter error types in this method:
    *                                              <ul>
    *                                                <li>BAD_KEY - if your api-key is incorrect;</li>
+   *                                                <li>WRONG_COUNTRY_ID  - if country id is incorrect;</li>
    *                                                <li>WRONG_OPERATOR - if operator or countryId is incorrect.</li>
    *                                              </ul>
    *                                            </p>
@@ -229,7 +230,7 @@ public class SMSActivateApi {
   public SMSActivateGetNumbersStatusResponse getNumbersStatus(@Nullable Integer countryId, @Nullable Set<String> operatorSet)
     throws SMSActivateBaseException {
     if (countryId != null && countryId < 0) {
-      throw new SMSActivateWrongParameterException("Wrong ID country.", "Неверный ID страны.");
+      throw new SMSActivateWrongParameterException(SMSActivateWrongParameter.WRONG_COUNTRY_ID);
     }
 
     String operator = null;
@@ -249,10 +250,10 @@ public class SMSActivateApi {
       smsActivateURLBuilder.append(SMSActivateURLKey.COUNTRY, String.valueOf(countryId));
     }
 
-    String data = new SMSActivateWebClient().getOrThrowCommonException(smsActivateURLBuilder, validator);
+    String serviceJsonResponse = new SMSActivateWebClient().getOrThrowCommonException(smsActivateURLBuilder, validator);
     SMSActivateJsonParser jsonParser = new SMSActivateJsonParser();
 
-    Map<String, Integer> serviceMap = jsonParser.tryParseJson(data, new TypeToken<Map<String, Integer>>() {
+    Map<String, Integer> serviceMap = jsonParser.tryParseJson(serviceJsonResponse, new TypeToken<Map<String, Integer>>() {
     }.getType(), validator);
     Map<String, SMSActivateServiceInfo> serviceInfoMap = new HashMap<>();
 
@@ -295,6 +296,7 @@ public class SMSActivateApi {
    *                                                <li>BAD_KEY - if your api-key is incorrect;</li>
    *                                                <li>BAD_SERVICE - if service is incorrect;</li>
    *                                                <li>BANNED - if your account has been banned.</li>
+   *                                                <li>WRONG_COUNTRY_ID  - if country id is incorrect.</li>
    *                                              </ul>
    *                                            </p>
    */
@@ -328,6 +330,7 @@ public class SMSActivateApi {
    *                                                <li>BAD_KEY - if your api-key is incorrect;</li>
    *                                                <li>BAD_SERVICE - if service is incorrect;</li>
    *                                                <li>BANNED - if your account has been banned.</li>
+   *                                                <li>WRONG_COUNTRY_ID  - if country id is incorrect.</li>
    *                                              </ul>
    *                                            </p>
    */
@@ -356,6 +359,7 @@ public class SMSActivateApi {
    *                                                 <li>ERROR_SQL - if error happened in sql-server;</li>
    *                                                 <li>NO_NUMBERS - if currently no numbers;</li>
    *                                                <li>NO_BALANCE - if money in the account;</li>
+   *                                                <li>WRONG_COUNTRY_ID  - if country id is incorrect.</li>
    *                                              </ul>
    *                                            </p>
    *                                            <p>
@@ -366,6 +370,7 @@ public class SMSActivateApi {
    *                                                <li>BAD_SERVICE - if service is incorrect;</li>
    *                                                <li>BANNED - if your account has been banned;</li>
    *                                                <li>WRONG_PHONE_EXCEPTION - if one or more numbers prefix is incorrect.</li>
+   *                                                <li>WRONG_COUNTRY_ID  - if country id is incorrect.</li>
    *                                              </ul>
    *                                            </p>
    */
@@ -385,7 +390,7 @@ public class SMSActivateApi {
     }
 
     if (countryId < 0) {
-      throw new SMSActivateWrongParameterException("Wrong ID country.", "Неверный ID страны.");
+      throw new SMSActivateWrongParameterException(SMSActivateWrongParameter.WRONG_COUNTRY_ID);
     }
 
     String phoneException = null;
@@ -408,31 +413,28 @@ public class SMSActivateApi {
     }
 
     SMSActivateURLBuilder smsActivateURLBuilder = new SMSActivateURLBuilder(apiKey, SMSActivateAction.GET_NUMBER);
-    smsActivateURLBuilder.append(SMSActivateURLKey.COUNTRY, String.valueOf(countryId))
+    smsActivateURLBuilder.append(SMSActivateURLKey.REF, String.valueOf(ref))
+      .append(SMSActivateURLKey.COUNTRY, String.valueOf(countryId))
       .append(SMSActivateURLKey.SERVICE, service)
       .append(SMSActivateURLKey.FORWARD, forward ? "1" : "0")
       .append(SMSActivateURLKey.OPERATOR, operator)
       .append(SMSActivateURLKey.PHONE_EXCEPTION, phoneException);
 
-    if (ref != null) {
-      smsActivateURLBuilder.append(SMSActivateURLKey.REF, String.valueOf(ref));
-    }
+    String responseFromServer = new SMSActivateWebClient().getOrThrowCommonException(smsActivateURLBuilder, validator);
+    validator.throwExceptionWithBan(responseFromServer);
 
-    String data = new SMSActivateWebClient().getOrThrowCommonException(smsActivateURLBuilder, validator);
-    validator.throwExceptionWithBan(data);
-
-    if (!data.startsWith(SMSActivateMagicKey.ACCESS)) {
-      throw validator.getBaseExceptionByErrorNameOrUnknown(data, null);
+    if (!responseFromServer.startsWith(SMSActivateMagicKey.ACCESS)) {
+      throw validator.getBaseExceptionByErrorNameOrUnknown(responseFromServer, null);
     }
 
     try {
-      String[] parts = data.split(":");
+      String[] parts = responseFromServer.split(":");
       int id = Integer.parseInt(parts[1]);
       long number = Long.parseLong(parts[2]);
 
       return new SMSActivateActivation(id, number, service);
     } catch (NumberFormatException e) {
-      throw new SMSActivateUnknownException(data, "Error formatting to number.");
+      throw new SMSActivateUnknownException(responseFromServer, "Error formatting to number.");
     }
   }
 
@@ -461,6 +463,7 @@ public class SMSActivateApi {
    *                                                <li>WRONG_OPERATOR - if operator or countryId is incorrect;</li>
    *                                                <li>BAD_SERVICE - if service is incorrect;</li>
    *                                                <li>BANNED - if your account has been banned;</li>
+   *                                                <li>WRONG_COUNTRY_ID  - if country id is incorrect;</li>
    *                                                <li>NOT_AVAILABLE  - if country not supported multi-service.</li>
    *                                              </ul>
    *                                            </p>
@@ -499,6 +502,7 @@ public class SMSActivateApi {
    *                                                <li>WRONG_OPERATOR - if operator or countryId is incorrect;</li>
    *                                                <li>BAD_SERVICE - if service is incorrect;</li>
    *                                                <li>BANNED - if your account has been banned;</li>
+   *                                                <li>WRONG_COUNTRY_ID  - if country id is incorrect;</li>
    *                                                <li>NOT_AVAILABLE  - if country not supported multi-service.</li>
    *                                              </ul>
    *                                            </p>
@@ -512,21 +516,17 @@ public class SMSActivateApi {
     @Nullable List<Boolean> multiForwardList
   ) throws SMSActivateBaseException {
     if (countryId < 0) {
-      throw new SMSActivateWrongParameterException("Wrong ID country.", "Неверный ID страны.");
+      throw new SMSActivateWrongParameterException(SMSActivateWrongParameter.WRONG_COUNTRY_ID);
     }
 
     if (ref == null) {
       throw new SMSActivateWrongParameterException(
-        "To receive rent, you need to set a referral ID.",
-        "Для получения аренды нужно установить реферальный идентификатор."
+        "To receive multi-service activation, you need to set a referral ID.",
+        "Для получения мультисервисной активации нужно установить реферальный идентификатор."
       );
     }
 
     multiServiceSet.removeIf(String::isEmpty);
-
-    if (multiServiceSet.isEmpty()) {
-      throw new SMSActivateBaseException("Set multi-service can't be empty.", "Set мультисервисов не может быть пустой.");
-    }
 
     String strMultiService = String.join(",", multiServiceSet);
     String strOperators = null;
@@ -541,21 +541,15 @@ public class SMSActivateApi {
 
     if (operatorSet != null) {
       operatorSet.removeIf(String::isEmpty);
-
-      if (!operatorSet.isEmpty()) {
-        strOperators = String.join(",", operatorSet);
-      }
+      strOperators = String.join(",", operatorSet);
     }
 
     SMSActivateURLBuilder smsActivateURLBuilder = new SMSActivateURLBuilder(apiKey, SMSActivateAction.GET_MULTI_SERVICE_NUMBER);
-    smsActivateURLBuilder.append(SMSActivateURLKey.MULTI_SERVICE, strMultiService)
+    smsActivateURLBuilder.append(SMSActivateURLKey.REF, String.valueOf(ref))
+      .append(SMSActivateURLKey.MULTI_SERVICE, strMultiService)
       .append(SMSActivateURLKey.COUNTRY, String.valueOf(countryId))
       .append(SMSActivateURLKey.MULTI_FORWARD, strMultiForward)
       .append(SMSActivateURLKey.OPERATOR, strOperators);
-
-    if (ref != null) {
-      smsActivateURLBuilder.append(SMSActivateURLKey.REF, String.valueOf(ref));
-    }
 
     String data = new SMSActivateWebClient().getOrThrowCommonException(smsActivateURLBuilder, validator);
     SMSActivateJsonParser jsonParser = new SMSActivateJsonParser();
@@ -609,7 +603,8 @@ public class SMSActivateApi {
    *                                            </p>
    */
   @NotNull
-  public SMSActivateSetStatusResponse setStatus(int idActivation, @NotNull SMSActivateSetStatusRequest status) throws SMSActivateBaseException {
+  public SMSActivateSetStatusResponse setStatus(int idActivation, @NotNull SMSActivateSetStatusRequest status)
+    throws SMSActivateBaseException {
     return setStatusWithForwardPhone(idActivation, status, null);
   }
 
@@ -828,6 +823,7 @@ public class SMSActivateApi {
    *                                              Wrong parameter error types in this method:
    *                                               <ul>
    *                                                 <li>BAD_KEY - if your api-key is incorrect;</li>
+   *                                                <li>WRONG_COUNTRY_ID  - if country id is incorrect.</li>
    *                                               </ul>
    *                                             </p>
    *                                            </p>
@@ -856,12 +852,14 @@ public class SMSActivateApi {
    *                                              Wrong parameter error types in this method:
    *                                               <ul>
    *                                                 <li>BAD_KEY - if your api-key is incorrect;</li>
+   *                                                <li>WRONG_COUNTRY_ID  - if country id is incorrect.</li>
    *                                               </ul>
    *                                             </p>
    *                                            </p>
    */
   @NotNull
-  public SMSActivateGetPricesResponse getPricesAllCountryByServiceShortName(@NotNull String serviceShortName) throws SMSActivateBaseException {
+  public SMSActivateGetPricesResponse getPricesAllCountryByServiceShortName(@NotNull String serviceShortName)
+    throws SMSActivateBaseException {
     return getPricesByCountryIdAndServiceShortName(null, serviceShortName);
   }
 
@@ -890,6 +888,7 @@ public class SMSActivateApi {
    *                                                 <li>BAD_KEY - if your api-key is incorrect;</li>
    *                                                 <li>WRONG_OPERATOR - if country id is incorrect;</li>
    *                                                 <li>WRONG_SERVICE - if service is incorrect;</li>
+   *                                                <li>WRONG_COUNTRY_ID  - if country id is incorrect.</li>
    *                                               </ul>
    *                                             </p>
    *                                            </p>
@@ -909,7 +908,7 @@ public class SMSActivateApi {
 
     if (countryId != null) {
       if (countryId < 0) {
-        throw new SMSActivateWrongParameterException("Wrong ID country.", "Неверный ID страны.");
+        throw new SMSActivateWrongParameterException(SMSActivateWrongParameter.WRONG_COUNTRY_ID);
       }
 
       smsActivateURLBuilder.append(SMSActivateURLKey.COUNTRY, String.valueOf(countryId));
@@ -1096,6 +1095,7 @@ public class SMSActivateApi {
    *                                              Wrong parameter error types in this method:
    *                                               <ul>
    *                                                 <li>BAD_KEY - if your api-key is incorrect;</li>
+   *                                                <li>WRONG_COUNTRY_ID  - if country id is incorrect.</li>
    *                                               </ul>
    *                                             </p>
    *                                            </p>
@@ -1111,7 +1111,7 @@ public class SMSActivateApi {
       );
     }
     if (countryId < 0) {
-      throw new SMSActivateWrongParameterException("Wrong ID country.", "Неверный ID страны.");
+      throw new SMSActivateWrongParameterException(SMSActivateWrongParameter.WRONG_COUNTRY_ID);
     }
 
     String operator = null;
@@ -1137,7 +1137,7 @@ public class SMSActivateApi {
   }
 
   /**
-   * Returns the object rent on {@value MINIMAL_RENT_TIME}.
+   * Returns the object rent on {@value MINIMAL_RENT_TIME} (default countryId is Russia).
    *
    * @param service service to which you need to get a number.
    * @return object rent.
@@ -1164,8 +1164,75 @@ public class SMSActivateApi {
    *                                            </p>
    */
   @NotNull
-  public SMSActivateGetRentNumber getRentNumber(@NotNull String service) throws SMSActivateBaseException {
-    return getRentNumber(0, service, null, MINIMAL_RENT_TIME, null);
+  public SMSActivateGetRentNumber getRentNumberByServiceShortName(@NotNull String service) throws SMSActivateBaseException {
+    return getRentNumberByCountryIdAndServiceShortName(0, service);
+  }
+
+  /**
+   * Returns the object rent on {@value MINIMAL_RENT_TIME} by counrtyId and service short name.
+   *
+   * @param countryId id country.
+   * @param service service to which you need to get a number.
+   * @return object rent.
+   * @throws SMSActivateWrongParameterException if one of parameters is incorrect.
+   * @throws SMSActivateUnknownException        if error type not documented.
+   *                                            <p>
+   *                                            Types errors:
+   *                                            <p>
+   *                                            Base type error in this method:
+   *                                              <ul>
+   *                                                <li>ERROR_SQL - if error happened in sql-server;</li>
+   *                                                <li>NO_NUMBERS - if currently no numbers;</li>
+   *                                                <li>NO_BALANCE - if money in the account;</li>
+   *                                              </ul>
+   *                                            </p>
+   *                                            <p>
+   *                                              Wrong parameter type error:
+   *                                              <ul>
+   *                                                <li>BAD_KEY - if your api-key is incorrect;</li>
+   *                                                <li>BAD_SERVICE - if service is incorrect;</li>
+   *                                                <li>ACCOUNT_INACTIVE  - if no free numbers.</li>
+   *                                              </ul>
+   *                                            </p>
+   *                                            </p>
+   */
+  @NotNull
+  public SMSActivateGetRentNumber getRentNumberByCountryIdAndServiceShortName(int countryId, @NotNull String service) throws SMSActivateBaseException {
+    return getRentNumberByCountryIdAndServiceShortNameOnTime(countryId, service, MINIMAL_RENT_TIME);
+  }
+
+  /**
+   * Returns the object rent on {@value MINIMAL_RENT_TIME} by counrtyId and service short name.
+   *
+   * @param countryId id country.
+   * @param service service to which you need to get a number.
+   * @param time rent time.
+   * @return object rent.
+   * @throws SMSActivateWrongParameterException if one of parameters is incorrect.
+   * @throws SMSActivateUnknownException        if error type not documented.
+   *                                            <p>
+   *                                            Types errors:
+   *                                            <p>
+   *                                            Base type error in this method:
+   *                                              <ul>
+   *                                                <li>ERROR_SQL - if error happened in sql-server;</li>
+   *                                                <li>NO_NUMBERS - if currently no numbers;</li>
+   *                                                <li>NO_BALANCE - if money in the account;</li>
+   *                                              </ul>
+   *                                            </p>
+   *                                            <p>
+   *                                              Wrong parameter type error:
+   *                                              <ul>
+   *                                                <li>BAD_KEY - if your api-key is incorrect;</li>
+   *                                                <li>BAD_SERVICE - if service is incorrect;</li>
+   *                                                <li>ACCOUNT_INACTIVE  - if no free numbers.</li>
+   *                                              </ul>
+   *                                            </p>
+   *                                            </p>
+   */
+  @NotNull
+  public SMSActivateGetRentNumber getRentNumberByCountryIdAndServiceShortNameOnTime(int countryId, @NotNull String service, int time) throws SMSActivateBaseException {
+    return getRentNumber(countryId, service, null, time, null);
   }
 
   /**
@@ -1194,7 +1261,9 @@ public class SMSActivateApi {
    *                                              <ul>
    *                                                <li>BAD_KEY - if your api-key is incorrect;</li>
    *                                                <li>BAD_SERVICE - if service is incorrect;</li>
-   *                                                <li>ACCOUNT_INACTIVE  - if no free numbers.</li>
+   *                                                <li>ACCOUNT_INACTIVE  - if no free numbers;</li>
+   *                                                <li>WRONG_OPERATOR  - if operator is incorrect;</li>
+   *                                                <li>WRONG_COUNTRY_ID  - if country id is incorrect.</li>
    *                                              </ul>
    *                                            </p>
    *                                            </p>
@@ -1208,7 +1277,7 @@ public class SMSActivateApi {
     @Nullable String urlWebhook
   ) throws SMSActivateBaseException {
     if (countryId < 0) {
-      throw new SMSActivateWrongParameterException("Wrong ID country.", "Неверный ID страны.");
+      throw new SMSActivateWrongParameterException(SMSActivateWrongParameter.WRONG_COUNTRY_ID);
     }
 
     if (time < MINIMAL_RENT_TIME) {

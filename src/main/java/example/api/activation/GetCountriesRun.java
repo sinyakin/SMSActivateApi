@@ -27,7 +27,7 @@ public class GetCountriesRun {
   }
 
   private static void printInfo(@NotNull SMSActivateCountryInfo smsActivateCountryInfo) {
-    System.out.println("Id: " + smsActivateCountryInfo.getId());
+    System.out.println("Country id: " + smsActivateCountryInfo.getId());
     System.out.println("Russian name: " + smsActivateCountryInfo.getRussianName());
     System.out.println("English name: " + smsActivateCountryInfo.getEnglishName());
     System.out.println("Chinese name: " + smsActivateCountryInfo.getChineseName());

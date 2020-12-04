@@ -11,7 +11,7 @@ public class SMSActivateGetQiwiRequisitesResponse {
   private String status;
 
   /**
-   * Comment specified in payment.
+   * Comment indicated when paying.
    */
   private String comment;
 
@@ -32,22 +32,22 @@ public class SMSActivateGetQiwiRequisitesResponse {
   /**
    * Returns the status qiwi wallet.
    *
-   * @return staus qiwi wallet.
+   * @return status qiwi wallet.
    */
   @NotNull
   public SMSActivateQiwiStatus getStatus() throws SMSActivateUnknownException {
     SMSActivateQiwiStatus status = SMSActivateQiwiStatus.getStatusByName(this.status);
     if (status == SMSActivateQiwiStatus.UNKNOWN) {
-      throw new SMSActivateUnknownException("Unknown status of qiwi wallet.", this.status);
+      throw new SMSActivateUnknownException(this.status, "Unknown status of qiwi wallet.");
     }
 
     return status;
   }
 
   /**
-   * Returns the comment specified payment.
+   * Returns the comment indicated when paying.
    *
-   * @return comment specified payment
+   * @return comment indicated when paying.
    */
   @Nullable
   public String getComment() {
