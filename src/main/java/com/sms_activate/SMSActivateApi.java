@@ -1169,7 +1169,7 @@ public class SMSActivateApi {
   }
 
   /**
-   * Returns the object rent on {@value MINIMAL_RENT_TIME} by counrtyId and service short name.
+   * Returns the object rent on {@value MINIMAL_RENT_TIME} by countryId and service short name.
    *
    * @param countryId id country.
    * @param service service to which you need to get a number.
@@ -1202,7 +1202,7 @@ public class SMSActivateApi {
   }
 
   /**
-   * Returns the object rent on {@value MINIMAL_RENT_TIME} by counrtyId and service short name.
+   * Returns the object rent on {@value MINIMAL_RENT_TIME} by countryId and service short name.
    *
    * @param countryId id country.
    * @param service service to which you need to get a number.
@@ -1293,8 +1293,8 @@ public class SMSActivateApi {
 
     if (urlWebhook != null && urlWebhook.isEmpty()) {
       throw new SMSActivateWrongParameterException(
-        "Parameter urlwebhook can't be empty.",
-        "Параметер urlwebhook не может быть пустым."
+        "Parameter url-webhook can't be empty.",
+        "Параметер url-webhook не может быть пустым."
       );
     }
 
