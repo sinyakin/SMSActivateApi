@@ -43,13 +43,13 @@ public class SMSActivateGetRentServicesAndCountriesResponse {
   }
 
   /**
-   * Returns the all rent services.
+   * Returns the all rent services info.
    *
-   * @return all rent services.
+   * @return all rent services info.
    */
   @NotNull
-  public List<SMSActivateRentService> getAllRentServices() {
-    return new ArrayList<>(services.values());
+  public Map<String, SMSActivateRentService> getAllRentServices() {
+    return services;
   }
 
   /**

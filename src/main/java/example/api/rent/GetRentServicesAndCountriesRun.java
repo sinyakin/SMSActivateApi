@@ -5,6 +5,7 @@ import com.sms_activate.error.base.SMSActivateBaseException;
 import com.sms_activate.error.wrong_parameter.SMSActivateWrongParameter;
 import com.sms_activate.error.wrong_parameter.SMSActivateWrongParameterException;
 import com.sms_activate.respone.rent.SMSActivateGetRentServicesAndCountriesResponse;
+import com.sms_activate.respone.rent.extra.SMSActivateRentService;
 
 public class GetRentServicesAndCountriesRun {
   public static void main(String[] args) {
@@ -21,8 +22,12 @@ public class GetRentServicesAndCountriesRun {
         SMSActivateApi.MINIMAL_RENT_TIME*/
       );
 
+      // print info about service
       System.out.println("Services: ");
-      smsActivateGetRentServicesAndCountriesResponse.getAllRentServices().forEach(smsActivateRentService -> {
+
+      // getAllRentServices - returns the map with all services where key is service shortname.
+      smsActivateGetRentServicesAndCountriesResponse.getAllRentServices().forEach((serviceShortName, smsActivateRentService) -> {
+        System.out.println(">> Service shortname: " + serviceShortName);
         System.out.println(">> count phone numbers: " + smsActivateRentService.getCountPhoneNumbers());
         System.out.println(">> Cost: " + smsActivateRentService.getCost());
         System.out.println("====================================");
@@ -31,6 +36,7 @@ public class GetRentServicesAndCountriesRun {
       System.out.println();
       System.out.println();
 
+      // print all name operators.
       System.out.println("Operators: ");
       smsActivateGetRentServicesAndCountriesResponse.getOperatorNameSet()
         .forEach(operatorName -> System.out.println(">> name: " + operatorName));
@@ -38,6 +44,7 @@ public class GetRentServicesAndCountriesRun {
       System.out.println();
       System.out.println();
 
+      // print all country who supported rent.
       System.out.println("Countries supported rent: ");
       smsActivateGetRentServicesAndCountriesResponse.getCountryIdSet()
         .forEach(countryId -> System.out.println(">> id: " + countryId));

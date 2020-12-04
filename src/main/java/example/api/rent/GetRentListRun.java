@@ -10,7 +10,13 @@ public class GetRentListRun {
   public static void main(String[] args) {
     try {
       SMSActivateApi smsActivateApi = new SMSActivateApi("API_KEY");
+      /*
+      Rent list is a list your current rent.
+       */
+
       SMSActivateGetRentListResponse smsActivateGetRentListResponse = smsActivateApi.getRentList();
+
+      // print info about each rent
       smsActivateGetRentListResponse.getRentNumberList().forEach(activateRentNumber -> {
         System.out.println("ID: " + activateRentNumber.getId());
         System.out.println("Number: " + activateRentNumber.getNumber());

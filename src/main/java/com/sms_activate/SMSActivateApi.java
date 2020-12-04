@@ -551,11 +551,11 @@ public class SMSActivateApi {
       .append(SMSActivateURLKey.MULTI_FORWARD, strMultiForward)
       .append(SMSActivateURLKey.OPERATOR, strOperators);
 
-    String data = new SMSActivateWebClient().getOrThrowCommonException(smsActivateURLBuilder, validator);
+    String jsonFromServer = new SMSActivateWebClient().getOrThrowCommonException(smsActivateURLBuilder, validator);
     SMSActivateJsonParser jsonParser = new SMSActivateJsonParser();
 
-    validator.throwExceptionWithBan(data);
-    List<SMSActivateActivation> smsActivateActivationList = jsonParser.tryParseJson(data, new TypeToken<List<SMSActivateActivation>>() {
+    validator.throwExceptionWithBan(jsonFromServer);
+    List<SMSActivateActivation> smsActivateActivationList = jsonParser.tryParseJson(jsonFromServer, new TypeToken<List<SMSActivateActivation>>() {
     }.getType(), validator);
 
     return new SMSActivateGetMultiServiceNumberResponse(smsActivateActivationList);
@@ -668,15 +668,15 @@ public class SMSActivateApi {
       .append(SMSActivateURLKey.ID, String.valueOf(idActivation))
       .append(SMSActivateURLKey.FORWARD, String.valueOf(forwardPhone));
 
-    String data = new SMSActivateWebClient().getOrThrowCommonException(smsActivateURLBuilder, validator);
+    String statusFromServer = new SMSActivateWebClient().getOrThrowCommonException(smsActivateURLBuilder, validator);
 
-    SMSActivateAccessStatus smsActivateAccessStatus = SMSActivateAccessStatus.getStatusByName(data);
+    SMSActivateAccessStatus smsActivateAccessStatus = SMSActivateAccessStatus.getStatusByName(statusFromServer);
 
     if (smsActivateAccessStatus != SMSActivateAccessStatus.UNKNOWN) {
       return new SMSActivateSetStatusResponse(smsActivateAccessStatus);
     }
 
-    throw validator.getBaseExceptionByErrorNameOrUnknown(data, null);
+    throw validator.getBaseExceptionByErrorNameOrUnknown(statusFromServer, null);
   }
 
   /**
@@ -706,22 +706,22 @@ public class SMSActivateApi {
     smsActivateURLBuilder.append(SMSActivateURLKey.ID, String.valueOf(idActivation));
 
     String code = null;
-    String data = new SMSActivateWebClient().getOrThrowCommonException(smsActivateURLBuilder, validator);
+    String statusFromServer = new SMSActivateWebClient().getOrThrowCommonException(smsActivateURLBuilder, validator);
 
-    if (data.contains(":")) {
-      String[] parts = data.split(":");
+    if (statusFromServer.contains(":")) {
+      String[] parts = statusFromServer.split(":");
 
-      data = parts[0];
+      statusFromServer = parts[0];
       code = parts[1];
     }
 
-    SMSActivateGetStatusActivation status = SMSActivateGetStatusActivation.getStatusByName(data);
+    SMSActivateGetStatusActivation status = SMSActivateGetStatusActivation.getStatusByName(statusFromServer);
 
     if (status != SMSActivateGetStatusActivation.UNKNOWN) {
       return new SMSActivateGetStatusResponse(status, code);
     }
 
-    throw validator.getBaseExceptionByErrorNameOrUnknown(data, null);
+    throw validator.getBaseExceptionByErrorNameOrUnknown(statusFromServer, null);
   }
 
   /**
@@ -760,21 +760,21 @@ public class SMSActivateApi {
     SMSActivateURLBuilder smsActivateURLBuilder = new SMSActivateURLBuilder(apiKey, SMSActivateAction.GET_FULL_SMS);
     smsActivateURLBuilder.append(SMSActivateURLKey.ID, String.valueOf(idActivation));
 
-    String data = new SMSActivateWebClient().getOrThrowCommonException(smsActivateURLBuilder, validator);
+    String smsFromServer = new SMSActivateWebClient().getOrThrowCommonException(smsActivateURLBuilder, validator);
 
-    SMSActivateStatusNumber smsActivateStatusNumber = SMSActivateStatusNumber.getStatusByName(data);
+    SMSActivateStatusNumber smsActivateStatusNumber = SMSActivateStatusNumber.getStatusByName(smsFromServer);
 
     if (smsActivateStatusNumber != SMSActivateStatusNumber.UNKNOWN) {
       String message = "";
 
       if (smsActivateStatusNumber == SMSActivateStatusNumber.FULL_SMS) {
-        message = data.split(":", 2)[1];
+        message = smsFromServer.split(":", 2)[1];
       }
 
       return new SMSActivateGetFullSmsResponse(smsActivateStatusNumber, message);
     }
 
-    throw validator.getBaseExceptionByErrorNameOrUnknown(data, null);
+    throw validator.getBaseExceptionByErrorNameOrUnknown(smsFromServer, null);
   }
 
   /**
@@ -914,10 +914,10 @@ public class SMSActivateApi {
       smsActivateURLBuilder.append(SMSActivateURLKey.COUNTRY, String.valueOf(countryId));
     }
 
-    String data = new SMSActivateWebClient().getOrThrowCommonException(smsActivateURLBuilder, validator);
+    String jsonFromServer = new SMSActivateWebClient().getOrThrowCommonException(smsActivateURLBuilder, validator);
     SMSActivateJsonParser jsonParser = new SMSActivateJsonParser();
 
-    Map<Integer, Map<String, SMSActivateGetPriceInfo>> smsActivateGetPriceMap = jsonParser.tryParseJson(data,
+    Map<Integer, Map<String, SMSActivateGetPriceInfo>> smsActivateGetPriceMap = jsonParser.tryParseJson(jsonFromServer,
       new TypeToken<Map<Integer, Map<String, SMSActivateGetPriceInfo>>>() {
       }.getType(), validator);
 
@@ -949,10 +949,10 @@ public class SMSActivateApi {
   @NotNull
   public SMSActivateGetCountriesResponse getCountries() throws SMSActivateBaseException {
     SMSActivateURLBuilder smsActivateURLBuilder = new SMSActivateURLBuilder(apiKey, SMSActivateAction.GET_COUNTRIES);
-    String data = new SMSActivateWebClient().getOrThrowCommonException(smsActivateURLBuilder, validator);
+    String jsonFromServer = new SMSActivateWebClient().getOrThrowCommonException(smsActivateURLBuilder, validator);
     SMSActivateJsonParser jsonParser = new SMSActivateJsonParser();
 
-    Map<Integer, SMSActivateCountryInfo> countryInformationMap = jsonParser.tryParseJson(data, new TypeToken<Map<Integer, SMSActivateCountryInfo>>() {
+    Map<Integer, SMSActivateCountryInfo> countryInformationMap = jsonParser.tryParseJson(jsonFromServer, new TypeToken<Map<Integer, SMSActivateCountryInfo>>() {
     }.getType(), validator);
 
     return new SMSActivateGetCountriesResponse(countryInformationMap);
@@ -989,9 +989,9 @@ public class SMSActivateApi {
   @NotNull
   public SMSActivateGetQiwiRequisitesResponse getQiwiRequisites() throws SMSActivateBaseException {
     SMSActivateURLBuilder smsActivateURLBuilder = new SMSActivateURLBuilder(apiKey, SMSActivateAction.GET_QIWI_REQUISITES);
-    String data = new SMSActivateWebClient().getOrThrowCommonException(smsActivateURLBuilder, validator);
+    String jsonFromServer = new SMSActivateWebClient().getOrThrowCommonException(smsActivateURLBuilder, validator);
     SMSActivateJsonParser jsonParser = new SMSActivateJsonParser();
-    return jsonParser.tryParseJson(data, new TypeToken<SMSActivateGetQiwiRequisitesResponse>() {
+    return jsonParser.tryParseJson(jsonFromServer, new TypeToken<SMSActivateGetQiwiRequisitesResponse>() {
     }.getType(), validator);
   }
 
@@ -1029,20 +1029,20 @@ public class SMSActivateApi {
     smsActivateURLBuilder.append(SMSActivateURLKey.ID, String.valueOf(id))
       .append(SMSActivateURLKey.SERVICE, service);
 
-    String data = new SMSActivateWebClient().getOrThrowCommonException(smsActivateURLBuilder, validator);
+    String responseFromServer = new SMSActivateWebClient().getOrThrowCommonException(smsActivateURLBuilder, validator);
+
+    if (responseFromServer.startsWith(SMSActivateMagicKey.ADDITIONAL)) {
+      throw validator.getBaseExceptionByErrorNameOrUnknown(responseFromServer, null);
+    }
 
     try {
-      if (data.startsWith(SMSActivateMagicKey.ADDITIONAL)) {
-        String[] parts = data.split(":");
-        int childId = Integer.parseInt(parts[1]);
-        long number = Long.parseLong(parts[2]);
+      String[] parts = responseFromServer.split(":");
+      int childId = Integer.parseInt(parts[1]);
+      long number = Long.parseLong(parts[2]);
 
-        return new SMSActivateActivation(childId, number, service);
-      }
-
-      throw validator.getBaseExceptionByErrorNameOrUnknown(data, null);
+      return new SMSActivateActivation(childId, number, service);
     } catch (NumberFormatException e) {
-      throw new SMSActivateUnknownException(data, "Error formatting to number.");
+      throw new SMSActivateUnknownException(responseFromServer, "Error formatting to number.");
     }
   }
 
@@ -1129,10 +1129,10 @@ public class SMSActivateApi {
       .append(SMSActivateURLKey.OPERATOR, operator)
       .append(SMSActivateURLKey.RENT_TIME, String.valueOf(time));
 
-    String data = new SMSActivateWebClient().getOrThrowCommonException(smsActivateURLBuilder, validator);
+    String jsonFromServer = new SMSActivateWebClient().getOrThrowCommonException(smsActivateURLBuilder, validator);
     SMSActivateJsonParser jsonParser = new SMSActivateJsonParser();
 
-    return jsonParser.tryParseJson(data, new TypeToken<SMSActivateGetRentServicesAndCountriesResponse>() {
+    return jsonParser.tryParseJson(jsonFromServer, new TypeToken<SMSActivateGetRentServicesAndCountriesResponse>() {
     }.getType(), validator);
   }
 
@@ -1305,17 +1305,17 @@ public class SMSActivateApi {
       .append(SMSActivateURLKey.URL, urlWebhook)
       .append(SMSActivateURLKey.SERVICE, service);
 
-    String data = new SMSActivateWebClient().getOrThrowCommonException(smsActivateURLBuilder, validator);
+    String jsonFromServer = new SMSActivateWebClient().getOrThrowCommonException(smsActivateURLBuilder, validator);
     SMSActivateJsonParser jsonParser = new SMSActivateJsonParser();
 
-    if (!validator.containsSuccessStatus(data)) {
-      SMSActivateErrorResponse errorResponse = jsonParser.tryParseJson(data, new TypeToken<SMSActivateErrorResponse>() {
+    if (!validator.containsSuccessStatus(jsonFromServer)) {
+      SMSActivateErrorResponse errorResponse = jsonParser.tryParseJson(jsonFromServer, new TypeToken<SMSActivateErrorResponse>() {
       }.getType(), validator);
 
       throw validator.getBaseExceptionByErrorNameOrUnknown(errorResponse.getMessage(), null);
     }
 
-    SMSActivateGetRentNumberResponse smsActivateGetRentNumberResponse = jsonParser.tryParseJson(data, new TypeToken<SMSActivateGetRentNumberResponse>() {
+    SMSActivateGetRentNumberResponse smsActivateGetRentNumberResponse = jsonParser.tryParseJson(jsonFromServer, new TypeToken<SMSActivateGetRentNumberResponse>() {
     }.getType(), validator);
     return smsActivateGetRentNumberResponse.getSMSmsActivateGetRentNumber();
   }
@@ -1352,16 +1352,16 @@ public class SMSActivateApi {
     SMSActivateURLBuilder smsActivateURLBuilder = new SMSActivateURLBuilder(apiKey, SMSActivateAction.GET_RENT_STATUS);
     smsActivateURLBuilder.append(SMSActivateURLKey.ID, String.valueOf(idRent));
 
-    String data = new SMSActivateWebClient().getOrThrowCommonException(smsActivateURLBuilder, validator);
+    String jsonResponseFromServer = new SMSActivateWebClient().getOrThrowCommonException(smsActivateURLBuilder, validator);
     SMSActivateJsonParser jsonParser = new SMSActivateJsonParser();
 
-    if (!validator.containsSuccessStatus(data)) {
-      SMSActivateErrorResponse errorResponse = jsonParser.tryParseJson(data, new TypeToken<SMSActivateErrorResponse>() {
+    if (!validator.containsSuccessStatus(jsonResponseFromServer)) {
+      SMSActivateErrorResponse errorResponse = jsonParser.tryParseJson(jsonResponseFromServer, new TypeToken<SMSActivateErrorResponse>() {
       }.getType(), validator);
       throw validator.getBaseExceptionByErrorNameOrUnknown(errorResponse.getMessage(), null);
     }
 
-    return jsonParser.tryParseJson(data, new TypeToken<SMSActivateGetRentStatusResponse>() {
+    return jsonParser.tryParseJson(jsonResponseFromServer, new TypeToken<SMSActivateGetRentStatusResponse>() {
     }.getType(), validator);
   }
 
@@ -1402,11 +1402,11 @@ public class SMSActivateApi {
     smsActivateURLBuilder.append(SMSActivateURLKey.ID, String.valueOf(idRent))
       .append(SMSActivateURLKey.STATUS, String.valueOf(status.getId()));
 
-    String data = new SMSActivateWebClient().getOrThrowCommonException(smsActivateURLBuilder, validator);
+    String jsonFromServer = new SMSActivateWebClient().getOrThrowCommonException(smsActivateURLBuilder, validator);
     SMSActivateJsonParser jsonParser = new SMSActivateJsonParser();
 
-    if (!validator.containsSuccessStatus(data)) {
-      SMSActivateErrorResponse response = jsonParser.tryParseJson(data, new TypeToken<SMSActivateErrorResponse>() {
+    if (!validator.containsSuccessStatus(jsonFromServer)) {
+      SMSActivateErrorResponse response = jsonParser.tryParseJson(jsonFromServer, new TypeToken<SMSActivateErrorResponse>() {
       }.getType(), validator);
       throw validator.getBaseExceptionByErrorNameOrUnknown(response.getMessage(), null);
     }
@@ -1440,17 +1440,17 @@ public class SMSActivateApi {
   @NotNull
   public SMSActivateGetRentListResponse getRentList() throws SMSActivateBaseException {
     SMSActivateURLBuilder smsActivateURLBuilder = new SMSActivateURLBuilder(apiKey, SMSActivateAction.GET_RENT_LIST);
+
+    String jsonFromServer = new SMSActivateWebClient().getOrThrowCommonException(smsActivateURLBuilder, validator);
     SMSActivateJsonParser jsonParser = new SMSActivateJsonParser();
 
-    String data = new SMSActivateWebClient().getOrThrowCommonException(smsActivateURLBuilder, validator);
-
-    if (!validator.containsSuccessStatus(data)) {
-      SMSActivateErrorResponse smsActivateErrorResponse = jsonParser.tryParseJson(data, new TypeToken<SMSActivateErrorResponse>() {
+    if (!validator.containsSuccessStatus(jsonFromServer)) {
+      SMSActivateErrorResponse smsActivateErrorResponse = jsonParser.tryParseJson(jsonFromServer, new TypeToken<SMSActivateErrorResponse>() {
       }.getType(), validator);
       throw validator.getBaseExceptionByErrorNameOrUnknown(smsActivateErrorResponse.getMessage(), null);
     }
 
-    return jsonParser.tryParseJson(data, new TypeToken<SMSActivateGetRentListResponse>() {
+    return jsonParser.tryParseJson(jsonFromServer, new TypeToken<SMSActivateGetRentListResponse>() {
     }.getType(), validator);
   }
 
@@ -1528,10 +1528,10 @@ public class SMSActivateApi {
     smsActivateURLBuilder.append(SMSActivateURLKey.START, String.valueOf(len - countStringInBatch))
       .append(SMSActivateURLKey.LENGTH, String.valueOf(len));
 
-    String data = new SMSActivateWebClient().getOrThrowCommonException(smsActivateURLBuilder, validator);
+    String jsonFromServer = new SMSActivateWebClient().getOrThrowCommonException(smsActivateURLBuilder, validator);
     SMSActivateJsonParser jsonParser = new SMSActivateJsonParser();
 
-    return jsonParser.tryParseJson(data, new TypeToken<SMSActivateGetCurrentActivationsResponse>() {
+    return jsonParser.tryParseJson(jsonFromServer, new TypeToken<SMSActivateGetCurrentActivationsResponse>() {
     }.getType(), validator);
   }
 
@@ -1545,11 +1545,11 @@ public class SMSActivateApi {
   @NotNull
   private BigDecimal getBalanceByAction(@NotNull SMSActivateAction smsActivateAction) throws SMSActivateBaseException {
     SMSActivateURLBuilder smsActivateURLBuilder = new SMSActivateURLBuilder(apiKey, smsActivateAction);
-    String data = new SMSActivateWebClient().getOrThrowCommonException(smsActivateURLBuilder, validator);
-    Matcher matcher = patternDigit.matcher(data);
+    String balance = new SMSActivateWebClient().getOrThrowCommonException(smsActivateURLBuilder, validator);
+    Matcher matcher = patternDigit.matcher(balance);
 
     if (!matcher.find()) {
-      throw new SMSActivateBaseException("Error: " + data, "Error: " + data);
+      throw new SMSActivateBaseException("Error: " + balance, "Error: " + balance);
     }
 
     return new BigDecimal(matcher.group());
