@@ -1,25 +1,22 @@
 package example.api.activation;
 
 import com.sms_activate.SMSActivateApi;
-import com.sms_activate.activation.SMSActivateActivation;
-import com.sms_activate.activation.SMSActivateGetStatusResponse;
-import com.sms_activate.activation.set_status.SMSActivateSetStatusRequest;
-import com.sms_activate.activation.set_status.SMSActivateSetStatusResponse;
+import com.sms_activate.respone.activation.SMSActivateActivation;
+import com.sms_activate.respone.activation.SMSActivateGetStatusResponse;
+import com.sms_activate.respone.activation.set_status.SMSActivateSetStatusRequest;
+import com.sms_activate.respone.activation.set_status.SMSActivateSetStatusResponse;
 import com.sms_activate.error.base.SMSActivateBaseException;
 
 public class GetAndSetStatusRun {
   public static void main(String[] args) {
     try {
       SMSActivateApi smsActivateApi = new SMSActivateApi("API_KEY");
+
       SMSActivateActivation smsActivateActivation = smsActivateApi.getNumber(0, "av", true);
-      SMSActivateActivation smsActivateActivation1 = smsActivateApi.getNumber(0, "av", true);
       // print info about activation
       System.out.println("Id: " + smsActivateActivation.getId());
       System.out.println("Number: " + smsActivateActivation.getNumber());
 
-      // print info about activation
-      System.out.println("Id: " + smsActivateActivation1.getId());
-      System.out.println("Number: " + smsActivateActivation1.getNumber());
       // check: https://sms-activate.ru/ru/getNumber
 
       //Thread.sleep(10000);
@@ -32,8 +29,8 @@ public class GetAndSetStatusRun {
         System.out.println("Code from sms: " + smsActivateGetStatusResponse.getCodeFromSMS());
       }
 
-      SMSActivateSetStatusResponse smsActivateSetStatusResponse = smsActivateApi.setStatusWithForwardPhone(smsActivateActivation.getId(),
-        SMSActivateSetStatusRequest.SEND_READY_NUMBER, smsActivateActivation1.getNumber());
+      SMSActivateSetStatusResponse smsActivateSetStatusResponse = smsActivateApi.setStatus(smsActivateActivation.getId(),
+        SMSActivateSetStatusRequest.SEND_READY_NUMBER);
 
       // check: https://sms-activate.ru/ru/getNumber
 

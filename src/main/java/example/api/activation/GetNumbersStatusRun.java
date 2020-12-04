@@ -1,8 +1,8 @@
 package example.api.activation;
 
 import com.sms_activate.SMSActivateApi;
-import com.sms_activate.activation.SMSActivateGetNumbersStatusResponse;
-import com.sms_activate.activation.extra.SMSActivateServiceInfo;
+import com.sms_activate.respone.activation.SMSActivateGetNumbersStatusResponse;
+import com.sms_activate.respone.activation.extra.SMSActivateServiceInfo;
 import com.sms_activate.error.base.SMSActivateBaseException;
 import org.jetbrains.annotations.NotNull;
 

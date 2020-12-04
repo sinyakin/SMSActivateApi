@@ -4,7 +4,7 @@ import com.sms_activate.SMSActivateApi;
 import com.sms_activate.error.base.SMSActivateBaseException;
 import com.sms_activate.error.wrong_parameter.SMSActivateWrongParameter;
 import com.sms_activate.error.wrong_parameter.SMSActivateWrongParameterException;
-import com.sms_activate.rent.SMSActivateGetRentListResponse;
+import com.sms_activate.respone.rent.SMSActivateGetRentListResponse;
 
 public class GetRentListRun {
   public static void main(String[] args) {

@@ -4,7 +4,7 @@ import org.jetbrains.annotations.NotNull;
 
 class SMSActivateErrorResponse {
   /**
-   * Status request.
+   * Status response.
    */
   private String status;
 
@@ -14,9 +14,9 @@ class SMSActivateErrorResponse {
   private String message;
 
   /**
-   * Returns the error status.
+   * Returns the error status response.
    *
-   * @return the error status.
+   * @return the error status response.
    */
   @NotNull
   public String getStatus() {

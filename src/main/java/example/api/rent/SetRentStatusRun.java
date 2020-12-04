@@ -4,9 +4,8 @@ import com.sms_activate.SMSActivateApi;
 import com.sms_activate.error.base.SMSActivateBaseException;
 import com.sms_activate.error.base.SMSActivateBaseTypeError;
 import com.sms_activate.error.wrong_parameter.SMSActivateWrongParameterException;
-import com.sms_activate.rent.extra.SMSActivateGetRentNumber;
-import com.sms_activate.rent.set_rent_status.SMSActivateRentStatus;
-import com.sms_activate.rent.set_rent_status.SMSActivateSetRentStatusRequest;
+import com.sms_activate.respone.rent.set_rent_status.SMSActivateRentStatus;
+import com.sms_activate.respone.rent.set_rent_status.SMSActivateSetRentStatusRequest;
 
 public class SetRentStatusRun {
   public static void main(String[] args) {

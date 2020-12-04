@@ -2,43 +2,34 @@ package example.api.multithread;
 
 import com.sms_activate.SMSActivateApi;
 import com.sms_activate.error.base.SMSActivateBaseException;
-import com.sms_activate.rent.extra.SMSActivateGetRentNumber;
-import com.sms_activate.rent.set_rent_status.SMSActivateSetRentStatusRequest;
+import com.sms_activate.respone.rent.set_rent_status.SMSActivateSetRentStatusRequest;
 
-import java.util.ArrayList;
-import java.util.List;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
+import java.util.concurrent.TimeUnit;
 
 public class RentRun {
-  public static void main(String[] args) throws SMSActivateBaseException, InterruptedException {
+  public static void main(String[] args) throws Exception {
     final int COUNT_THREAD = 30;
-    long start = System.currentTimeMillis();
 
     SMSActivateApi smsActivateApi = new SMSActivateApi("API_KEY");
-    List<Thread> threadList = new ArrayList<>();
+    ExecutorService pool = Executors.newFixedThreadPool(10);
 
     for (int i = 0; i < COUNT_THREAD; i++) {
-      threadList.add(new Thread(() -> {
+      pool.submit(() -> {
         try {
-          SMSActivateGetRentNumber gt = smsActivateApi.getRentNumber("gt");
-          new Thread(() -> {
-            /*try {
-              //smsActivateApi.setRentStatus(gt.getId(), SMSActivateSetRentStatusRequest.CANCEL);
-            } catch (SMSActivateBaseException e) {
-              e.printStackTrace();
-            }*/
-          }).start();
+          smsActivateApi.setRentStatus(smsActivateApi.getRentNumber("sd").getId(), SMSActivateSetRentStatusRequest.CANCEL);
         } catch (SMSActivateBaseException e) {
           e.printStackTrace();
         }
-      }));
+      });
     }
 
-    new Thread(() -> {
-      for (Thread t : threadList) {
-        t.start();
-      }
-    }).start();
+    pool.shutdown();
+    boolean win = pool.awaitTermination(20, TimeUnit.SECONDS);
 
-    System.out.println("End main: " + (System.currentTimeMillis() - start));
+    if (!win) {
+      System.out.println("Lose.....");
+    }
   }
 }

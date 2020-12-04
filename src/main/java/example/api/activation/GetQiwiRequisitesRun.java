@@ -4,8 +4,8 @@ import com.sms_activate.SMSActivateApi;
 import com.sms_activate.error.base.SMSActivateBaseException;
 import com.sms_activate.error.wrong_parameter.SMSActivateWrongParameter;
 import com.sms_activate.error.wrong_parameter.SMSActivateWrongParameterException;
-import com.sms_activate.qiwi.SMSActivateGetQiwiRequisitesResponse;
-import com.sms_activate.qiwi.SMSActivateQiwiStatus;
+import com.sms_activate.respone.qiwi.SMSActivateGetQiwiRequisitesResponse;
+import com.sms_activate.respone.qiwi.SMSActivateQiwiStatus;
 
 public class GetQiwiRequisitesRun {
   public static void main(String[] args) {

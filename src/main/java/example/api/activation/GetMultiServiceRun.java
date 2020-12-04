@@ -1,7 +1,7 @@
 package example.api.activation;
 
 import com.sms_activate.SMSActivateApi;
-import com.sms_activate.activation.SMSActivateGetMultiServiceNumberResponse;
+import com.sms_activate.respone.activation.SMSActivateGetMultiServiceNumberResponse;
 import com.sms_activate.error.SMSActivateBannedException;
 import com.sms_activate.error.base.SMSActivateBaseException;
 import com.sms_activate.error.base.SMSActivateBaseTypeError;

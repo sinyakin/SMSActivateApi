@@ -6,21 +6,24 @@ import com.sms_activate.error.base.SMSActivateBaseException;
 import com.sms_activate.error.base.SMSActivateBaseTypeError;
 import com.sms_activate.error.wrong_parameter.SMSActivateWrongParameter;
 import com.sms_activate.error.wrong_parameter.SMSActivateWrongParameterException;
-import com.sms_activate.rent.extra.SMSActivateGetRentNumber;
+import com.sms_activate.respone.rent.extra.SMSActivateGetRentNumber;
 
 public class GetRentNumberRun {
   public static void main(String[] args) {
     try {
+      final int REFERRAL_IDENTIFIER = 000;
       SMSActivateApi smsActivateApi = new SMSActivateApi("API_KEY");
       // request rent for vk
       // you can set rent time
       SMSActivateGetRentNumber smsActivateGetRentNumberResponse = smsActivateApi.getRentNumber(
-        "vk",
           0,
+        "vk",
         "mts",
         SMSActivateApi.MINIMAL_RENT_TIME,
         "https://google.com/webhook.php"
         );
+
+      smsActivateApi.setRef(REFERRAL_IDENTIFIER);
 
       // print info about rent
       System.out.println(">> ID: " + smsActivateGetRentNumberResponse.getId());

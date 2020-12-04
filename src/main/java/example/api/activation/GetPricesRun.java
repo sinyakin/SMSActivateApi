@@ -1,8 +1,8 @@
 package example.api.activation;
 
 import com.sms_activate.SMSActivateApi;
-import com.sms_activate.activation.SMSActivateGetPricesResponse;
-import com.sms_activate.activation.extra.SMSActivateGetPriceInfo;
+import com.sms_activate.respone.activation.SMSActivateGetPricesResponse;
+import com.sms_activate.respone.activation.extra.SMSActivateGetPriceInfo;
 import com.sms_activate.error.base.SMSActivateBaseException;
 import com.sms_activate.error.wrong_parameter.SMSActivateWrongParameter;
 import com.sms_activate.error.wrong_parameter.SMSActivateWrongParameterException;

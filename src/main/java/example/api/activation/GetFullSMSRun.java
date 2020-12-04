@@ -1,11 +1,9 @@
 package example.api.activation;
 
 import com.sms_activate.SMSActivateApi;
-import com.sms_activate.activation.SMSActivateActivation;
-import com.sms_activate.activation.SMSActivateGetFullSmsResponse;
-import com.sms_activate.activation.extra.SMSActivateStatusNumber;
-import com.sms_activate.activation.set_status.SMSActivateSetStatusRequest;
-import com.sms_activate.error.SMSActivateBannedException;
+import com.sms_activate.respone.activation.SMSActivateGetFullSmsResponse;
+import com.sms_activate.respone.activation.extra.SMSActivateStatusNumber;
+import com.sms_activate.respone.activation.set_status.SMSActivateSetStatusRequest;
 import com.sms_activate.error.base.SMSActivateBaseException;
 import com.sms_activate.error.base.SMSActivateBaseTypeError;
 import com.sms_activate.error.wrong_parameter.SMSActivateWrongParameter;

@@ -4,9 +4,7 @@ import com.sms_activate.SMSActivateApi;
 import com.sms_activate.error.base.SMSActivateBaseException;
 import com.sms_activate.error.wrong_parameter.SMSActivateWrongParameter;
 import com.sms_activate.error.wrong_parameter.SMSActivateWrongParameterException;
-import com.sms_activate.rent.SMSActivateGetRentServicesAndCountriesResponse;
-
-import java.util.HashSet;
+import com.sms_activate.respone.rent.SMSActivateGetRentServicesAndCountriesResponse;
 
 public class GetRentServicesAndCountriesRun {
   public static void main(String[] args) {
@@ -14,13 +12,13 @@ public class GetRentServicesAndCountriesRun {
       SMSActivateApi smsActivateApi = new SMSActivateApi("API_KEY");
       // request services and countries where rent is supported
       SMSActivateGetRentServicesAndCountriesResponse smsActivateGetRentServicesAndCountriesResponse = smsActivateApi.getRentServicesAndCountries(
-        0, // 0 - Russia
+/*        0, // 0 - Russia
         // operators
         new HashSet<String>() {{
           add("mts");
           add("tele2");
         }},
-        SMSActivateApi.MINIMAL_RENT_TIME
+        SMSActivateApi.MINIMAL_RENT_TIME*/
       );
 
       System.out.println("Services: ");

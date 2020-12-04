@@ -1,7 +1,7 @@
 package example.api.activation;
 
 import com.sms_activate.SMSActivateApi;
-import com.sms_activate.activation.SMSActivateActivation;
+import com.sms_activate.respone.activation.SMSActivateActivation;
 import com.sms_activate.error.SMSActivateBannedException;
 import com.sms_activate.error.base.SMSActivateBaseException;
 import com.sms_activate.error.base.SMSActivateBaseTypeError;
@@ -11,6 +11,7 @@ import com.sms_activate.error.wrong_parameter.SMSActivateWrongParameterException
 public class GetNumberRun {
   public static void main(String[] args) {
     try {
+      final int REFERRAL_IDENTIFIER = 0000;
       SMSActivateApi smsActivateApi = new SMSActivateApi("API_KEY");
       SMSActivateActivation smsActivateActivation = smsActivateApi.getNumber(
         0,
@@ -23,6 +24,9 @@ public class GetNumberRun {
             add("7918");
           }},
           false*/);
+
+      smsActivateApi.setRef(REFERRAL_IDENTIFIER);
+
       System.out.println(smsActivateActivation.getId());
       System.out.println(smsActivateActivation.getNumber());
       // check: https://sms-activate.ru/ru/getNumber

@@ -1,8 +1,8 @@
 package example.api.activation;
 
 import com.sms_activate.SMSActivateApi;
-import com.sms_activate.activation.SMSActivateGetCountriesResponse;
-import com.sms_activate.activation.extra.SMSActivateCountryInfo;
+import com.sms_activate.respone.activation.SMSActivateGetCountriesResponse;
+import com.sms_activate.respone.activation.extra.SMSActivateCountryInfo;
 import com.sms_activate.error.base.SMSActivateBaseException;
 import com.sms_activate.error.wrong_parameter.SMSActivateWrongParameterException;
 import org.jetbrains.annotations.NotNull;
@@ -18,7 +18,7 @@ public class GetCountriesRun {
       printInfo(smsActivateGetCountriesResponse.get(0));
 
       // print info about all countries
-      smsActivateGetCountriesResponse.getSMSActivateGetCountryResponseList().forEach(GetCountriesRun::printInfo);
+      smsActivateGetCountriesResponse.getSMSActivateGetCountryInfoList().forEach(GetCountriesRun::printInfo);
     } catch (SMSActivateWrongParameterException e) {
       System.out.println(e.getWrongParameter());
     } catch (SMSActivateBaseException e) {

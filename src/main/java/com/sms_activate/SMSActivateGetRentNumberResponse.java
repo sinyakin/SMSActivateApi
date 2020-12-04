@@ -1,6 +1,6 @@
 package com.sms_activate;
 
-import com.sms_activate.rent.extra.SMSActivateGetRentNumber;
+import com.sms_activate.respone.rent.extra.SMSActivateGetRentNumber;
 import org.jetbrains.annotations.NotNull;
 
 class SMSActivateGetRentNumberResponse {
