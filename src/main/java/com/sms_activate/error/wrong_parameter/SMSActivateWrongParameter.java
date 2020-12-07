@@ -2,6 +2,7 @@ package com.sms_activate.error.wrong_parameter;
 
 import org.jetbrains.annotations.NotNull;
 
+
 public enum SMSActivateWrongParameter {
   BAD_ACTION("BAD_ACTION", "Некорректное действие.", "Wrong action."),
   BAD_SERVICE("BAD_SERVICE", "Некорректное наименование сервиса.", "Wrong name service."),
