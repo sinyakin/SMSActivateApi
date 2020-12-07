@@ -2,6 +2,7 @@ package com.sms_activate.respone.activation.extra;
 
 import org.jetbrains.annotations.NotNull;
 
+//todo добавь toString у подобных объектов
 public class SMSActivateCountryInfo {
   /**
    * Country id.

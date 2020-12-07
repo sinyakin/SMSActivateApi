@@ -9,8 +9,8 @@ import com.sms_activate.error.wrong_parameter.SMSActivateWrongParameter;
 import com.sms_activate.error.wrong_parameter.SMSActivateWrongParameterException;
 import com.sms_activate.respone.activation.*;
 import com.sms_activate.respone.activation.extra.*;
-import com.sms_activate.respone.activation.set_status.SMSActivateAccessStatus;
-import com.sms_activate.respone.activation.set_status.SMSActivateSetStatusRequest;
+import com.sms_activate.respone.activation.set_status.SMSActivateServerStatus;
+import com.sms_activate.respone.activation.set_status.SMSActivateClientStatus;
 import com.sms_activate.respone.activation.set_status.SMSActivateSetStatusResponse;
 import com.sms_activate.respone.qiwi.SMSActivateGetQiwiRequisitesResponse;
 import com.sms_activate.respone.rent.SMSActivateGetRentListResponse;
@@ -71,7 +71,7 @@ public class SMSActivateApi {
   /**
    * Referral identifier.
    */
-  private Integer ref = null;
+  private String ref = null;
 
   /**
    * Constructor API sms-activate with API key.
@@ -98,11 +98,12 @@ public class SMSActivateApi {
   }
 
   /**
-   * Sets the referral identifier.
+   * If you are a partner of sms-activate set the referral identifier. For example ref=softgorregtelegram.
+   * The referral identifier are given by support
    *
    * @param ref referral identifier.
    */
-  public void setRef(@NotNull Integer ref) {
+  public void setRef(@NotNull String ref) {
     this.ref = ref;
   }
 
@@ -112,7 +113,7 @@ public class SMSActivateApi {
    * @return referral identifier.
    */
   @Nullable
-  public Integer getRef() {
+  public String getRef() {
     return ref;
   }
 
@@ -438,6 +439,22 @@ public class SMSActivateApi {
     }
   }
 
+  //todo допиши этот метод. узнай как меняются статусы, чтобы был правильный выход из метода (когда нужно запрашивать повторную смс)
+  //todo я написал только выход из метода по первой смс.
+  @Nullable
+  public String waitSms(SMSActivateActivation activation, int maxWaitMinutes) throws Exception {
+    Calendar calendar = Calendar.getInstance();
+    calendar.add(Calendar.MINUTE, maxWaitMinutes);
+    while (System.currentTimeMillis() < calendar.getTime().getTime()) {
+      SMSActivateGetStatusResponse statusResponse = getStatus(activation);
+      if (statusResponse.getCodeFromSMS() != null) {
+        return statusResponse.getCodeFromSMS();
+      }
+      Thread.sleep(5 * 1000);
+    }
+    return null;
+  }
+
   /**
    * Returns the specified object id by countryId, multiService.<br/>
    * Separator for multiService is commas. <br/>
@@ -582,7 +599,7 @@ public class SMSActivateApi {
    * <em>FINISH</em> - Confirm SMS code and complete activation
    * </p>
    *
-   * @param idActivation id to set activation status (not be null).
+   * @param activationId id to set activation status (not be null).
    * @param status       value to establish (not be null).
    * @return access activation.
    * @throws SMSActivateWrongParameterException if one of parameters is incorrect.
@@ -603,9 +620,14 @@ public class SMSActivateApi {
    *                                            </p>
    */
   @NotNull
-  public SMSActivateSetStatusResponse setStatus(int idActivation, @NotNull SMSActivateSetStatusRequest status)
+  public SMSActivateSetStatusResponse setStatus(int activationId, @NotNull SMSActivateClientStatus status)
     throws SMSActivateBaseException {
-    return setStatusWithForwardPhone(idActivation, status, null);
+    return setStatusWithForwardPhone(activationId, status, null);
+  }
+
+  public SMSActivateSetStatusResponse setStatus(@NotNull SMSActivateActivation activation, @NotNull SMSActivateClientStatus status)
+      throws SMSActivateBaseException {
+    return setStatus(activation.getId(), status);
   }
 
   /**
@@ -652,8 +674,8 @@ public class SMSActivateApi {
    */
   @NotNull
   public SMSActivateSetStatusResponse setStatusWithForwardPhone(
-    int idActivation,
-    @NotNull SMSActivateSetStatusRequest status,
+    int activationId,
+    @NotNull SMSActivateClientStatus status,
     @Nullable Long forwardPhone
   ) throws SMSActivateBaseException {
     if (forwardPhone != null && forwardPhone <= 0) {
@@ -665,15 +687,15 @@ public class SMSActivateApi {
 
     SMSActivateURLBuilder smsActivateURLBuilder = new SMSActivateURLBuilder(apiKey, SMSActivateAction.SET_STATUS);
     smsActivateURLBuilder.append(SMSActivateURLKey.STATUS, String.valueOf(status.getId()))
-      .append(SMSActivateURLKey.ID, String.valueOf(idActivation))
+      .append(SMSActivateURLKey.ID, String.valueOf(activationId))
       .append(SMSActivateURLKey.FORWARD, String.valueOf(forwardPhone));
 
     String statusFromServer = new SMSActivateWebClient().getOrThrowCommonException(smsActivateURLBuilder, validator);
 
-    SMSActivateAccessStatus smsActivateAccessStatus = SMSActivateAccessStatus.getStatusByName(statusFromServer);
+    SMSActivateServerStatus smsActivateServerStatus = SMSActivateServerStatus.getStatusByName(statusFromServer);
 
-    if (smsActivateAccessStatus != SMSActivateAccessStatus.UNKNOWN) {
-      return new SMSActivateSetStatusResponse(smsActivateAccessStatus);
+    if (smsActivateServerStatus != SMSActivateServerStatus.UNKNOWN) {
+      return new SMSActivateSetStatusResponse(smsActivateServerStatus);
     }
 
     throw validator.getBaseExceptionByErrorNameOrUnknown(statusFromServer, null);
@@ -682,7 +704,7 @@ public class SMSActivateApi {
   /**
    * Returns the state by id activation.
    *
-   * @param idActivation id activation to get activation state.
+   * @param activationId id activation to get activation state.
    * @return state activation.
    * @throws SMSActivateWrongParameterException if one of parameters is incorrect.
    * @throws SMSActivateUnknownException        if error type not documented.
@@ -701,9 +723,9 @@ public class SMSActivateApi {
    *                                            </p>
    */
   @NotNull
-  public SMSActivateGetStatusResponse getStatus(int idActivation) throws SMSActivateBaseException {
+  public SMSActivateGetStatusResponse getStatus(int activationId) throws SMSActivateBaseException {
     SMSActivateURLBuilder smsActivateURLBuilder = new SMSActivateURLBuilder(apiKey, SMSActivateAction.GET_STATUS);
-    smsActivateURLBuilder.append(SMSActivateURLKey.ID, String.valueOf(idActivation));
+    smsActivateURLBuilder.append(SMSActivateURLKey.ID, String.valueOf(activationId));
 
     String code = null;
     String statusFromServer = new SMSActivateWebClient().getOrThrowCommonException(smsActivateURLBuilder, validator);
@@ -724,10 +746,14 @@ public class SMSActivateApi {
     throw validator.getBaseExceptionByErrorNameOrUnknown(statusFromServer, null);
   }
 
+  public SMSActivateGetStatusResponse getStatus(@NotNull SMSActivateActivation activation) throws SMSActivateBaseException {
+    return getStatus(activation.getId());
+  }
+
   /**
    * Returns the specified object from server with text sms.
    *
-   * @param idActivation id activation.
+   * @param activationId id activation.
    * @return full text sms with status:
    * <p>
    *   <ul>
@@ -756,9 +782,9 @@ public class SMSActivateApi {
    *                                            </p>
    */
   @NotNull
-  public SMSActivateGetFullSmsResponse getFullSms(int idActivation) throws SMSActivateBaseException {
+  public SMSActivateGetFullSmsResponse getFullSms(int activationId) throws SMSActivateBaseException {
     SMSActivateURLBuilder smsActivateURLBuilder = new SMSActivateURLBuilder(apiKey, SMSActivateAction.GET_FULL_SMS);
-    smsActivateURLBuilder.append(SMSActivateURLKey.ID, String.valueOf(idActivation));
+    smsActivateURLBuilder.append(SMSActivateURLKey.ID, String.valueOf(activationId));
 
     String smsFromServer = new SMSActivateWebClient().getOrThrowCommonException(smsActivateURLBuilder, validator);
 
@@ -1510,7 +1536,7 @@ public class SMSActivateApi {
    *                                             </p>
    *                                            </p>
    */
-  @NotNull
+  @NotNull //todo давай удалим этот метод из api вместе с примером.
   public SMSActivateGetCurrentActivationsResponse getCurrentActivations(int batch, int countStringInBatch)
     throws SMSActivateBaseException {
     if (batch <= 0) {

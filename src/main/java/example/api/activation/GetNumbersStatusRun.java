@@ -37,7 +37,7 @@ public class GetNumbersStatusRun {
   private static void printInfo(@NotNull SMSActivateServiceInfo serviceInfo) {
     System.out.println("Short name service: " + serviceInfo.getShortName());
     System.out.println("count phone numbers: " + serviceInfo.getCountPhoneNumber());
-    System.out.println("Supported: " + (serviceInfo.isForward() ? "yes" : "no"));
+    System.out.println("Forwarding is available: " + (serviceInfo.isForward() ? "yes" : "no"));
     System.out.println("=============================================");
   }
 }

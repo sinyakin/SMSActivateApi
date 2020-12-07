@@ -5,20 +5,20 @@ import org.jetbrains.annotations.NotNull;
 
 public class SMSActivateGetFullSmsResponse {
   /**
-   * Text sms.
+   * Sms text.
    */
   private final String text;
 
   /**
-   * Status activation.
+   * Activation status.
    */
   private final SMSActivateStatusNumber smsActivateStatusNumber;
 
   /**
    * Constructor response getFullSMS with data from server.
    *
-   * @param text                    text sms.
-   * @param smsActivateStatusNumber status activation.
+   * @param text                    sms text.
+   * @param smsActivateStatusNumber activation status.
    */
   public SMSActivateGetFullSmsResponse(@NotNull SMSActivateStatusNumber smsActivateStatusNumber, @NotNull String text) {
     this.smsActivateStatusNumber = smsActivateStatusNumber;

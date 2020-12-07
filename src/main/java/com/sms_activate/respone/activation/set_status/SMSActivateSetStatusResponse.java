@@ -6,15 +6,15 @@ public class SMSActivateSetStatusResponse {
   /**
    * Status about activation from server.
    */
-  private final SMSActivateAccessStatus smsActivateAccessStatus;
+  private final SMSActivateServerStatus smsActivateServerStatus;
 
   /**
    * Constructor response setStatus with specified status from server.
    *
-   * @param smsActivateAccessStatus status about activation from server.
+   * @param smsActivateServerStatus status about activation from server.
    */
-  public SMSActivateSetStatusResponse(@NotNull SMSActivateAccessStatus smsActivateAccessStatus) {
-    this.smsActivateAccessStatus = smsActivateAccessStatus;
+  public SMSActivateSetStatusResponse(@NotNull SMSActivateServerStatus smsActivateServerStatus) {
+    this.smsActivateServerStatus = smsActivateServerStatus;
   }
 
   /**
@@ -24,7 +24,7 @@ public class SMSActivateSetStatusResponse {
    */
   @NotNull
   public String getMessage() {
-    return smsActivateAccessStatus.getMessage();
+    return smsActivateServerStatus.getMessage();
   }
 
   /**
@@ -33,7 +33,7 @@ public class SMSActivateSetStatusResponse {
    * @return status activation.
    */
   @NotNull
-  public SMSActivateAccessStatus getSMSActivateAccessStatus() {
-    return smsActivateAccessStatus;
+  public SMSActivateServerStatus getSMSActivateAccessStatus() {
+    return smsActivateServerStatus;
   }
 }

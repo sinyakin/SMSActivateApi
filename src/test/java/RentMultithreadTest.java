@@ -33,6 +33,7 @@ public class RentMultithreadTest {
     }
   }
 
+  //todo напомни меня спросить тебя про эти тесты
   @Test
   public void multithreadRun() throws Exception {
     pool.shutdown();

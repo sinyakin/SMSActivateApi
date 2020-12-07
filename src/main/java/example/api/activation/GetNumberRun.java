@@ -8,26 +8,26 @@ import com.sms_activate.error.base.SMSActivateBaseTypeError;
 import com.sms_activate.error.wrong_parameter.SMSActivateWrongParameter;
 import com.sms_activate.error.wrong_parameter.SMSActivateWrongParameterException;
 
+import java.util.*;
+
 public class GetNumberRun {
   public static void main(String[] args) {
     try {
-      final int REFERRAL_IDENTIFIER = 0;
       SMSActivateApi smsActivateApi = new SMSActivateApi("API_KEY");
-      // before the request, you need to set the referral identifier
-      smsActivateApi.setRef(REFERRAL_IDENTIFIER);
 
+      /*Set<String> operatorSet = new HashSet<>();
+      operatorSet.add("mts");
+      operatorSet.add("tele2");*/
+
+      /*Set<String> phoneExceptionSet = new HashSet<>();
+      phoneExceptionSet.add("7918");
+      phoneExceptionSet.add("7928");*/
+
+      //todo не пиши внутри метода new HashSet - смотрится не красиво) как выше написал - так пиши
       SMSActivateActivation smsActivateActivation = smsActivateApi.getNumber(
         0,
         "tn"
-          /*new HashSet<String>(){{
-            add("mts");
-            add("tele2");
-          }},
-          new HashSet<String>(){{
-            add("7918");
-          }},
-          false*/);
-
+          /*operatorSet, phoneExceptionSet*/);
 
       System.out.println("Id activation: " + smsActivateActivation.getId());
       System.out.println("Phone number: " + smsActivateActivation.getNumber());
@@ -39,7 +39,7 @@ public class GetNumberRun {
         System.out.println("Your api-key is incorrect.");
       } else {
         // todo check other wrong parameter
-        System.out.println(e.getMessage() + "  " + e.getMessage());
+        System.out.println(e.getWrongParameter() + "  " + e.getMessage());
       }
     } catch (SMSActivateBannedException e) {
       System.out.println("Your account has been banned wait " + e.getEndDate());

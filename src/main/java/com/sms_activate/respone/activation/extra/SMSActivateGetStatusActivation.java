@@ -2,6 +2,7 @@ package com.sms_activate.respone.activation.extra;
 
 import org.jetbrains.annotations.NotNull;
 
+//todo как то странно разбросаны enumЫ. подумай над структурой пакетов
 public enum SMSActivateGetStatusActivation {
   WAIT_CODE("STATUS_WAIT_CODE", "Ожидание смс.", "Waiting sms."),
   WAIT_RETRY("STATUS_WAIT_RETRY", "Ожидание уточнения кода.", "Waiting for code clarification."),

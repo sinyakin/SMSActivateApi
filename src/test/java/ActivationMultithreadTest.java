@@ -1,6 +1,6 @@
 import com.sms_activate.SMSActivateApi;
 import com.sms_activate.error.base.SMSActivateBaseException;
-import com.sms_activate.respone.activation.set_status.SMSActivateSetStatusRequest;
+import com.sms_activate.respone.activation.set_status.SMSActivateClientStatus;
 import org.junit.Before;
 import org.junit.Test;
 
@@ -17,16 +17,16 @@ public class ActivationMultithreadTest {
 
   @Before
   public void setUp() throws Exception {
+    //todo внимателен будь, не заливай apikey. поменяй свой в базе
     smsActivateApi = new SMSActivateApi("9A34fbf73d52752607e37ebA26f6f0bf");
-    smsActivateApi.setRef(0);
     pool = Executors.newFixedThreadPool(COUNT_THREAD / STEP);
 
     for (int i = 0; i < COUNT_THREAD; i++) {
       pool.submit(() -> {
         try {
           smsActivateApi.setStatus(
-            smsActivateApi.getNumber(0, "vk").getId(),
-            SMSActivateSetStatusRequest.CANCEL
+            smsActivateApi.getNumber(0, "vk"),
+            SMSActivateClientStatus.CANCEL
           );
         } catch (SMSActivateBaseException ignored) {
         }

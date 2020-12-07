@@ -62,4 +62,13 @@ public class SMSActivateActivation {
   public String getShortName() {
     return service;
   }
+
+  @Override
+  public String toString() {
+    return "SMSActivateActivation{" +
+        "activation=" + activation +
+        ", phone=" + phone +
+        ", service='" + service + '\'' +
+        '}';
+  }
 }

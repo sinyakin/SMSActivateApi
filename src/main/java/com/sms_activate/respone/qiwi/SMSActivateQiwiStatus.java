@@ -1,9 +1,10 @@
 package com.sms_activate.respone.qiwi;
 
+import com.sms_activate.error.SMSActivateUnknownException;
 import org.jetbrains.annotations.NotNull;
 
 public enum SMSActivateQiwiStatus {
-  UNKNOWN("UNKNOWN", "", ""),
+ // UNKNOWN("UNKNOWN", "", ""),
   SUCCESS("SUCCESS", "Оплату можно проводить.", "Payment can be made."),
   FALSE("FALSE", "Прием платежей киви невозможен.", "Acceptance of qiwi payments is not possible."),
   ;
@@ -78,19 +79,18 @@ public enum SMSActivateQiwiStatus {
   /**
    * Returns status by name or unknown if not contains.
    *
-   * @param name status name.
+   * @param response status name.
    * @return status or unknown if not contains.
    */
   @NotNull
-  public static SMSActivateQiwiStatus getStatusByName(@NotNull String name) {
-    name = name.toUpperCase();
-
+  //todo в некоторых enum не нужен статус UNKNOWN, лучше выкинуть ошибку здесь, а не плодить код выше
+  //todo пересмотри все енамы, удали где не нужно UNKNOWN
+  public static SMSActivateQiwiStatus getStatusByName(@NotNull String response) throws SMSActivateUnknownException {
     for (SMSActivateQiwiStatus status : values()) {
-      if (status.getResponse().equals(name)) {
+      if (status.getResponse().equalsIgnoreCase(response)) {
         return status;
       }
     }
-
-    return UNKNOWN;
+    throw new SMSActivateUnknownException(response, "Unknown status of qiwi wallet.");//todo
   }
 }
