@@ -17,7 +17,7 @@ public class RentMultithreadTest {
 
   @Before
   public void setUp() throws Exception {
-    smsActivateApi = new SMSActivateApi("9A34fbf73d52752607e37ebA26f6f0bf");
+    smsActivateApi = new SMSActivateApi("API_KEY");
     pool = Executors.newFixedThreadPool(COUNT_THREAD / STEP);
 
     for (int i = 0; i < COUNT_THREAD; i++) {

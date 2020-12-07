@@ -15,7 +15,7 @@ public class SMSActivateWrongParameterException extends SMSActivateBaseException
    * @param smsActivateWrongParameter specified constant with description.
    */
   public SMSActivateWrongParameterException(@NotNull SMSActivateWrongParameter smsActivateWrongParameter) {
-    super(smsActivateWrongParameter.getEnglishMessage(), smsActivateWrongParameter.getRussianMessage());
+    this(smsActivateWrongParameter.getEnglishMessage(), smsActivateWrongParameter.getRussianMessage());
     this.wrongParameter = smsActivateWrongParameter;
   }
 
@@ -27,6 +27,18 @@ public class SMSActivateWrongParameterException extends SMSActivateBaseException
    */
   public SMSActivateWrongParameterException(@NotNull String englishMessage, @NotNull String russianMessage) {
     super(englishMessage, russianMessage);
+  }
+
+  /**
+   * Constructor wrong parameter exception with status with other desc.
+   *
+   * @param smsActivateWrongParameter specified constant with description.
+   * @param englishMessage            message on english language.
+   * @param russianMessage            message on russian language.
+   */
+  private SMSActivateWrongParameterException(@NotNull SMSActivateWrongParameter smsActivateWrongParameter, @NotNull String englishMessage, @NotNull String russianMessage) {
+    this(englishMessage, russianMessage);
+    this.wrongParameter = smsActivateWrongParameter;
   }
 
   /**

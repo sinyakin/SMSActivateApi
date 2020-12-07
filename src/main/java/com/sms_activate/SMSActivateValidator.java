@@ -47,8 +47,7 @@ class SMSActivateValidator {
    * @throws SMSActivateWrongParameterException if one of parameters is incorrect.
    * @throws SMSActivateBaseException           if error happened on SQL-server.
    */
-  public void throwCommonExceptionByName(@NotNull String name)
-    throws SMSActivateBaseException {
+  public void throwCommonExceptionByName(@NotNull String name) throws SMSActivateBaseException {
     throwWrongParameterExceptionByName(name);
 
     if (name.toUpperCase().contains(SQL)) {
