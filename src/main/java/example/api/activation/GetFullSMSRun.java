@@ -4,7 +4,7 @@ import com.sms_activate.SMSActivateApi;
 import com.sms_activate.respone.activation.SMSActivateActivation;
 import com.sms_activate.respone.activation.SMSActivateGetFullSmsResponse;
 import com.sms_activate.respone.activation.extra.SMSActivateStatusNumber;
-import com.sms_activate.respone.activation.set_status.SMSActivateSetStatusRequest;
+import com.sms_activate.respone.activation.set_status.SMSActivateClientStatus;
 import com.sms_activate.error.base.SMSActivateBaseException;
 import com.sms_activate.error.base.SMSActivateBaseTypeError;
 import com.sms_activate.error.wrong_parameter.SMSActivateWrongParameter;
@@ -16,10 +16,7 @@ public class
 GetFullSMSRun {
   public static void main(String[] args) {
     try {
-      final int REFERRAL_IDENTIFIER = 0;
       SMSActivateApi smsActivateApi = new SMSActivateApi("API_KEY");
-
-      smsActivateApi.setRef(REFERRAL_IDENTIFIER);
 
       SMSActivateActivation activation = smsActivateApi.getNumber(0, "vk");
       //To receive SMS with a code from the service, you must first set the SEND_READY_NUMBER
@@ -27,8 +24,10 @@ GetFullSMSRun {
 
       // the number must be used on the service for which you took it, else SMS will not come to it
       System.out.println("Please use your activation " + activation.getNumber() + " with ID " + activation.getId());
-      smsActivateApi.setStatus(activation.getId(), SMSActivateSetStatusRequest.SEND_READY_NUMBER);
+      smsActivateApi.setStatus(activation, SMSActivateClientStatus.MESSAGE_WAS_SENT);
       Scanner scanner = new Scanner(System.in);
+
+      //todo сделай метод smsActivateApi.waitFullSms
 
       while (true) {
         System.out.println("Input ch(check sms)/q(quit)");
@@ -47,7 +46,7 @@ GetFullSMSRun {
           if (smsActivateGetFullSmsResponse.getSmsActivateGetFullTypeResponse() == SMSActivateStatusNumber.FULL_SMS) {
             System.out.println("Code from sms: " + smsActivateApi.getStatus(activation.getId()).getCodeFromSMS());
             System.out.println("Full text sms: " + smsActivateGetFullSmsResponse.getText());
-            smsActivateApi.setStatus(353136785, SMSActivateSetStatusRequest.FINISH);
+            smsActivateApi.setStatus(activation, SMSActivateClientStatus.FINISH);
             break;
           }
           System.out.println(smsActivateGetFullSmsResponse.getSmsActivateGetFullTypeResponse().getMessage());

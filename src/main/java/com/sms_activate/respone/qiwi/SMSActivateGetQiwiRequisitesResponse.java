@@ -36,12 +36,7 @@ public class SMSActivateGetQiwiRequisitesResponse {
    */
   @NotNull
   public SMSActivateQiwiStatus getStatus() throws SMSActivateUnknownException {
-    SMSActivateQiwiStatus status = SMSActivateQiwiStatus.getStatusByName(this.status);
-    if (status == SMSActivateQiwiStatus.UNKNOWN) {
-      throw new SMSActivateUnknownException(this.status, "Unknown status of qiwi wallet.");
-    }
-
-    return status;
+    return SMSActivateQiwiStatus.getStatusByName(this.status);
   }
 
   /**

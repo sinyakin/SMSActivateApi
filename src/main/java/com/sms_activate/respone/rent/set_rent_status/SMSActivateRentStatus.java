@@ -76,6 +76,7 @@ public enum SMSActivateRentStatus {
     return String.join(" | ", englishMessage, russianMessage);
   }
 
+  //не используешь
   @NotNull
   public static SMSActivateRentStatus getStatusByName(@NotNull String name) {
     name = name.toUpperCase();

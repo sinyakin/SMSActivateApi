@@ -1,6 +1,6 @@
 import com.sms_activate.SMSActivateApi;
 import com.sms_activate.error.base.SMSActivateBaseException;
-import com.sms_activate.respone.activation.set_status.SMSActivateSetStatusRequest;
+import com.sms_activate.respone.activation.set_status.SMSActivateClientStatus;
 import org.junit.Before;
 import org.junit.Test;
 
@@ -25,8 +25,8 @@ public class ActivationMultithreadTest {
       pool.submit(() -> {
         try {
           smsActivateApi.setStatus(
-            smsActivateApi.getNumber(0, "vk").getId(),
-            SMSActivateSetStatusRequest.CANCEL
+            smsActivateApi.getNumber(0, "vk"),
+            SMSActivateClientStatus.CANCEL
           );
         } catch (SMSActivateBaseException ignored) {
         }

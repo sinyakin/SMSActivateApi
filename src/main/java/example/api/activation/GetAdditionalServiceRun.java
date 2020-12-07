@@ -7,33 +7,37 @@ import com.sms_activate.error.base.SMSActivateBaseException;
 import com.sms_activate.error.base.SMSActivateBaseTypeError;
 import com.sms_activate.error.wrong_parameter.SMSActivateWrongParameter;
 import com.sms_activate.error.wrong_parameter.SMSActivateWrongParameterException;
-import com.sms_activate.respone.activation.set_status.SMSActivateSetStatusRequest;
+import com.sms_activate.respone.activation.set_status.SMSActivateClientStatus;
 
 public class GetAdditionalServiceRun {
+
   public static void main(String[] args) {
     try {
-      final int REFERRAL_IDENTIFIER = 0;
       // create SMSActivateApi object for requests
       SMSActivateApi smsActivateApi = new SMSActivateApi("API_KEY");
-      smsActivateApi.setRef(REFERRAL_IDENTIFIER);
 
       // request activation
-      SMSActivateActivation parentActivation = smsActivateApi.getNumber(0, "av", true);
+      SMSActivateActivation activation = smsActivateApi.getNumber(0, "av", true);
 
       // print info
-      System.out.println(parentActivation.getId());
-      System.out.println(parentActivation.getNumber());
+      System.out.println(activation);
 
-
-      smsActivateApi.setStatus(parentActivation.getId(), SMSActivateSetStatusRequest.SEND_READY_NUMBER);
+      // send MESSAGE_WAS_SENT status after you sent a sms to the number
+      smsActivateApi.setStatus(activation, SMSActivateClientStatus.MESSAGE_WAS_SENT);
       // check: https://sms-activate.ru/ru/getNumber
 
+      //todo для Влада: сначала нужно получить смс и только потом можно запросить добавочный сервис
+      //todo на сервисе ot+переадресация можно не получять смс (глянь на сайте), но метода в api нет
+      //todo то есть этот твой пример всегда не получит getAdditionalService
+
       // request new activation for additional service
-      SMSActivateActivation childActivation = smsActivateApi.getAdditionalService(parentActivation.getId(), "ym");
+      SMSActivateActivation childActivation = smsActivateApi.getAdditionalService(activation.getId(), "ym");
 
       // print info about additional activation
-      System.out.println(childActivation.getId());
-      System.out.println(childActivation.getNumber());
+      System.out.println(childActivation);
+
+      smsActivateApi.setStatus(activation, SMSActivateClientStatus.FINISH);
+      smsActivateApi.setStatus(childActivation, SMSActivateClientStatus.FINISH);
     } catch (SMSActivateWrongParameterException e) {
       if (e.getWrongParameter() == SMSActivateWrongParameter.BAD_ACTION) {
         System.out.println("Contact support.");
