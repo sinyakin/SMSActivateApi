@@ -41,7 +41,7 @@ public class GetAdditionalServiceRun {
         System.out.println("Your api-key is incorrect.");
       } else {
         // todo check other wrong parameter
-        System.out.println(e.getMessage() + "  " + e.getMessage());
+        System.out.println(e.getWrongParameter() + "  " + e.getMessage());
       }
     } catch (SMSActivateBannedException e) {
       System.out.println("Your account has been banned wait " + e.getEndDate());

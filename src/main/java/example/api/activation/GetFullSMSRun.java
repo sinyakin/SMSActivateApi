@@ -12,7 +12,8 @@ import com.sms_activate.error.wrong_parameter.SMSActivateWrongParameterException
 
 import java.util.Scanner;
 
-public class GetFullSMSRun {
+public class
+GetFullSMSRun {
   public static void main(String[] args) {
     try {
       final int REFERRAL_IDENTIFIER = 0;
@@ -61,7 +62,7 @@ public class GetFullSMSRun {
         System.out.println("Your api-key is incorrect.");
       } else {
         // todo check other wrong parameter
-        System.out.println(e.getMessage() + "  " + e.getMessage());
+        System.out.println(e.getWrongParameter() + "  " + e.getMessage());
       }
     } catch (SMSActivateBaseException e) {
       if (e.getTypeError() == SMSActivateBaseTypeError.NO_BALANCE) {
