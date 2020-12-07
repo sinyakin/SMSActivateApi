@@ -17,8 +17,8 @@ public class ActivationMultithreadTest {
 
   @Before
   public void setUp() throws Exception {
-    //todo внимателен будь, не заливай apikey. поменяй свой в базе
-    smsActivateApi = new SMSActivateApi("9A34fbf73d52752607e37ebA26f6f0bf");
+    smsActivateApi = new SMSActivateApi("API_KEY");
+    smsActivateApi.setRef(0);
     pool = Executors.newFixedThreadPool(COUNT_THREAD / STEP);
 
     for (int i = 0; i < COUNT_THREAD; i++) {

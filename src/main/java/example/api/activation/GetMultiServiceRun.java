@@ -54,6 +54,8 @@ public class GetMultiServiceRun {
       // todo check other wrong parameter
       System.out.println(e.getMessage() + "  " + e.getMessage());
     } /*catch (SMSActivateBannedException e) {
+      System.out.println(e.getWrongParameter() + "  " + e.getMessage());
+    } catch (SMSActivateBannedException e) {
       System.out.println("Your account has been banned wait " + e.getEndDate());
     } */catch (SMSActivateBaseException e) {
       if (e.getTypeError() == SMSActivateBaseTypeError.NO_BALANCE) {

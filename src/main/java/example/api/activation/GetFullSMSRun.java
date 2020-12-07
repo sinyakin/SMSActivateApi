@@ -12,7 +12,8 @@ import com.sms_activate.error.wrong_parameter.SMSActivateWrongParameterException
 
 import java.util.Scanner;
 
-public class GetFullSMSRun {
+public class
+GetFullSMSRun {
   public static void main(String[] args) {
     try {
       SMSActivateApi smsActivateApi = new SMSActivateApi("API_KEY");

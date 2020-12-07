@@ -126,12 +126,6 @@ public class SMSActivateApi {
    *                                            <p>
    *                                            Types errors:
    *                                            <p>
-   *                                            Base type error in this method:
-   *                                              <ul>
-   *                                                <li>ERROR_SQL - if error happened in sql-server;</li>
-   *                                              </ul>
-   *                                            </p>
-   *                                            <p>
    *                                            Wrong parameter error types in this method:
    *                                              <ul>
    *                                                <li>BAD_KEY - if your api-key is incorrect;</li>
@@ -152,12 +146,6 @@ public class SMSActivateApi {
    * @throws SMSActivateUnknownException        if error type not documented.
    *                                            <p>
    *                                            Types errors:
-   *                                            <p>
-   *                                            Base type error in this method:
-   *                                              <ul>
-   *                                                <li>ERROR_SQL - if error happened in sql-server;</li>
-   *                                              </ul>
-   *                                            </p>
    *                                            <p>
    *                                            Wrong parameter error types in this method:
    *                                              <ul>
@@ -183,12 +171,6 @@ public class SMSActivateApi {
    *                                            <p>
    *                                            Types errors:
    *                                            <p>
-   *                                            Base type error in this method:
-   *                                              <ul>
-   *                                                <li>ERROR_SQL - if error happened in sql-server;</li>
-   *                                              </ul>
-   *                                            </p>
-   *                                            <p>
    *                                            Wrong parameter error types in this method:
    *                                              <ul>
    *                                                <li>BAD_KEY - if your api-key is incorrect;</li>
@@ -211,12 +193,6 @@ public class SMSActivateApi {
    * @throws SMSActivateUnknownException        if error type not documented.
    *                                            <p>
    *                                            Types errors:
-   *                                            <p>
-   *                                            Base type error in this method:
-   *                                              <ul>
-   *                                                <li>ERROR_SQL - if error happened in sql-server;</li>
-   *                                              </ul>
-   *                                            </p>
    *                                            <p>
    *                                            Wrong parameter error types in this method:
    *                                              <ul>
@@ -286,9 +262,8 @@ public class SMSActivateApi {
    *                                            <p>
    *                                            Base type error in this method:
    *                                              <ul>
-   *                                                <li>ERROR_SQL - if error happened in sql-server;</li>
    *                                                <li>NO_NUMBERS - if currently no numbers;</li>
-   *                                                <li>NO_BALANCE - if money in the account;</li>
+   *                                                <li>NO_BALANCE - if your balance is less than the price;</li>
    *                                              </ul>
    *                                            </p>
    *                                            <p>
@@ -320,9 +295,8 @@ public class SMSActivateApi {
    *                                            <p>
    *                                            Base type error in this method:
    *                                              <ul>
-   *                                                <li>ERROR_SQL - if error happened in sql-server;</li>
    *                                                <li>NO_NUMBERS - if currently no numbers;</li>
-   *                                                <li>NO_BALANCE - if money in the account;</li>
+   *                                                <li>NO_BALANCE - if your balance is less than the price;</li>
    *                                              </ul>
    *                                            </p>
    *                                            <p>
@@ -357,9 +331,8 @@ public class SMSActivateApi {
    *                                            <p>
    *                                            Base type error in this method:
    *                                               <ul>
-   *                                                 <li>ERROR_SQL - if error happened in sql-server;</li>
    *                                                 <li>NO_NUMBERS - if currently no numbers;</li>
-   *                                                <li>NO_BALANCE - if money in the account;</li>
+   *                                                <li>NO_BALANCE - if your balance is less than the price;</li>
    *                                                <li>WRONG_COUNTRY_ID  - if country id is incorrect.</li>
    *                                              </ul>
    *                                            </p>
@@ -468,12 +441,6 @@ public class SMSActivateApi {
    *                                            <p>
    *                                            Types errors:
    *                                            <p>
-   *                                            Base type error in this method:
-   *                                               <ul>
-   *                                                 <li>ERROR_SQL - if error happened in sql-server;</li>
-   *                                              </ul>
-   *                                            </p>
-   *                                            <p>
    *                                            Wrong parameter error types in this method:
    *                                              <ul>
    *                                                <li>BAD_KEY - if your api-key is incorrect;</li>
@@ -506,12 +473,6 @@ public class SMSActivateApi {
    * @throws SMSActivateBannedException         if your account has been banned.
    *                                            <p>
    *                                            Types errors:
-   *                                            <p>
-   *                                            Base type error in this method:
-   *                                               <ul>
-   *                                                 <li>ERROR_SQL - if error happened in sql-server;</li>
-   *                                              </ul>
-   *                                            </p>
    *                                            <p>
    *                                            Wrong parameter error types in this method:
    *                                              <ul>
@@ -605,18 +566,15 @@ public class SMSActivateApi {
    * @throws SMSActivateWrongParameterException if one of parameters is incorrect.
    * @throws SMSActivateUnknownException        if error type not documented.
    *                                            <p>
-   *                                            Base type error in this method:
-   *                                              <ul>
-   *                                                 <li>ERROR_SQL - if error happened in sql-server.</li>
-   *                                              </ul>
-   *                                            </p>
-   *                                            <p>
-   *                                              Wrong parameter error types in this method:
-   *                                               <ul>
+   *                                              Types errors:
+   *                                              <p>
+   *                                                Wrong parameter error types in this method:
+   *                                                <ul>
    *                                                 <li>BAD_KEY - if your api-key is incorrect;</li>
    *                                                 <li>BAD_STATUS - if service is incorrect;</li>
    *                                                 <li>NO_ACTIVATION - if activation is not exist.</li>
-   *                                               </ul>
+   *                                                </ul>
+   *                                              </p>
    *                                            </p>
    */
   @NotNull
@@ -658,11 +616,7 @@ public class SMSActivateApi {
    * @throws SMSActivateWrongParameterException if one of parameters is incorrect.
    * @throws SMSActivateUnknownException        if error type not documented.
    *                                            <p>
-   *                                            Base type error in this method:
-   *                                              <ul>
-   *                                                 <li>ERROR_SQL - if error happened in sql-server.</li>
-   *                                              </ul>
-   *                                            </p>
+   *                                              Types errors:
    *                                            <p>
    *                                              Wrong parameter error types in this method:
    *                                               <ul>
@@ -671,6 +625,7 @@ public class SMSActivateApi {
    *                                                 <li>NO_ACTIVATION - if activation is not exist.</li>
    *                                               </ul>
    *                                            </p>
+   *                                           </p>
    */
   @NotNull
   public SMSActivateSetStatusResponse setStatusWithForwardPhone(
@@ -709,17 +664,14 @@ public class SMSActivateApi {
    * @throws SMSActivateWrongParameterException if one of parameters is incorrect.
    * @throws SMSActivateUnknownException        if error type not documented.
    *                                            <p>
-   *                                            Base type error in this method:
-   *                                              <ul>
-   *                                                 <li>ERROR_SQL - if error happened in sql-server.</li>
-   *                                              </ul>
-   *                                            </p>
+   *                                              Types errors:
    *                                            <p>
    *                                              Wrong parameter error types in this method:
    *                                               <ul>
    *                                                 <li>BAD_KEY - if your api-key is incorrect;</li>
    *                                                 <li>NO_ACTIVATION - if activation is not exist.</li>
    *                                               </ul>
+   *                                            </p>
    *                                            </p>
    */
   @NotNull
@@ -766,12 +718,6 @@ public class SMSActivateApi {
    * @throws SMSActivateUnknownException        if error type not documented.
    *                                            <p>
    *                                            Types errors:
-   *                                            <p>
-   *                                            Base type error in this method:
-   *                                               <ul>
-   *                                                 <li>ERROR_SQL - if error happened in sql-server.</li>
-   *                                               </ul>
-   *                                             </p>
    *                                             <p>
    *                                              Wrong parameter error types in this method:
    *                                               <ul>
@@ -811,12 +757,6 @@ public class SMSActivateApi {
    * @throws SMSActivateUnknownException        if error type not documented.
    *                                            <p>
    *                                            Types errors:
-   *                                            <p>
-   *                                            Base type error in this method:
-   *                                               <ul>
-   *                                                 <li>ERROR_SQL - if error happened in sql-server.</li>
-   *                                               </ul>
-   *                                             </p>
    *                                             <p>
    *                                              Wrong parameter error types in this method:
    *                                               <ul>
@@ -839,12 +779,6 @@ public class SMSActivateApi {
    * @throws SMSActivateUnknownException        if error type not documented.
    *                                            <p>
    *                                            Types errors:
-   *                                            <p>
-   *                                            Base type error in this method:
-   *                                               <ul>
-   *                                                 <li>ERROR_SQL - if error happened in sql-server.</li>
-   *                                               </ul>
-   *                                             </p>
    *                                             <p>
    *                                              Wrong parameter error types in this method:
    *                                               <ul>
@@ -868,12 +802,6 @@ public class SMSActivateApi {
    * @throws SMSActivateUnknownException        if error type not documented.
    *                                            <p>
    *                                            Types errors:
-   *                                            <p>
-   *                                            Base type error in this method:
-   *                                               <ul>
-   *                                                 <li>ERROR_SQL - if error happened in sql-server.</li>
-   *                                               </ul>
-   *                                             </p>
    *                                             <p>
    *                                              Wrong parameter error types in this method:
    *                                               <ul>
@@ -902,12 +830,6 @@ public class SMSActivateApi {
    * @throws SMSActivateUnknownException        if error type not documented.
    *                                            <p>
    *                                            Types errors:
-   *                                            <p>
-   *                                            Base type error in this method:
-   *                                               <ul>
-   *                                                 <li>ERROR_SQL - if error happened in sql-server.</li>
-   *                                               </ul>
-   *                                             </p>
    *                                             <p>
    *                                              Wrong parameter error types in this method:
    *                                               <ul>
@@ -958,12 +880,6 @@ public class SMSActivateApi {
    * @throws SMSActivateUnknownException        if error type not documented.
    *                                            <p>
    *                                            Types errors:
-   *                                            <p>
-   *                                            Base type error in this method:
-   *                                               <ul>
-   *                                                 <li>ERROR_SQL - if error happened in sql-server.</li>
-   *                                               </ul>
-   *                                             </p>
    *                                             <p>
    *                                              Wrong parameter error types in this method:
    *                                               <ul>
@@ -998,12 +914,6 @@ public class SMSActivateApi {
    * @throws SMSActivateUnknownException        if error type not documented.
    *                                            <p>
    *                                            Types errors:
-   *                                            <p>
-   *                                            Base type error in this method:
-   *                                               <ul>
-   *                                                 <li>ERROR_SQL - if error happened in sql-server.</li>
-   *                                               </ul>
-   *                                             </p>
    *                                             <p>
    *                                              Wrong parameter error types in this method:
    *                                               <ul>
@@ -1033,8 +943,7 @@ public class SMSActivateApi {
    *                                            <p>
    *                                            Base type error in this method:
    *                                               <ul>
-   *                                                 <li>ERROR_SQL - if error happened in sql-server;</li>
-   *                                                 <li>NO_BALANCE  - if error happened in sql-server.</li>
+   *                                                 <li>NO_BALANCE  - if your balance is less than the price.</li>
    *                                               </ul>
    *                                             </p>
    *                                             <p>
@@ -1080,12 +989,6 @@ public class SMSActivateApi {
    * @throws SMSActivateUnknownException        if error type not documented.
    *                                            <p>
    *                                            Types errors:
-   *                                            <p>
-   *                                            Base type error in this method:
-   *                                               <ul>
-   *                                                 <li>ERROR_SQL - if error happened in sql-server;</li>
-   *                                               </ul>
-   *                                             </p>
    *                                             <p>
    *                                              Wrong parameter error types in this method:
    *                                               <ul>
@@ -1111,12 +1014,6 @@ public class SMSActivateApi {
    * @throws SMSActivateUnknownException        if error type not documented.
    *                                            <p>
    *                                            Types errors:
-   *                                            <p>
-   *                                            Base type error in this method:
-   *                                               <ul>
-   *                                                 <li>ERROR_SQL - if error happened in sql-server;</li>
-   *                                               </ul>
-   *                                             </p>
    *                                             <p>
    *                                              Wrong parameter error types in this method:
    *                                               <ul>
@@ -1174,9 +1071,8 @@ public class SMSActivateApi {
    *                                            <p>
    *                                            Base type error in this method:
    *                                              <ul>
-   *                                                <li>ERROR_SQL - if error happened in sql-server;</li>
    *                                                <li>NO_NUMBERS - if currently no numbers;</li>
-   *                                                <li>NO_BALANCE - if money in the account;</li>
+   *                                                <li>NO_BALANCE - if your balance is less than the price;</li>
    *                                              </ul>
    *                                            </p>
    *                                            <p>
@@ -1207,9 +1103,8 @@ public class SMSActivateApi {
    *                                            <p>
    *                                            Base type error in this method:
    *                                              <ul>
-   *                                                <li>ERROR_SQL - if error happened in sql-server;</li>
    *                                                <li>NO_NUMBERS - if currently no numbers;</li>
-   *                                                <li>NO_BALANCE - if money in the account;</li>
+   *                                                <li>NO_BALANCE - if your balance is less than the price;</li>
    *                                              </ul>
    *                                            </p>
    *                                            <p>
@@ -1241,9 +1136,8 @@ public class SMSActivateApi {
    *                                            <p>
    *                                            Base type error in this method:
    *                                              <ul>
-   *                                                <li>ERROR_SQL - if error happened in sql-server;</li>
    *                                                <li>NO_NUMBERS - if currently no numbers;</li>
-   *                                                <li>NO_BALANCE - if money in the account;</li>
+   *                                                <li>NO_BALANCE - if your balance is less than the price;</li>
    *                                              </ul>
    *                                            </p>
    *                                            <p>
@@ -1277,9 +1171,8 @@ public class SMSActivateApi {
    *                                            <p>
    *                                            Base type error in this method:
    *                                              <ul>
-   *                                                <li>ERROR_SQL - if error happened in sql-server;</li>
    *                                                <li>NO_NUMBERS - if currently no numbers;</li>
-   *                                                <li>NO_BALANCE - if money in the account;</li>
+   *                                                <li>NO_BALANCE - if your balance is less than the price;</li>
    *                                              </ul>
    *                                            </p>
    *                                            <p>
@@ -1356,12 +1249,6 @@ public class SMSActivateApi {
    *                                            <p>
    *                                            Types errors:
    *                                            <p>
-   *                                            Base type error in this method:
-   *                                              <ul>
-   *                                                <li>ERROR_SQL - if error happened in sql-server;</li>
-   *                                              </ul>
-   *                                            </p>
-   *                                            <p>
    *                                              Wrong parameter type error:
    *                                              <ul>
    *                                                <li>BAD_KEY - if your api-key is incorrect;</li>
@@ -1401,12 +1288,6 @@ public class SMSActivateApi {
    * @throws SMSActivateUnknownException        if error type not documented.
    *                                            <p>
    *                                            Types errors:
-   *                                            <p>
-   *                                            Base type error in this method:
-   *                                              <ul>
-   *                                                <li>ERROR_SQL - if error happened in sql-server;</li>
-   *                                              </ul>
-   *                                            </p>
    *                                            <p>
    *                                              Wrong parameter type error:
    *                                              <ul>
@@ -1451,7 +1332,6 @@ public class SMSActivateApi {
    *                                            <p>
    *                                            Base type error in this method:
    *                                              <ul>
-   *                                                <li>ERROR_SQL - if error happened in sql-server;</li>
    *                                                <li>NO_NUMBERS - if no rented rooms numbers.</li>
    *                                              </ul>
    *                                            </p>
@@ -1490,12 +1370,6 @@ public class SMSActivateApi {
    * @throws SMSActivateUnknownException        if error type not documented.
    *                                            <p>
    *                                            Types errors:
-   *                                            <p>
-   *                                            Base type error in this method:
-   *                                               <ul>
-   *                                                 <li>ERROR_SQL - if error happened in sql-server;</li>
-   *                                               </ul>
-   *                                             </p>
    *                                             <p>
    *                                              Wrong parameter error types in this method:
    *                                               <ul>
@@ -1522,12 +1396,6 @@ public class SMSActivateApi {
    * @throws SMSActivateUnknownException        if error type not documented.
    *                                            <p>
    *                                            Types errors:
-   *                                            <p>
-   *                                            Base type error in this method:
-   *                                               <ul>
-   *                                                 <li>ERROR_SQL - if error happened in sql-server;</li>
-   *                                               </ul>
-   *                                             </p>
    *                                             <p>
    *                                              Wrong parameter error types in this method:
    *                                               <ul>
