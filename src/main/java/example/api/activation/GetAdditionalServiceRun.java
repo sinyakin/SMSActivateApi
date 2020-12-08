@@ -34,7 +34,7 @@ public class GetAdditionalServiceRun {
   public static void main(String[] args) {
     try {
       // create SMSActivateApi object for requests
-      SMSActivateApi smsActivateApi = new SMSActivateApi("eed3136c89d684bd8c5902AdccA2b970");
+      SMSActivateApi smsActivateApi = new SMSActivateApi("API_KEY");
 
       // 1. Set the referral link.
       smsActivateApi.setRef("YOUR_REFERRAL_LINK");
