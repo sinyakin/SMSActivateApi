@@ -763,8 +763,11 @@ public class SMSActivateApi {
 
     SMSActivateURLBuilder smsActivateURLBuilder = new SMSActivateURLBuilder(apiKey, SMSActivateAction.SET_STATUS);
     smsActivateURLBuilder.append(SMSActivateURLKey.STATUS, String.valueOf(status.getId()))
-      .append(SMSActivateURLKey.ID, String.valueOf(activationId))
-      .append(SMSActivateURLKey.FORWARD, String.valueOf(forwardPhone));
+      .append(SMSActivateURLKey.ID, String.valueOf(activationId));
+
+      if (forwardPhone != null) {
+        smsActivateURLBuilder.append(SMSActivateURLKey.FORWARD, String.valueOf(forwardPhone));
+      }
 
     String statusFromServer = new SMSActivateWebClient().getOrThrowCommonException(smsActivateURLBuilder, validator);
 

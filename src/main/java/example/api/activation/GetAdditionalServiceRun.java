@@ -34,14 +34,14 @@ public class GetAdditionalServiceRun {
   public static void main(String[] args) {
     try {
       // create SMSActivateApi object for requests
-      SMSActivateApi smsActivateApi = new SMSActivateApi("API_KEY");
+      SMSActivateApi smsActivateApi = new SMSActivateApi("eed3136c89d684bd8c5902AdccA2b970");
 
       // 1. Set the referral link.
       smsActivateApi.setRef("YOUR_REFERRAL_LINK");
 
       // 2. Request to get number.
-      SMSActivateActivation activation = smsActivateApi.getNumber(0, "ot", true);
-
+      //SMSActivateActivation activation = smsActivateApi.getNumber(0, "ot", true);
+      SMSActivateActivation activation = new SMSActivateActivation(355858072, 0, "");
       // print info
       System.out.println(activation);
 
