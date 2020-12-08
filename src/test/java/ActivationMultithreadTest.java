@@ -1,6 +1,7 @@
 import com.sms_activate.SMSActivateApi;
 import com.sms_activate.error.base.SMSActivateBaseException;
-import com.sms_activate.respone.activation.set_status.SMSActivateClientStatus;
+import com.sms_activate.client_enums.SMSActivateClientStatus;
+import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 
@@ -18,7 +19,7 @@ public class ActivationMultithreadTest {
   @Before
   public void setUp() throws Exception {
     smsActivateApi = new SMSActivateApi("API_KEY");
-    smsActivateApi.setRef(0);
+    smsActivateApi.setRef("YOUR_REFERRAL_LINK");
     pool = Executors.newFixedThreadPool(COUNT_THREAD / STEP);
 
     for (int i = 0; i < COUNT_THREAD; i++) {
@@ -38,9 +39,6 @@ public class ActivationMultithreadTest {
   public void multithreadRun() throws Exception {
     pool.shutdown();
     boolean win = pool.awaitTermination(20, TimeUnit.SECONDS);
-
-    if (!win) {
-      throw new RuntimeException();
-    }
+    Assert.assertTrue(win);
   }
 }

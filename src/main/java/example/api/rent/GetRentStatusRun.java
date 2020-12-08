@@ -5,14 +5,28 @@ import com.sms_activate.error.base.SMSActivateBaseException;
 import com.sms_activate.error.base.SMSActivateBaseTypeError;
 import com.sms_activate.error.wrong_parameter.SMSActivateWrongParameter;
 import com.sms_activate.error.wrong_parameter.SMSActivateWrongParameterException;
-import com.sms_activate.respone.rent.SMSActivateGetRentStatusResponse;
+import com.sms_activate.response.api_rent.SMSActivateGetRentStatusResponse;
+import com.sms_activate.response.api_rent.extra.SMSActivateGetRentNumber;
 
+/**
+ * The example shows how you can receive all SMS that came to a specific rental number.
+ */
 public class GetRentStatusRun {
   public static void main(String[] args) {
     try {
       SMSActivateApi smsActivateApi = new SMSActivateApi("API_KEY");
-      // ID rent for check status rent
-      SMSActivateGetRentStatusResponse smsActivateGetRentStatusResponse = smsActivateApi.getRentStatus(457724);
+
+      // 1. Request to get rent number.
+      SMSActivateGetRentNumber smsActivateGetRentNumber = smsActivateApi.getRentNumberByCountryIdAndServiceShortName(0, "vk");
+
+      // print info
+      System.out.println(smsActivateGetRentNumber);
+
+      System.out.println("Send SMS to the number: " + smsActivateGetRentNumber.getNumber());
+      Thread.sleep(10000);
+
+      // 2. Request to get all sms who came to the rented phone number
+      SMSActivateGetRentStatusResponse smsActivateGetRentStatusResponse = smsActivateApi.getRentStatus(smsActivateGetRentNumber.getId());
 
       // count sms in rent
       System.out.println("Count sms: " + smsActivateGetRentStatusResponse.getCountSms());
@@ -41,6 +55,7 @@ public class GetRentStatusRun {
         // todo check other type error
         System.out.println(e.getTypeError() + "  " + e.getMessage());
       }
+    } catch (InterruptedException ignored) {
     }
   }
 }

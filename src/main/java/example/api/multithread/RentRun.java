@@ -2,7 +2,7 @@ package example.api.multithread;
 
 import com.sms_activate.SMSActivateApi;
 import com.sms_activate.error.base.SMSActivateBaseException;
-import com.sms_activate.respone.rent.set_rent_status.SMSActivateSetRentStatusRequest;
+import com.sms_activate.client_enums.SMSActivateClientRentStatus;
 
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
@@ -19,7 +19,7 @@ public class RentRun {
     for (int i = 0; i < COUNT_THREAD; i++) {
       pool.submit(() -> {
         try {
-          smsActivateApi.setRentStatus(smsActivateApi.getRentNumberByCountryIdAndServiceShortName(0, "yw").getId(), SMSActivateSetRentStatusRequest.CANCEL);
+          smsActivateApi.setRentStatus(smsActivateApi.getRentNumberByCountryIdAndServiceShortName(0, "yw").getId(), SMSActivateClientRentStatus.CANCEL);
         } catch (SMSActivateBaseException e) {
           e.printStackTrace();
         }

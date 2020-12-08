@@ -4,16 +4,20 @@ import com.sms_activate.SMSActivateApi;
 import com.sms_activate.error.base.SMSActivateBaseException;
 import com.sms_activate.error.wrong_parameter.SMSActivateWrongParameter;
 import com.sms_activate.error.wrong_parameter.SMSActivateWrongParameterException;
-import com.sms_activate.respone.rent.SMSActivateGetRentListResponse;
+import com.sms_activate.response.api_rent.SMSActivateGetRentListResponse;
 
+/**
+ * To get the current list of rented phone numbers, use the getRentList method.
+ */
 public class GetRentListRun {
   public static void main(String[] args) {
     try {
       SMSActivateApi smsActivateApi = new SMSActivateApi("API_KEY");
-      /*
-      Rent list is a list your current rent.
-       */
 
+      // 1. Request to get rent number
+      smsActivateApi.getRentNumberByCountryIdAndServiceShortName(0, "vk");
+
+      // 2. Request to get list current rents.
       SMSActivateGetRentListResponse smsActivateGetRentListResponse = smsActivateApi.getRentList();
 
       // print info about each rent

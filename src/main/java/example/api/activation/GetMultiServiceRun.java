@@ -1,19 +1,26 @@
 package example.api.activation;
 
 import com.sms_activate.SMSActivateApi;
-import com.sms_activate.respone.activation.SMSActivateGetMultiServiceNumberResponse;
-import com.sms_activate.error.SMSActivateBannedException;
 import com.sms_activate.error.base.SMSActivateBaseException;
 import com.sms_activate.error.base.SMSActivateBaseTypeError;
 import com.sms_activate.error.wrong_parameter.SMSActivateWrongParameter;
 import com.sms_activate.error.wrong_parameter.SMSActivateWrongParameterException;
+import com.sms_activate.response.api_activation.SMSActivateGetMultiServiceNumberResponse;
 
 import java.util.*;
 
+/**
+ * In addition to simple activation,
+ * you can get a multi-service one,
+ * that is, one activation can be used for several services.
+ */
 public class GetMultiServiceRun {
   public static void main(String[] args) {
     try {
       SMSActivateApi smsActivateApi = new SMSActivateApi("API_KEY");
+
+      // 1. Set referral link.
+      smsActivateApi.setRef("YOUR_REFERRAL_LINK");
 
       // multi-service number is an activation that can be used for more than 1 service.
 
@@ -22,20 +29,11 @@ public class GetMultiServiceRun {
       operatorSet.add("tele2");*/
 
       Map<String, Boolean> serviceMap = new HashMap<>();
-      serviceMap.put("av", true); // true - номер с переадресацией
-      serviceMap.put("vk", false);
+      serviceMap.put("an", false); // true - number with forward.
+      serviceMap.put("sd", false);
 
-      //todo сделай метод getMultiServiceNumber, который принимает serviceMap - это удобно, а внутри сам преобразовывай в нужное для протокола
-
-      /*SMSActivateGetMultiServiceNumberResponse smsActivateGetMultiServiceNumberResponse = smsActivateApi.getMultiServiceNumber(
-        0, serviceMap, null,
-        // forward
-        new ArrayList<Boolean>() {{
-          add(true); // av with forward
-          add(false);
-        }}
-        //null
-      );
+      // 2. Request to get multi-service number.
+      SMSActivateGetMultiServiceNumberResponse smsActivateGetMultiServiceNumberResponse = smsActivateApi.getMultiServiceNumber(0, serviceMap);
 
       // print info about activations
       smsActivateGetMultiServiceNumberResponse.getSMSActivateActivationList().forEach(activation -> {
@@ -43,7 +41,7 @@ public class GetMultiServiceRun {
         System.out.println("Number: " + activation.getNumber());
         System.out.println("Service name: " + activation.getShortName());
         System.out.println("===============================================");
-      });*/
+      });
     }  catch (SMSActivateWrongParameterException e) {
       if (e.getWrongParameter() == SMSActivateWrongParameter.BAD_ACTION) {
         System.out.println("Contact support.");
@@ -53,11 +51,7 @@ public class GetMultiServiceRun {
 
       // todo check other wrong parameter
       System.out.println(e.getMessage() + "  " + e.getMessage());
-    } /*catch (SMSActivateBannedException e) {
-      System.out.println(e.getWrongParameter() + "  " + e.getMessage());
-    } catch (SMSActivateBannedException e) {
-      System.out.println("Your account has been banned wait " + e.getEndDate());
-    } */catch (SMSActivateBaseException e) {
+    } catch (SMSActivateBaseException e) {
       if (e.getTypeError() == SMSActivateBaseTypeError.NO_BALANCE) {
         System.out.println("Top up balance.");
       }

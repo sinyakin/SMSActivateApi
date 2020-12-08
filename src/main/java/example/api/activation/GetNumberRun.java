@@ -1,19 +1,23 @@
 package example.api.activation;
 
 import com.sms_activate.SMSActivateApi;
-import com.sms_activate.respone.activation.SMSActivateActivation;
+import com.sms_activate.response.api_activation.SMSActivateActivation;
 import com.sms_activate.error.SMSActivateBannedException;
 import com.sms_activate.error.base.SMSActivateBaseException;
 import com.sms_activate.error.base.SMSActivateBaseTypeError;
 import com.sms_activate.error.wrong_parameter.SMSActivateWrongParameter;
 import com.sms_activate.error.wrong_parameter.SMSActivateWrongParameterException;
 
-import java.util.*;
-
+/**
+ * To get activation for a specific service, use the getNumber method.
+ */
 public class GetNumberRun {
   public static void main(String[] args) {
     try {
       SMSActivateApi smsActivateApi = new SMSActivateApi("API_KEY");
+
+      // 1. Set referral link.
+      smsActivateApi.setRef("YOUR_REFERRAL_LINK");
 
       /*Set<String> operatorSet = new HashSet<>();
       operatorSet.add("mts");
@@ -23,12 +27,13 @@ public class GetNumberRun {
       phoneExceptionSet.add("7918");
       phoneExceptionSet.add("7928");*/
 
-      //todo не пиши внутри метода new HashSet - смотрится не красиво) как выше написал - так пиши
+      // 2. Request to get number.
       SMSActivateActivation smsActivateActivation = smsActivateApi.getNumber(
         0,
         "tn"
           /*operatorSet, phoneExceptionSet*/);
 
+      // info about your activation.
       System.out.println("Id activation: " + smsActivateActivation.getId());
       System.out.println("Phone number: " + smsActivateActivation.getNumber());
       // check: https://sms-activate.ru/ru/getNumber

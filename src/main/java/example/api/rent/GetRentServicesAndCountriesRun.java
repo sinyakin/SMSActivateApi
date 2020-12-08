@@ -4,9 +4,11 @@ import com.sms_activate.SMSActivateApi;
 import com.sms_activate.error.base.SMSActivateBaseException;
 import com.sms_activate.error.wrong_parameter.SMSActivateWrongParameter;
 import com.sms_activate.error.wrong_parameter.SMSActivateWrongParameterException;
-import com.sms_activate.respone.rent.SMSActivateGetRentServicesAndCountriesResponse;
-import com.sms_activate.respone.rent.extra.SMSActivateRentService;
+import com.sms_activate.response.api_rent.SMSActivateGetRentServicesAndCountriesResponse;
 
+/**
+ * Чтобы получить сервисы и страны, которые поддерживают аренду воспользуетесь методом getRentServicesAndCountries.
+ */
 public class GetRentServicesAndCountriesRun {
   public static void main(String[] args) {
     try {

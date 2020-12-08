@@ -1,58 +1,43 @@
 package example.api.activation;
 
 import com.sms_activate.SMSActivateApi;
-import com.sms_activate.respone.activation.SMSActivateActivation;
-import com.sms_activate.respone.activation.SMSActivateGetFullSmsResponse;
-import com.sms_activate.respone.activation.extra.SMSActivateStatusNumber;
-import com.sms_activate.respone.activation.set_status.SMSActivateClientStatus;
+import com.sms_activate.response.api_activation.SMSActivateActivation;
+import com.sms_activate.response.api_activation.SMSActivateGetFullSmsResponse;
+import com.sms_activate.client_enums.SMSActivateClientStatus;
 import com.sms_activate.error.base.SMSActivateBaseException;
 import com.sms_activate.error.base.SMSActivateBaseTypeError;
 import com.sms_activate.error.wrong_parameter.SMSActivateWrongParameter;
 import com.sms_activate.error.wrong_parameter.SMSActivateWrongParameterException;
 
-import java.util.Scanner;
-
-public class
-GetFullSMSRun {
+/**
+ * This example demonstrates how you can receive a full SMS on activation.
+ */
+public class GetFullSMSRun {
   public static void main(String[] args) {
     try {
       SMSActivateApi smsActivateApi = new SMSActivateApi("API_KEY");
 
-      SMSActivateActivation activation = smsActivateApi.getNumber(0, "vk");
-      //To receive SMS with a code from the service, you must first set the SEND_READY_NUMBER
-      // status after your activation will be ready to receive SMS.
+      // 1. Set referral link.
+      smsActivateApi.setRef("YOUR_REFERRAL_LINK");
 
+      // 2. Request to get number.
+      SMSActivateActivation activation = smsActivateApi.getNumber(0, "vk");
+
+      // 3. Set status SEND_READY_NUMBER.
+      // To receive SMS with a code from the service, you must first set the SEND_READY_NUMBER
+      // status after your activation will be ready to receive SMS.
       // the number must be used on the service for which you took it, else SMS will not come to it
       System.out.println("Please use your activation " + activation.getNumber() + " with ID " + activation.getId());
       smsActivateApi.setStatus(activation, SMSActivateClientStatus.MESSAGE_WAS_SENT);
-      Scanner scanner = new Scanner(System.in);
 
-      //todo сделай метод smsActivateApi.waitFullSms
+      String code = smsActivateApi.waitSms(activation, 3);
 
-      while (true) {
-        System.out.println("Input ch(check sms)/q(quit)");
-        String response = scanner.next();
-
-        if (response.equals("q")) {
-          break;
-        } else if (response.equals("ch")) {
-          SMSActivateGetFullSmsResponse smsActivateGetFullSmsResponse = smsActivateApi.getFullSms(activation.getId());
-
-          // if SMS arrived, the activation status will be FULL_SMS
-
-          // also, if the activation has the status OK (smsActivateApi.getStatus(idActivation),
-          // then you received an SMS with a code.
-
-          if (smsActivateGetFullSmsResponse.getSmsActivateGetFullTypeResponse() == SMSActivateStatusNumber.FULL_SMS) {
-            System.out.println("Code from sms: " + smsActivateApi.getStatus(activation.getId()).getCodeFromSMS());
-            System.out.println("Full text sms: " + smsActivateGetFullSmsResponse.getText());
-            smsActivateApi.setStatus(activation, SMSActivateClientStatus.FINISH);
-            break;
-          }
-          System.out.println(smsActivateGetFullSmsResponse.getSmsActivateGetFullTypeResponse().getMessage());
-        }
-
-        System.out.println("No sms.");
+      if (code == null) {
+        smsActivateApi.setStatus(activation, SMSActivateClientStatus.CANCEL);
+      } else {
+        SMSActivateGetFullSmsResponse smsActivateGetFullSmsResponse = smsActivateApi.getFullSms(activation);
+        System.out.println("Full sms: " + smsActivateGetFullSmsResponse.getText());
+        smsActivateApi.setStatus(activation, SMSActivateClientStatus.FINISH);
       }
     }  catch (SMSActivateWrongParameterException e) {
       if (e.getWrongParameter() == SMSActivateWrongParameter.BAD_ACTION) {

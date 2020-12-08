@@ -1,20 +1,34 @@
 package example.api.activation;
 
 import com.sms_activate.SMSActivateApi;
-import com.sms_activate.respone.activation.SMSActivateGetNumbersStatusResponse;
-import com.sms_activate.respone.activation.extra.SMSActivateServiceInfo;
+import com.sms_activate.response.api_activation.SMSActivateGetNumbersStatusResponse;
+import com.sms_activate.response.api_activation.extra.SMSActivateServiceInfo;
 import com.sms_activate.error.base.SMSActivateBaseException;
 import org.jetbrains.annotations.NotNull;
 
+import java.util.HashSet;
+import java.util.Set;
+
+/**
+ * To find out information about the number of numbers in the service and their price, use the getNumbersStatus method.
+ */
 public class GetNumbersStatusRun {
   public static void main(String[] args) {
     try {
       SMSActivateApi smsActivateApi = new SMSActivateApi("API_KEY");
       System.out.println("Your api-key: " + smsActivateApi.getApiKey());
 
-      // request count available numbers
+      // 1. Request to get count available numbers in service.
       SMSActivateGetNumbersStatusResponse smsActivateGetNumbersStatusResponse = smsActivateApi.getNumbersStatusByDefaultSettingFromSite();
 
+      // if you are interested in specific services in a country without a specific operator, then uncomment the line below.
+      // smsActivateGetNumbersStatusResponse = smsActivateApi.getNumbersStatus(0, null);
+
+      // if you are interested in services for specific operators without a specific country, then uncomment the line below.
+      /*Set<String> operatorSet = new HashSet<>();
+      operatorSet.add("mts");
+      operatorSet.add("tele2");
+      smsActivateGetNumbersStatusResponse = smsActivateApi.getNumbersStatus(null, operatorSet);*/
       /*
         if you need specify service
         you can get it by short name.

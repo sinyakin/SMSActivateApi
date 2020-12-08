@@ -1,11 +1,14 @@
 package example.api.activation;
 
 import com.sms_activate.SMSActivateApi;
-import com.sms_activate.respone.activation.SMSActivateGetBalanceAndCashBackResponse;
+import com.sms_activate.response.api_activation.SMSActivateGetBalanceAndCashBackResponse;
 import com.sms_activate.error.base.SMSActivateBaseException;
 
 import java.math.BigDecimal;
 
+/**
+ * This example shows how you can get your account balance.
+ */
 public class GetBalanceAndCashBackRun {
   public static void main(String[] args) {
     try {

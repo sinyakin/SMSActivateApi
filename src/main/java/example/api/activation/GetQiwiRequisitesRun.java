@@ -4,15 +4,22 @@ import com.sms_activate.SMSActivateApi;
 import com.sms_activate.error.base.SMSActivateBaseException;
 import com.sms_activate.error.wrong_parameter.SMSActivateWrongParameter;
 import com.sms_activate.error.wrong_parameter.SMSActivateWrongParameterException;
-import com.sms_activate.respone.qiwi.SMSActivateGetQiwiRequisitesResponse;
-import com.sms_activate.respone.qiwi.SMSActivateQiwiStatus;
+import com.sms_activate.response.qiwi.SMSActivateGetQiwiRequisitesResponse;
+import com.sms_activate.response.qiwi.SMSActivateQiwiStatus;
 
+/**
+ * If you need to automatically replenish the balance through your payment API, the getQiwiRequisites method will
+ * return the necessary details for this.
+ */
 public class GetQiwiRequisitesRun {
   public static void main(String[] args) {
     try {
       SMSActivateApi smsActivateApi = new SMSActivateApi("API_KEY");
+
+      // 1. Request to get qiwi requisites.
       SMSActivateGetQiwiRequisitesResponse smsActivateGetQiwiRequisitesResponse = smsActivateApi.getQiwiRequisites();
 
+      // 2. If success then you can payment.
       if (smsActivateGetQiwiRequisitesResponse.getStatus() == SMSActivateQiwiStatus.SUCCESS) {
         System.out.println("Comment: " + smsActivateGetQiwiRequisitesResponse.getComment());
         System.out.println("Wallet: " + smsActivateGetQiwiRequisitesResponse.getWallet());

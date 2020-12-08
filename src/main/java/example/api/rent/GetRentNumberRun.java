@@ -6,14 +6,20 @@ import com.sms_activate.error.base.SMSActivateBaseException;
 import com.sms_activate.error.base.SMSActivateBaseTypeError;
 import com.sms_activate.error.wrong_parameter.SMSActivateWrongParameter;
 import com.sms_activate.error.wrong_parameter.SMSActivateWrongParameterException;
-import com.sms_activate.respone.rent.extra.SMSActivateGetRentNumber;
+import com.sms_activate.response.api_rent.extra.SMSActivateGetRentNumber;
 
+/**
+ * Для аренды номера воспользуйтесь методом getRentNumber.
+ */
 public class GetRentNumberRun {
   public static void main(String[] args) {
     try {
       SMSActivateApi smsActivateApi = new SMSActivateApi("API_KEY");
-      // request rent for vk
-      // you can set rent time
+
+      // 1. Request to get rent number
+      // country: Russia (0)
+      // service: vk
+      // you can set rent time and urlWebHook
       SMSActivateGetRentNumber smsActivateGetRentNumberResponse = smsActivateApi.getRentNumber(
           0,
         "vk",

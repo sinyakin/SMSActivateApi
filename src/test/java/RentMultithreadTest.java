@@ -1,6 +1,7 @@
 import com.sms_activate.SMSActivateApi;
 import com.sms_activate.error.base.SMSActivateBaseException;
-import com.sms_activate.respone.rent.set_rent_status.SMSActivateSetRentStatusRequest;
+import com.sms_activate.client_enums.SMSActivateClientRentStatus;
+import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 
@@ -25,7 +26,7 @@ public class RentMultithreadTest {
         try {
           smsActivateApi.setRentStatus(
             smsActivateApi.getRentNumberByServiceShortName("sd").getId(),
-            SMSActivateSetRentStatusRequest.CANCEL
+            SMSActivateClientRentStatus.CANCEL
           );
         } catch (SMSActivateBaseException ignored) {
         }
@@ -38,9 +39,6 @@ public class RentMultithreadTest {
   public void multithreadRun() throws Exception {
     pool.shutdown();
     boolean win = pool.awaitTermination(20, TimeUnit.SECONDS);
-
-    if (!win) {
-      throw new RuntimeException();
-    }
+    Assert.assertTrue(win);
   }
 }

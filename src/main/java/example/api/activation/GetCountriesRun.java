@@ -1,12 +1,23 @@
 package example.api.activation;
 
 import com.sms_activate.SMSActivateApi;
-import com.sms_activate.respone.activation.SMSActivateGetCountriesResponse;
-import com.sms_activate.respone.activation.extra.SMSActivateCountryInfo;
+import com.sms_activate.response.api_activation.SMSActivateGetCountriesResponse;
+import com.sms_activate.response.api_activation.extra.SMSActivateCountryInfo;
 import com.sms_activate.error.base.SMSActivateBaseException;
 import com.sms_activate.error.wrong_parameter.SMSActivateWrongParameterException;
 import org.jetbrains.annotations.NotNull;
 
+/**
+ * <p>This class shows how you can get information about supported countries.</p>
+ * Also, in addition to the names of the countries, the following is contained:
+ * <ul>
+ *   <li>id - id country, it is often used to take activations for a specific country;</li>
+ *   <li>visible - whether the country is shown on the site;</li>
+ *   <li>multiService - whether the multiService is available;</li>
+ *   <li>retry - whether repeated SMS is available;</li>
+ *   <li>rent - whether the rent is available.</li>
+ * </ul>
+ */
 public class GetCountriesRun {
   public static void main(String[] args) {
     try {
@@ -28,9 +39,11 @@ public class GetCountriesRun {
 
   private static void printInfo(@NotNull SMSActivateCountryInfo smsActivateCountryInfo) {
     System.out.println("Country id: " + smsActivateCountryInfo.getId());
+
     System.out.println("Russian name: " + smsActivateCountryInfo.getRussianName());
     System.out.println("English name: " + smsActivateCountryInfo.getEnglishName());
     System.out.println("Chinese name: " + smsActivateCountryInfo.getChineseName());
+
     System.out.println("Support multi-service: " + (smsActivateCountryInfo.isSupportMultiService() ? "yes" : "no"));
     System.out.println("Support retry: " + (smsActivateCountryInfo.isSupportRetry() ? "yes" : "no"));
     System.out.println("Visible in site: " + (smsActivateCountryInfo.isVisible() ? "yes" : "no"));
