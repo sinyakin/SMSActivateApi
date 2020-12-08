@@ -6,6 +6,7 @@ public enum SMSActivateClientStatus {
   MESSAGE_WAS_SENT(1, "Сообщить о готовности номера (смс на номер отправлено).", "Inform about the readiness of the number (SMS sent to the number)."),
   REQUEST_ONE_MORE_CODE(3, "Запросить еще один код (бесплатно).", "Request another code (free)."),
   FINISH(6, "Завершить активацию.", "Finish the activation."),
+  FAKE_SMS(2, "Не нужно принимать смс.", "No need to receive SMS."),
   CANCEL(8, "Сообщить о том, что номер использован и отменить активацию", "Report that the number has been used and cancel activation."),
   ;
 

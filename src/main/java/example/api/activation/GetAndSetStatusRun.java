@@ -25,6 +25,7 @@ import com.sms_activate.response.api_activation.enums.SMSActivateServerStatus;
  *   <li>ACTIVATION - service has been activate;</li>
  *   <li>CANCEL - activation is canceled.</li>
  * </ul>
+ * <p>For the ot + redirect service, you can send the FAKE_SMS status.</p>
  */
 public class GetAndSetStatusRun {
   public static void main(String[] args) {

@@ -46,15 +46,8 @@ public class GetAdditionalServiceRun {
       System.out.println(activation);
 
       // 3. send MESSAGE_WAS_SENT status after you sent a sms to the number
-      smsActivateApi.setStatus(activation, SMSActivateClientStatus.MESSAGE_WAS_SENT);
+      smsActivateApi.setStatus(activation, SMSActivateClientStatus.FAKE_SMS);
       // check: https://sms-activate.ru/ru/getNumber
-
-      // 4. CheckCheck if SMS arrived within 5 minutes
-      if (smsActivateApi.waitSms(activation, 5) == null) {
-        System.out.println("The code did not come to your activation.");
-        System.exit(1);
-      }
-
 
       // 4. Request new activation for additional service
       SMSActivateActivation childActivation = smsActivateApi.getAdditionalService(activation, "av");
