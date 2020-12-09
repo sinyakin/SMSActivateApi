@@ -12,7 +12,7 @@ import com.sms_activate.response.api_rent.SMSActivateGetRentServicesAndCountries
 public class GetRentServicesAndCountriesRun {
   public static void main(String[] args) {
     try {
-      SMSActivateApi smsActivateApi = new SMSActivateApi("API_KEY");
+      SMSActivateApi smsActivateApi = new SMSActivateApi(System.getenv("API_KEY_SMS_ACTIVATE"));
       // request services and countries where rent is supported
       SMSActivateGetRentServicesAndCountriesResponse smsActivateGetRentServicesAndCountriesResponse =
           smsActivateApi.getRentServicesAndCountries(0, null, 4);

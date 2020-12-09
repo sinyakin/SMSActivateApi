@@ -29,4 +29,11 @@ public class SMSActivateUnknownException extends SMSActivateBaseException {
   public String getMessageUnknownError() {
     return messageUnknownError;
   }
+
+  @Override
+  public String getMessage() {
+    String eng = super.getEnglishMessage() + " " + this.messageUnknownError;
+    String rus = super.getRussianMessage() + " " + this.messageUnknownError;
+    return String.join(" | ", eng, rus);
+  }
 }

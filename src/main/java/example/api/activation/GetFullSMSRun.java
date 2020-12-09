@@ -1,6 +1,7 @@
 package example.api.activation;
 
 import com.sms_activate.SMSActivateApi;
+import com.sms_activate.listener.SMSActivateWebClientListener;
 import com.sms_activate.response.api_activation.SMSActivateActivation;
 import com.sms_activate.response.api_activation.SMSActivateGetFullSmsResponse;
 import com.sms_activate.client_enums.SMSActivateClientStatus;
@@ -8,6 +9,7 @@ import com.sms_activate.error.base.SMSActivateBaseException;
 import com.sms_activate.error.base.SMSActivateBaseTypeError;
 import com.sms_activate.error.wrong_parameter.SMSActivateWrongParameter;
 import com.sms_activate.error.wrong_parameter.SMSActivateWrongParameterException;
+import org.jetbrains.annotations.NotNull;
 
 /**
  * This example demonstrates how you can receive a full SMS on activation.
@@ -15,13 +17,18 @@ import com.sms_activate.error.wrong_parameter.SMSActivateWrongParameterException
 public class GetFullSMSRun {
   public static void main(String[] args) {
     try {
-      SMSActivateApi smsActivateApi = new SMSActivateApi("API_KEY");
+      SMSActivateApi smsActivateApi = new SMSActivateApi(System.getenv("API_KEY_SMS_ACTIVATE"));
+
+      smsActivateApi.setSmsActivateWebClientListener((cid, request, statusCode, response) -> System.out.printf(
+        "CID: %d REQUEST: %s RESPONSE: %s STATUS_CODE: %d",
+        cid, request, response, statusCode
+      ));
 
       // 1. Set referral identifier if it was registered by sms-activate.
 //      smsActivateApi.setRef("YOUR_REFERRAL_IDENTIFIER");
 
       // 2. Request to get number.
-      SMSActivateActivation activation = smsActivateApi.getNumber(0, "vk");
+      SMSActivateActivation activation = smsActivateApi.getNumber(0, "ot");
 
       // 3. Set status SEND_READY_NUMBER.
       // To receive SMS with a code from the service, you must first set the MESSAGE_WAS_SENT
@@ -30,7 +37,7 @@ public class GetFullSMSRun {
       System.out.println("Please use your activation " + activation.getNumber() + " with ID " + activation.getId());
       smsActivateApi.setStatus(activation, SMSActivateClientStatus.MESSAGE_WAS_SENT);
 
-      String code = smsActivateApi.waitSms(activation, 3);
+      String code = smsActivateApi.waitSms(activation, 2);
 
       if (code == null) {
         // if you have not received any messages you need sending CANCEL status

@@ -10,6 +10,7 @@ public enum SMSActivateServerStatus {
   RETRY_GET("ACCESS_RETRY_GET", "Ожидание нового смс.", "Wait new sms."),
   FINISH("ACCESS_ACTIVATION", "Сервис успешно активирован.", "The service has been successfully activated."),
   CANCEL("ACCESS_CANCEL", "Активация была отменена.", "Activation has been canceled."),
+  SMS_ADDED("SMS_ADDED", "СМС была добавлена.", "SMS has been added."),
   UNKNOWN("UNKNOWN", "Неизвестный статус активации.", "Unknown status activation.");
 
   /**

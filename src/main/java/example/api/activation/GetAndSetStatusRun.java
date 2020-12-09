@@ -8,6 +8,7 @@ import com.sms_activate.response.api_activation.SMSActivateSetStatusResponse;
 import com.sms_activate.error.base.SMSActivateBaseException;
 import com.sms_activate.response.api_activation.enums.SMSActivateGetStatusActivation;
 import com.sms_activate.response.api_activation.enums.SMSActivateServerStatus;
+import org.jetbrains.annotations.NotNull;
 
 /**
  * This class shows how to deal with activation statuses.
@@ -30,7 +31,18 @@ import com.sms_activate.response.api_activation.enums.SMSActivateServerStatus;
 public class GetAndSetStatusRun {
   public static void main(String[] args) {
     try {
-      SMSActivateApi smsActivateApi = new SMSActivateApi("API_KEY");
+      SMSActivateApi smsActivateApi = new SMSActivateApi(System.getenv("API_KEY_SMS_ACTIVATE"));
+
+      smsActivateApi.setSmsActivateExceptionListener(errorFromServer -> {
+        System.out.println("Error from server: " + errorFromServer);
+      });
+
+      smsActivateApi.setSmsActivateWebClientListener((int cid, @NotNull String request, int a, @NotNull String response) -> {
+        System.out.printf(
+          "CID: %d REQUEST: %s RESPONSE: %s\n",
+          cid, request, response
+        );
+      });
 
       // 1. Set referral identifier if it was registered by sms-activate.
 //      smsActivateApi.setRef("YOUR_REFERRAL_IDENTIFIER");
@@ -45,7 +57,7 @@ public class GetAndSetStatusRun {
       // 3. we set the status that the activation is ready to receive sms
       smsActivateApi.setStatus(activation, SMSActivateClientStatus.MESSAGE_WAS_SENT);
 
-      String code = smsActivateApi.waitSms(activation, 5);
+      String code = smsActivateApi.waitSms(activation, 1);
       System.out.println("Code from sms: " + code);
 
       // 4. if your service timed out and you need a new code (repeated), then you can simply set the REQUEST_ONE_MORE_CODE status,

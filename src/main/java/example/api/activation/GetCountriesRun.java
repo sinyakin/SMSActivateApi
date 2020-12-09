@@ -1,6 +1,7 @@
 package example.api.activation;
 
 import com.sms_activate.SMSActivateApi;
+import com.sms_activate.listener.SMSActivateWebClientListener;
 import com.sms_activate.response.api_activation.SMSActivateGetCountriesResponse;
 import com.sms_activate.response.api_activation.extra.SMSActivateCountryInfo;
 import com.sms_activate.error.base.SMSActivateBaseException;
@@ -21,8 +22,13 @@ import org.jetbrains.annotations.NotNull;
 public class GetCountriesRun {
   public static void main(String[] args) {
     try {
-      SMSActivateApi smsActivateApi = new SMSActivateApi("API_KEY");
+      SMSActivateApi smsActivateApi = new SMSActivateApi(System.getenv("API_KEY_SMS_ACTIVATE"));
+      smsActivateApi.setSmsActivateWebClientListener((cid, request, status, response) -> System.out.printf(
+        "CID: %d REQUEST: %s RESPONSE: %s STATUS_CODE: %d\n",
+        cid, request, response, status
+      ));
       SMSActivateGetCountriesResponse smsActivateGetCountriesResponse = smsActivateApi.getCountries();
+
 
       // 0 (id) - Russia
       // id is needed for request when you need to specify a specific country
@@ -34,6 +40,7 @@ public class GetCountriesRun {
       System.out.println(e.getWrongParameter());
     } catch (SMSActivateBaseException e) {
       System.out.println(e.getTypeError());
+      System.out.println(e.getMessage());
     }
   }
 

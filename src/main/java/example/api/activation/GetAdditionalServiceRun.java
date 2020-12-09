@@ -63,11 +63,11 @@ public class GetAdditionalServiceRun {
       SMSActivateGetStatusResponse smsActivateGetStatusResponse = smsActivateApi.getStatus(childActivation);
 
       // 5.1 finish or cancel child activation.
-      if (smsActivateGetStatusResponse.getSMSActivateGetStatus() == SMSActivateGetStatusActivation.OK) {
+      /*if (smsActivateGetStatusResponse.getSMSActivateGetStatus() == SMSActivateGetStatusActivation.OK) {
         smsActivateApi.setStatus(childActivation, SMSActivateClientStatus.FINISH);
       } else {
         smsActivateApi.setStatus(activation, SMSActivateClientStatus.CANCEL);
-      }
+      }*/
     } catch (SMSActivateWrongParameterException e) {
       if (e.getWrongParameter() == SMSActivateWrongParameter.BAD_ACTION) {
         System.out.println("Contact support.");

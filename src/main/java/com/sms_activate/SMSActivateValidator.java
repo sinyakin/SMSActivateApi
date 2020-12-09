@@ -6,6 +6,7 @@ import com.sms_activate.error.base.SMSActivateBaseException;
 import com.sms_activate.error.base.SMSActivateBaseTypeError;
 import com.sms_activate.error.wrong_parameter.SMSActivateWrongParameter;
 import com.sms_activate.error.wrong_parameter.SMSActivateWrongParameterException;
+import com.sms_activate.listener.SMSActivateExceptionListener;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -26,15 +27,33 @@ class SMSActivateValidator {
   private static final String SQL = "SQL";
 
   /**
+   * Listener on error.
+   */
+  private SMSActivateExceptionListener smsActivateExceptionListener;
+
+  /**
+   * Sets the listener on error.
+   *
+   * @param smsActivateExceptionListener listener on error.
+   */
+  public void setSmsActivateExceptionListener(@NotNull SMSActivateExceptionListener smsActivateExceptionListener) {
+    this.smsActivateExceptionListener = smsActivateExceptionListener;
+  }
+
+  /**
    * Throws WrongParameterException if name contains in wrong parameter.
    *
    * @param name name parameter.
    * @throws SMSActivateWrongParameterException if one of parameters is incorrect.
    */
-  public void throwWrongParameterExceptionByName(@NotNull String name) throws SMSActivateWrongParameterException {
+  private void throwWrongParameterExceptionByName(@NotNull String name) throws SMSActivateWrongParameterException {
     SMSActivateWrongParameter wrongParameter = SMSActivateWrongParameter.getWrongParameterByName(name);
 
     if (wrongParameter != SMSActivateWrongParameter.UNKNOWN) {
+      if (smsActivateExceptionListener != null) {
+        smsActivateExceptionListener.handle(name);
+      }
+
       throw new SMSActivateWrongParameterException(wrongParameter);
     }
   }
@@ -51,6 +70,10 @@ class SMSActivateValidator {
     throwWrongParameterExceptionByName(name);
 
     if (name.toUpperCase().contains(SQL)) {
+      if (smsActivateExceptionListener != null) {
+        smsActivateExceptionListener.handle(name);
+      }
+
       throw new SMSActivateBaseException("Error SQL-server.", "Ошибка SQL-сервера.");
     }
   }
@@ -67,6 +90,10 @@ class SMSActivateValidator {
     throwCommonExceptionByName(name);
 
     if (name.toUpperCase().contains(BANNED)) {
+      if (smsActivateExceptionListener != null) {
+        smsActivateExceptionListener.handle(name);
+      }
+
       throw new SMSActivateBannedException("Your account has been banned", "Ваш акаунт был забанен", name.split(BANNED + ":")[1]);
     }
   }
@@ -78,28 +105,28 @@ class SMSActivateValidator {
    * @return smsactivate base exception.
    */
   @NotNull
-  public SMSActivateBaseException getBaseExceptionByErrorNameOrUnknown(@NotNull String errorName, @Nullable String messageUnknown) throws SMSActivateBaseException {
+  public SMSActivateBaseException getBaseExceptionByErrorNameOrUnknown(@NotNull String errorName, @Nullable String message) throws SMSActivateBaseException {
     throwCommonExceptionByName(errorName);
     SMSActivateBaseTypeError error = SMSActivateBaseTypeError.getErrorByName(errorName);
 
+    if (smsActivateExceptionListener != null) {
+      smsActivateExceptionListener.handle(errorName);
+    }
+
     if (error != SMSActivateBaseTypeError.UNKNOWN) {
       return new SMSActivateBaseException(error);
-    } else {
-      return new SMSActivateUnknownException(errorName, messageUnknown);
     }
+
+    return new SMSActivateUnknownException(errorName, message);
   }
 
   /**
-   * Returns the true if status is success else false.
+   * Returns the true if data contains success status else false.
    *
-   * @param status status request.
-   * @return true if status is success else false.
+   * @param data data from server.
+   * @return true if data contains success status else false.
    */
-  public boolean isSuccessStatus(@NotNull String status) {
-    return SUCCESS_STATUS.equalsIgnoreCase(status);
-  }
-
   public boolean containsSuccessStatus(@NotNull String data) {
-    return data.toLowerCase().contains(SUCCESS_STATUS);
+    return !data.toLowerCase().contains(SUCCESS_STATUS);
   }
 }

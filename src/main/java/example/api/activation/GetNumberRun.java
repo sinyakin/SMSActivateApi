@@ -8,6 +8,12 @@ import com.sms_activate.error.base.SMSActivateBaseException;
 import com.sms_activate.error.base.SMSActivateBaseTypeError;
 import com.sms_activate.error.wrong_parameter.SMSActivateWrongParameter;
 import com.sms_activate.error.wrong_parameter.SMSActivateWrongParameterException;
+import org.jetbrains.annotations.NotNull;
+
+import java.io.FileWriter;
+import java.io.IOException;
+import java.util.Map;
+import java.util.stream.Collectors;
 
 /**
  * To get activation for a specific service, use the getNumber method.
@@ -15,7 +21,7 @@ import com.sms_activate.error.wrong_parameter.SMSActivateWrongParameterException
 public class GetNumberRun {
   public static void main(String[] args) {
     try {
-      SMSActivateApi smsActivateApi = new SMSActivateApi("API_KEY");
+      SMSActivateApi smsActivateApi = new SMSActivateApi(System.getenv("API_KEY_SMS_ACTIVATE"));
 
       // 1. Set referral identifier if it was registered by sms-activate.
 //      smsActivateApi.setRef("YOUR_REFERRAL_IDENTIFIER");
@@ -31,7 +37,7 @@ public class GetNumberRun {
       // 2. Request to get number.
       SMSActivateActivation activation = smsActivateApi.getNumber(
         0,
-        "tn"
+        "vk"
           /*operatorSet, phoneExceptionSet*/);
 
       // info about your activation.

@@ -15,7 +15,7 @@ import java.util.Set;
 public class GetNumbersStatusRun {
   public static void main(String[] args) {
     try {
-      SMSActivateApi smsActivateApi = new SMSActivateApi("API_KEY");
+      SMSActivateApi smsActivateApi = new SMSActivateApi(System.getenv("API_KEY_SMS_ACTIVATE"));
       System.out.println("Your api-key: " + smsActivateApi.getApiKey());
 
       // 1. Request to get count available numbers in service.

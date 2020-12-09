@@ -15,7 +15,7 @@ import java.util.Set;
 public class GetPricesRun {
   public static void main(String[] args) {
     try {
-      SMSActivateApi smsActivateApi = new SMSActivateApi("API_KEY");
+      SMSActivateApi smsActivateApi = new SMSActivateApi(System.getenv("API_KEY_SMS_ACTIVATE"));
 
       // 1. Request to get current prices by specified country and serviceName.
       // 0 - Russia

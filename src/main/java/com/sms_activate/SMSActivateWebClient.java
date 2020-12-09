@@ -3,16 +3,37 @@ package com.sms_activate;
 import com.sms_activate.error.SMSActivateUnknownException;
 import com.sms_activate.error.base.SMSActivateBaseException;
 import com.sms_activate.error.wrong_parameter.SMSActivateWrongParameterException;
+import com.sms_activate.listener.SMSActivateWebClientListener;
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
-import java.io.*;
+import java.io.BufferedReader;
+import java.io.IOException;
+import java.io.InputStreamReader;
 import java.net.HttpURLConnection;
-import java.net.URL;
-import java.util.List;
+import java.util.concurrent.atomic.AtomicInteger;
 import java.util.zip.GZIPInputStream;
-import java.util.zip.GZIPOutputStream;
 
 class SMSActivateWebClient {
+  /**
+   * Counter of the number of requests.
+   */
+  private static final AtomicInteger COUNT_REQUEST = new AtomicInteger();
+
+  /**
+   * Listener for every request.
+   */
+  private final SMSActivateWebClientListener smsActivateWebClientListener;
+
+  /**
+   * Constructor with listener for every request.
+   *
+   * @param smsActivateWebClientListener listener for every request
+   */
+  public SMSActivateWebClient(@Nullable SMSActivateWebClientListener smsActivateWebClientListener) {
+    this.smsActivateWebClientListener = smsActivateWebClientListener;
+  }
+
   /**
    * Get data or throw common exception if error is happened.
    *
@@ -27,43 +48,26 @@ class SMSActivateWebClient {
   public String getOrThrowCommonException(@NotNull SMSActivateURLBuilder smsActivateURLBuilder, @NotNull SMSActivateValidator validator)
     throws SMSActivateBaseException {
     try {
+      int cid = COUNT_REQUEST.incrementAndGet();
+
       HttpURLConnection urlConnection = (HttpURLConnection) smsActivateURLBuilder.build().openConnection();
       urlConnection.setRequestMethod("GET");
       urlConnection.setRequestProperty("accept-Encoding", "gzip, json");
 
+      int statusCode = urlConnection.getResponseCode();
+
       String data = load(urlConnection);
+
+      if (smsActivateWebClientListener != null) {
+        smsActivateWebClientListener.handle(cid, urlConnection.getURL().toString(), statusCode, data);
+      }
+
       validator.throwCommonExceptionByName(data);
 
       return data;
     } catch (IOException e) {
       throw new SMSActivateUnknownException("Problems with network connection.", e.getMessage());
     }
-  }
-
-  /**
-   * Method post for send on server.
-   *
-   * @param url      target url.
-   * @param dataList data for server.
-   * @return data form url.
-   * @throws IOException if an I/O exception occurs.
-   */
-  @NotNull
-  public String post(@NotNull URL url, @NotNull List<String> dataList) throws IOException {
-    HttpURLConnection urlConnection = (HttpURLConnection) url.openConnection();
-
-    urlConnection.setRequestMethod("POST");
-    urlConnection.setDoOutput(true);
-    urlConnection.setRequestProperty("accept-Encoding", "gzip");
-
-    try (BufferedWriter writer = new BufferedWriter(
-      new OutputStreamWriter(new GZIPOutputStream(urlConnection.getOutputStream())))) {
-      for (String data : dataList) {
-        writer.write(data);
-      }
-    }
-
-    return load(urlConnection);
   }
 
   /**
@@ -77,10 +81,14 @@ class SMSActivateWebClient {
   private String load(@NotNull HttpURLConnection urlConnection) throws IOException {
     InputStreamReader inputStreamReader;
 
-    if (urlConnection.getContentEncoding() != null && urlConnection.getContentEncoding().contains("gzip")) {
-      inputStreamReader = new InputStreamReader(new GZIPInputStream(urlConnection.getInputStream()));
+    if (urlConnection.getErrorStream() == null) {
+      if (urlConnection.getContentEncoding() != null && urlConnection.getContentEncoding().contains("gzip")) {
+        inputStreamReader = new InputStreamReader(new GZIPInputStream(urlConnection.getInputStream()));
+      } else {
+        inputStreamReader = new InputStreamReader(urlConnection.getInputStream());
+      }
     } else {
-      inputStreamReader = new InputStreamReader(urlConnection.getInputStream());
+      inputStreamReader = new InputStreamReader(urlConnection.getErrorStream());
     }
 
     BufferedReader reader = new BufferedReader(inputStreamReader);

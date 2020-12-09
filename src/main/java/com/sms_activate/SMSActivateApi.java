@@ -7,6 +7,8 @@ import com.sms_activate.error.base.SMSActivateBaseException;
 import com.sms_activate.error.base.SMSActivateBaseTypeError;
 import com.sms_activate.error.wrong_parameter.SMSActivateWrongParameter;
 import com.sms_activate.error.wrong_parameter.SMSActivateWrongParameterException;
+import com.sms_activate.listener.SMSActivateExceptionListener;
+import com.sms_activate.listener.SMSActivateWebClientListener;
 import com.sms_activate.response.api_activation.*;
 import com.sms_activate.client_enums.SMSActivateClientStatus;
 import com.sms_activate.response.api_activation.enums.SMSActivateGetStatusActivation;
@@ -21,6 +23,7 @@ import com.sms_activate.response.api_rent.SMSActivateGetRentStatusResponse;
 import com.sms_activate.client_enums.SMSActivateClientRentStatus;
 import com.sms_activate.response.api_rent.enums.SMSActivateRentStatus;
 import com.sms_activate.response.api_rent.extra.SMSActivateRentActivation;
+import com.sms_activate.response.api_rent.extra.SMSActivateSMS;
 import com.sms_activate.response.qiwi.SMSActivateGetQiwiRequisitesResponse;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
@@ -72,6 +75,11 @@ public class SMSActivateApi {
   private String ref = null;
 
   /**
+   * Listener on data from server.
+   */
+  private SMSActivateWebClientListener smsActivateWebClientListener;
+
+  /**
    * Constructor API sms-activate with API key.
    *
    * @param apiKey API key (not be null).
@@ -83,6 +91,24 @@ public class SMSActivateApi {
     }
 
     this.apiKey = apiKey;
+  }
+
+  /**
+   * Sets the listener on request to server.
+   *
+   * @param smsActivateWebClientListener listener on request to server.
+   */
+  public void setSmsActivateWebClientListener(@NotNull SMSActivateWebClientListener smsActivateWebClientListener) {
+    this.smsActivateWebClientListener = smsActivateWebClientListener;
+  }
+
+  /**
+   * Sets the listener on error.
+   *
+   * @param smsActivateExceptionListener listener on error.
+   */
+  public void setSmsActivateExceptionListener(@NotNull SMSActivateExceptionListener smsActivateExceptionListener) {
+    this.validator.setSmsActivateExceptionListener(smsActivateExceptionListener);
   }
 
   /**
@@ -225,7 +251,7 @@ public class SMSActivateApi {
       smsActivateURLBuilder.append(SMSActivateURLKey.COUNTRY, String.valueOf(countryId));
     }
 
-    String serviceJsonResponse = new SMSActivateWebClient().getOrThrowCommonException(smsActivateURLBuilder, validator);
+    String serviceJsonResponse = new SMSActivateWebClient(smsActivateWebClientListener).getOrThrowCommonException(smsActivateURLBuilder, validator);
     SMSActivateJsonParser jsonParser = new SMSActivateJsonParser();
 
     Map<String, Integer> serviceMap = jsonParser.tryParseJson(serviceJsonResponse, new TypeToken<Map<String, Integer>>() {
@@ -383,7 +409,7 @@ public class SMSActivateApi {
       .append(SMSActivateURLKey.OPERATOR, operator)
       .append(SMSActivateURLKey.PHONE_EXCEPTION, phoneException);
 
-    String responseFromServer = new SMSActivateWebClient().getOrThrowCommonException(smsActivateURLBuilder, validator);
+    String responseFromServer = new SMSActivateWebClient(smsActivateWebClientListener).getOrThrowCommonException(smsActivateURLBuilder, validator);
     validator.throwExceptionWithBan(responseFromServer);
 
     if (!responseFromServer.startsWith(SMSActivateMagicConstant.ACCESS)) {
@@ -397,7 +423,7 @@ public class SMSActivateApi {
 
       return new SMSActivateActivation(id, number, service);
     } catch (NumberFormatException e) {
-      throw new SMSActivateUnknownException(responseFromServer, "Error formatting to number.");
+      throw validator.getBaseExceptionByErrorNameOrUnknown(responseFromServer, "Error formatting to number.");
     }
   }
 
@@ -407,7 +433,8 @@ public class SMSActivateApi {
    * @param activationId     activation id to get sms.
    * @param maxWaitMinutes minutes to wait.
    * @return code from sms.
-   * @throws SMSActivateBaseException
+   * @throws SMSActivateWrongParameterException if one of parameters is incorrect.
+   * @throws SMSActivateUnknownException        if error type not documented.
    */
   @Nullable
   public String waitSms(int activationId, int maxWaitMinutes) throws SMSActivateBaseException {
@@ -440,11 +467,74 @@ public class SMSActivateApi {
    * @param activation     activation to get sms.
    * @param maxWaitMinutes minutes to wait.
    * @return code from sms.
-   * @throws SMSActivateBaseException
+   * @throws SMSActivateWrongParameterException if one of parameters is incorrect.
+   * @throws SMSActivateUnknownException        if error type not documented.
    */
   @Nullable
   public String waitSms(@NotNull SMSActivateActivation activation, int maxWaitMinutes) throws SMSActivateBaseException {
     return waitSms(activation.getId(), maxWaitMinutes);
+  }
+
+  /**
+   * Returns a list of sms that came for rent after a while.
+   *
+   * @param rentActivation rent for rent for which you need to return the list of sms.
+   * @param maxWaitMinutes how many minutes to wait.
+   * @return list of sms that came for rent.
+   * @throws SMSActivateWrongParameterException if one of parameters is incorrect.
+   * @throws SMSActivateUnknownException        if error type not documented.
+   */
+  @NotNull
+  public List<SMSActivateSMS> waitSmsForRent(@NotNull SMSActivateRentActivation rentActivation, int maxWaitMinutes) throws SMSActivateBaseException {
+    return this.waitSmsForRent(rentActivation.getId(), maxWaitMinutes);
+  }
+
+  /**
+   * Returns a list of sms that came for rent after a while.
+   *
+   * @param rentId rent for rent for which you need to return the list of sms.
+   * @param maxWaitMinutes how many minutes to wait.
+   * @return list of sms that came for rent.
+   * @throws SMSActivateWrongParameterException if one of parameters is incorrect.
+   * @throws SMSActivateUnknownException        if error type not documented.
+   */
+  @NotNull
+  public List<SMSActivateSMS> waitSmsForRent(int rentId, int maxWaitMinutes) throws SMSActivateBaseException {
+    Calendar calendar = Calendar.getInstance();
+    calendar.add(Calendar.MINUTE, maxWaitMinutes);
+    int countSMS = 0;
+    List<SMSActivateSMS> smsActivateSMS = new ArrayList<>();
+
+    try {
+      SMSActivateGetRentStatusResponse rentStatus = this.getRentStatus(rentId);
+      countSMS = rentStatus.getCountSms();
+      smsActivateSMS = rentStatus.getSmsActivateSMSList();
+    } catch (SMSActivateBaseException e) {
+      if (e.getTypeError() != SMSActivateBaseTypeError.WAIT_CODE) {
+        throw e;
+      }
+    }
+
+    while (System.currentTimeMillis() < calendar.getTime().getTime()) {
+      try {
+        SMSActivateGetRentStatusResponse rentStatus = this.getRentStatus(rentId);
+
+        if (rentStatus.getCountSms() != countSMS) {
+          return rentStatus.getSmsActivateSMSList();
+        }
+      } catch (SMSActivateBaseException e) {
+        if (e.getTypeError() != SMSActivateBaseTypeError.WAIT_CODE) {
+          throw e;
+        }
+      }
+
+      try {
+        Thread.sleep(5 * 1000);
+      } catch (Exception ignored) {
+      }
+    }
+
+    return smsActivateSMS;
   }
 
   /**
@@ -598,7 +688,7 @@ public class SMSActivateApi {
       .append(SMSActivateURLKey.MULTI_FORWARD, strMultiForward)
       .append(SMSActivateURLKey.OPERATOR, strOperators);
 
-    String jsonFromServer = new SMSActivateWebClient().getOrThrowCommonException(smsActivateURLBuilder, validator);
+    String jsonFromServer = new SMSActivateWebClient(smsActivateWebClientListener).getOrThrowCommonException(smsActivateURLBuilder, validator);
     SMSActivateJsonParser jsonParser = new SMSActivateJsonParser();
 
     validator.throwExceptionWithBan(jsonFromServer);
@@ -756,7 +846,7 @@ public class SMSActivateApi {
         smsActivateURLBuilder.append(SMSActivateURLKey.FORWARD, String.valueOf(forwardPhone));
       }
 
-    String statusFromServer = new SMSActivateWebClient().getOrThrowCommonException(smsActivateURLBuilder, validator);
+    String statusFromServer = new SMSActivateWebClient(smsActivateWebClientListener).getOrThrowCommonException(smsActivateURLBuilder, validator);
 
     SMSActivateServerStatus smsActivateServerStatus = SMSActivateServerStatus.getStatusByName(statusFromServer);
 
@@ -791,7 +881,7 @@ public class SMSActivateApi {
     smsActivateURLBuilder.append(SMSActivateURLKey.ID, String.valueOf(activationId));
 
     String code = null;
-    String statusFromServer = new SMSActivateWebClient().getOrThrowCommonException(smsActivateURLBuilder, validator);
+    String statusFromServer = new SMSActivateWebClient(smsActivateWebClientListener).getOrThrowCommonException(smsActivateURLBuilder, validator);
 
     if (statusFromServer.contains(":")) {
       String[] parts = statusFromServer.split(":");
@@ -862,7 +952,7 @@ public class SMSActivateApi {
     SMSActivateURLBuilder smsActivateURLBuilder = new SMSActivateURLBuilder(apiKey, SMSActivateAction.GET_FULL_SMS);
     smsActivateURLBuilder.append(SMSActivateURLKey.ID, String.valueOf(activationId));
 
-    String smsFromServer = new SMSActivateWebClient().getOrThrowCommonException(smsActivateURLBuilder, validator);
+    String smsFromServer = new SMSActivateWebClient(smsActivateWebClientListener).getOrThrowCommonException(smsActivateURLBuilder, validator);
 
     SMSActivateStatusNumber smsActivateStatusNumber = SMSActivateStatusNumber.getStatusByName(smsFromServer);
 
@@ -1022,7 +1112,7 @@ public class SMSActivateApi {
       smsActivateURLBuilder.append(SMSActivateURLKey.COUNTRY, String.valueOf(countryId));
     }
 
-    String jsonFromServer = new SMSActivateWebClient().getOrThrowCommonException(smsActivateURLBuilder, validator);
+    String jsonFromServer = new SMSActivateWebClient(smsActivateWebClientListener).getOrThrowCommonException(smsActivateURLBuilder, validator);
     SMSActivateJsonParser jsonParser = new SMSActivateJsonParser();
 
     Map<Integer, Map<String, SMSActivateGetPriceInfo>> smsActivateGetPriceMap = jsonParser.tryParseJson(jsonFromServer,
@@ -1051,7 +1141,7 @@ public class SMSActivateApi {
   @NotNull
   public SMSActivateGetCountriesResponse getCountries() throws SMSActivateBaseException {
     SMSActivateURLBuilder smsActivateURLBuilder = new SMSActivateURLBuilder(apiKey, SMSActivateAction.GET_COUNTRIES);
-    String jsonFromServer = new SMSActivateWebClient().getOrThrowCommonException(smsActivateURLBuilder, validator);
+    String jsonFromServer = new SMSActivateWebClient(smsActivateWebClientListener).getOrThrowCommonException(smsActivateURLBuilder, validator);
     SMSActivateJsonParser jsonParser = new SMSActivateJsonParser();
 
     Map<Integer, SMSActivateCountryInfo> countryInformationMap = jsonParser.tryParseJson(jsonFromServer, new TypeToken<Map<Integer, SMSActivateCountryInfo>>() {
@@ -1085,7 +1175,7 @@ public class SMSActivateApi {
   @NotNull
   public SMSActivateGetQiwiRequisitesResponse getQiwiRequisites() throws SMSActivateBaseException {
     SMSActivateURLBuilder smsActivateURLBuilder = new SMSActivateURLBuilder(apiKey, SMSActivateAction.GET_QIWI_REQUISITES);
-    String jsonFromServer = new SMSActivateWebClient().getOrThrowCommonException(smsActivateURLBuilder, validator);
+    String jsonFromServer = new SMSActivateWebClient(smsActivateWebClientListener).getOrThrowCommonException(smsActivateURLBuilder, validator);
     SMSActivateJsonParser jsonParser = new SMSActivateJsonParser();
     return jsonParser.tryParseJson(jsonFromServer, new TypeToken<SMSActivateGetQiwiRequisitesResponse>() {
     }.getType(), validator);
@@ -1156,7 +1246,7 @@ public class SMSActivateApi {
     smsActivateURLBuilder.append(SMSActivateURLKey.ID, String.valueOf(parentActivationId))
       .append(SMSActivateURLKey.SERVICE, service);
 
-    String responseFromServer = new SMSActivateWebClient().getOrThrowCommonException(smsActivateURLBuilder, validator);
+    String responseFromServer = new SMSActivateWebClient(smsActivateWebClientListener).getOrThrowCommonException(smsActivateURLBuilder, validator);
 
     if (!responseFromServer.startsWith(SMSActivateMagicConstant.ADDITIONAL)) {
       throw validator.getBaseExceptionByErrorNameOrUnknown(responseFromServer, null);
@@ -1169,7 +1259,7 @@ public class SMSActivateApi {
 
       return new SMSActivateActivation(childId, number, service);
     } catch (NumberFormatException e) {
-      throw new SMSActivateUnknownException(responseFromServer, "Error formatting to number.");
+      throw validator.getBaseExceptionByErrorNameOrUnknown(responseFromServer, "Error formatting to number.");
     }
   }
 
@@ -1223,7 +1313,7 @@ public class SMSActivateApi {
       .append(SMSActivateURLKey.OPERATOR, operator)
       .append(SMSActivateURLKey.RENT_TIME, String.valueOf(hours));
 
-    String jsonFromServer = new SMSActivateWebClient().getOrThrowCommonException(smsActivateURLBuilder, validator);
+    String jsonFromServer = new SMSActivateWebClient(smsActivateWebClientListener).getOrThrowCommonException(smsActivateURLBuilder, validator);
     SMSActivateJsonParser jsonParser = new SMSActivateJsonParser();
 
     return jsonParser.tryParseJson(jsonFromServer, new TypeToken<SMSActivateGetRentServicesAndCountriesResponse>() {
@@ -1364,10 +1454,10 @@ public class SMSActivateApi {
       .append(SMSActivateURLKey.URL, urlWebhook)
       .append(SMSActivateURLKey.SERVICE, service);
 
-    String jsonFromServer = new SMSActivateWebClient().getOrThrowCommonException(smsActivateURLBuilder, validator);
+    String jsonFromServer = new SMSActivateWebClient(smsActivateWebClientListener).getOrThrowCommonException(smsActivateURLBuilder, validator);
     SMSActivateJsonParser jsonParser = new SMSActivateJsonParser();
 
-    if (!validator.containsSuccessStatus(jsonFromServer)) {
+    if (validator.containsSuccessStatus(jsonFromServer)) {
       SMSActivateErrorResponse errorResponse = jsonParser.tryParseJson(jsonFromServer, new TypeToken<SMSActivateErrorResponse>() {
       }.getType(), validator);
 
@@ -1405,10 +1495,10 @@ public class SMSActivateApi {
     SMSActivateURLBuilder smsActivateURLBuilder = new SMSActivateURLBuilder(apiKey, SMSActivateAction.GET_RENT_STATUS);
     smsActivateURLBuilder.append(SMSActivateURLKey.ID, String.valueOf(rentId));
 
-    String jsonResponseFromServer = new SMSActivateWebClient().getOrThrowCommonException(smsActivateURLBuilder, validator);
+    String jsonResponseFromServer = new SMSActivateWebClient(smsActivateWebClientListener).getOrThrowCommonException(smsActivateURLBuilder, validator);
     SMSActivateJsonParser jsonParser = new SMSActivateJsonParser();
 
-    if (!validator.containsSuccessStatus(jsonResponseFromServer)) {
+    if (validator.containsSuccessStatus(jsonResponseFromServer)) {
       SMSActivateErrorResponse errorResponse = jsonParser.tryParseJson(jsonResponseFromServer, new TypeToken<SMSActivateErrorResponse>() {
       }.getType(), validator);
       throw validator.getBaseExceptionByErrorNameOrUnknown(errorResponse.getMessage(), null);
@@ -1418,6 +1508,27 @@ public class SMSActivateApi {
     }.getType(), validator);
   }
 
+  /**
+   * Returns the list sms.
+   *
+   * @param rentActivation to get the list sms.
+   * @return list sms.
+   * @throws SMSActivateWrongParameterException if one of parameters is incorrect.
+   * @throws SMSActivateUnknownException        if error type not documented.
+   *                                            <p>
+   *                                            Types errors:
+   *                                            <p>
+   *                                            Wrong parameter type error:
+   *                                              <ul>
+   *                                                <li>BAD_KEY - if your api-key is incorrect;</li>
+   *                                                <li>NO_ID_RENT   - if is not input.</li>
+   *                                                <li>STATUS_WAIT_CODE    - if not sms.</li>
+   *                                                <li>STATUS_CANCEL     - if rent is canceled.</li>
+   *                                                <li>STATUS_FINISH      - if rent is finished.</li>
+   *                                              </ul>
+   *                                            </p>
+   *                                            </p>
+   */
   @NotNull
   public SMSActivateGetRentStatusResponse getRentStatus(@NotNull SMSActivateRentActivation rentActivation) throws SMSActivateBaseException {
     return getRentStatus(rentActivation.getId());
@@ -1454,10 +1565,10 @@ public class SMSActivateApi {
     smsActivateURLBuilder.append(SMSActivateURLKey.ID, String.valueOf(rentId))
       .append(SMSActivateURLKey.STATUS, String.valueOf(status.getId()));
 
-    String jsonFromServer = new SMSActivateWebClient().getOrThrowCommonException(smsActivateURLBuilder, validator);
+    String jsonFromServer = new SMSActivateWebClient(smsActivateWebClientListener).getOrThrowCommonException(smsActivateURLBuilder, validator);
     SMSActivateJsonParser jsonParser = new SMSActivateJsonParser();
 
-    if (!validator.containsSuccessStatus(jsonFromServer)) {
+    if (validator.containsSuccessStatus(jsonFromServer)) {
       SMSActivateErrorResponse response = jsonParser.tryParseJson(jsonFromServer, new TypeToken<SMSActivateErrorResponse>() {
       }.getType(), validator);
       throw validator.getBaseExceptionByErrorNameOrUnknown(response.getMessage(), null);
@@ -1498,10 +1609,10 @@ public class SMSActivateApi {
   public SMSActivateGetRentListResponse getRentList() throws SMSActivateBaseException {
     SMSActivateURLBuilder smsActivateURLBuilder = new SMSActivateURLBuilder(apiKey, SMSActivateAction.GET_RENT_LIST);
 
-    String jsonFromServer = new SMSActivateWebClient().getOrThrowCommonException(smsActivateURLBuilder, validator);
+    String jsonFromServer = new SMSActivateWebClient(smsActivateWebClientListener).getOrThrowCommonException(smsActivateURLBuilder, validator);
     SMSActivateJsonParser jsonParser = new SMSActivateJsonParser();
 
-    if (!validator.containsSuccessStatus(jsonFromServer)) {
+    if (validator.containsSuccessStatus(jsonFromServer)) {
       SMSActivateErrorResponse smsActivateErrorResponse = jsonParser.tryParseJson(jsonFromServer, new TypeToken<SMSActivateErrorResponse>() {
       }.getType(), validator);
       throw validator.getBaseExceptionByErrorNameOrUnknown(smsActivateErrorResponse.getMessage(), null);
@@ -1521,7 +1632,7 @@ public class SMSActivateApi {
   @NotNull
   private BigDecimal getBalanceByAction(@NotNull SMSActivateAction smsActivateAction) throws SMSActivateBaseException {
     SMSActivateURLBuilder smsActivateURLBuilder = new SMSActivateURLBuilder(apiKey, smsActivateAction);
-    String balance = new SMSActivateWebClient().getOrThrowCommonException(smsActivateURLBuilder, validator);
+    String balance = new SMSActivateWebClient(smsActivateWebClientListener).getOrThrowCommonException(smsActivateURLBuilder, validator);
     Matcher matcher = patternDigit.matcher(balance);
 
     if (!matcher.find()) {

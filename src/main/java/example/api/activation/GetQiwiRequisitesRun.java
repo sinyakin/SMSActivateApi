@@ -14,7 +14,7 @@ import com.sms_activate.response.qiwi.SMSActivateQiwiStatus;
 public class GetQiwiRequisitesRun {
   public static void main(String[] args) {
     try {
-      SMSActivateApi smsActivateApi = new SMSActivateApi("API_KEY");
+      SMSActivateApi smsActivateApi = new SMSActivateApi(System.getenv("API_KEY_SMS_ACTIVATE"));
 
       // 1. Request to get qiwi requisites.
       SMSActivateGetQiwiRequisitesResponse smsActivateGetQiwiRequisitesResponse = smsActivateApi.getQiwiRequisites();
