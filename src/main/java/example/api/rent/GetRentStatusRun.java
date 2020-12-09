@@ -19,7 +19,7 @@ import java.util.List;
 public class GetRentStatusRun {
   public static void main(String[] args) {
     try {
-      SMSActivateApi smsActivateApi = new SMSActivateApi("Hello world!");
+      SMSActivateApi smsActivateApi = new SMSActivateApi("API_KEY");
 
       smsActivateApi.setSmsActivateExceptionListener(errorFromServer -> {
         System.out.println("Error: " + errorFromServer);
@@ -44,6 +44,7 @@ public class GetRentStatusRun {
 
       if (smsActivateSMS.isEmpty()) {
         System.out.println("Not a single SMS came.");
+        System.exit(1);
       }
 
       // 2. Request to get all sms who came to the rented phone number

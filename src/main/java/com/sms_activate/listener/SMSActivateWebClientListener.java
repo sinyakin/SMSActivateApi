@@ -2,16 +2,14 @@ package com.sms_activate.listener;
 
 import org.jetbrains.annotations.NotNull;
 
-import java.io.IOException;
-import java.util.Map;
-
 public interface SMSActivateWebClientListener {
   /**
+   * The method is called every time a request is made to the server.
    *
-   * @param cid
-   * @param request
-   * @param statusCode
-   * @param response
+   * @param cid        number of request.
+   * @param request    full request to the server.
+   * @param statusCode response code.
+   * @param response   response from server.
    */
   void handle(int cid, @NotNull String request, int statusCode, @NotNull String response);
 }

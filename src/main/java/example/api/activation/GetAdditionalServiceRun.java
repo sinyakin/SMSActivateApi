@@ -1,15 +1,16 @@
 package example.api.activation;
 
 import com.sms_activate.SMSActivateApi;
-import com.sms_activate.response.api_activation.SMSActivateActivation;
+import com.sms_activate.client_enums.SMSActivateClientStatus;
 import com.sms_activate.error.SMSActivateBannedException;
 import com.sms_activate.error.base.SMSActivateBaseException;
 import com.sms_activate.error.base.SMSActivateBaseTypeError;
 import com.sms_activate.error.wrong_parameter.SMSActivateWrongParameter;
 import com.sms_activate.error.wrong_parameter.SMSActivateWrongParameterException;
-import com.sms_activate.response.api_activation.SMSActivateGetStatusResponse;
-import com.sms_activate.client_enums.SMSActivateClientStatus;
-import com.sms_activate.response.api_activation.enums.SMSActivateGetStatusActivation;
+import com.sms_activate.listener.SMSActivateExceptionListener;
+import com.sms_activate.listener.SMSActivateWebClientListener;
+import com.sms_activate.response.api_activation.SMSActivateActivation;
+import org.jetbrains.annotations.NotNull;
 
 /**
  * <p>This class shows how you can get an additional service for your activation.</p>
@@ -37,6 +38,30 @@ public class GetAdditionalServiceRun {
       // create SMSActivateApi object for requests
       SMSActivateApi smsActivateApi = new SMSActivateApi("API_KEY");
 
+      // Since very often errors can occur during requests, it is better to hang listeners to track and log errors.
+      // All listeners must be set before requests!!!!
+
+      // listener to each error (SMSActivateExceptionListener).
+      smsActivateApi.setSmsActivateExceptionListener(new SMSActivateExceptionListener() {
+        @Override
+        public void handle(@NotNull String errorFromServer) {
+          // write to log files or print to console.
+          System.out.println("Error response: " + errorFromServer);
+        }
+      });
+
+      // listener to each request (SMSActivateWebClientListener)
+      smsActivateApi.setSmsActivateWebClientListener(new SMSActivateWebClientListener() {
+        @Override
+        public void handle(int cid, @NotNull String request, int statusCode, @NotNull String response) {
+          // write to log files or print to console.
+          System.out.printf(
+            "NUMBER_OF_REQUEST: %d || REQUEST: %s || STATUS_CODE: %d || RESPONSE: %s\n",
+            cid, request, statusCode, response
+          );
+        }
+      });
+
       // 1. Set referral identifier if it was registered by sms-activate.
 //      smsActivateApi.setRef("YOUR_REFERRAL_IDENTIFIER");
 
@@ -58,20 +83,14 @@ public class GetAdditionalServiceRun {
       System.out.println(childActivation);
 
       // after using numbers send finish status or cancel
-      // 5. finish parent activation.
+      // 5. finish parent activation and cancel child activation.
       smsActivateApi.setStatus(activation, SMSActivateClientStatus.FINISH);
-      SMSActivateGetStatusResponse smsActivateGetStatusResponse = smsActivateApi.getStatus(childActivation);
-
-      // 5.1 finish or cancel child activation.
-      /*if (smsActivateGetStatusResponse.getSMSActivateGetStatus() == SMSActivateGetStatusActivation.OK) {
-        smsActivateApi.setStatus(childActivation, SMSActivateClientStatus.FINISH);
-      } else {
-        smsActivateApi.setStatus(activation, SMSActivateClientStatus.CANCEL);
-      }*/
+      smsActivateApi.setStatus(childActivation, SMSActivateClientStatus.CANCEL);
     } catch (SMSActivateWrongParameterException e) {
       if (e.getWrongParameter() == SMSActivateWrongParameter.BAD_ACTION) {
         System.out.println("Contact support.");
-      } if (e.getWrongParameter() == SMSActivateWrongParameter.BAD_KEY) {
+      }
+      if (e.getWrongParameter() == SMSActivateWrongParameter.BAD_KEY) {
         System.out.println("Your api-key is incorrect.");
       } else {
         // todo check other wrong parameter

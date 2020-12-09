@@ -1,6 +1,8 @@
 package com.sms_activate;
 
 import com.google.gson.reflect.TypeToken;
+import com.sms_activate.client_enums.SMSActivateClientRentStatus;
+import com.sms_activate.client_enums.SMSActivateClientStatus;
 import com.sms_activate.error.SMSActivateBannedException;
 import com.sms_activate.error.SMSActivateUnknownException;
 import com.sms_activate.error.base.SMSActivateBaseException;
@@ -10,7 +12,6 @@ import com.sms_activate.error.wrong_parameter.SMSActivateWrongParameterException
 import com.sms_activate.listener.SMSActivateExceptionListener;
 import com.sms_activate.listener.SMSActivateWebClientListener;
 import com.sms_activate.response.api_activation.*;
-import com.sms_activate.client_enums.SMSActivateClientStatus;
 import com.sms_activate.response.api_activation.enums.SMSActivateGetStatusActivation;
 import com.sms_activate.response.api_activation.enums.SMSActivateServerStatus;
 import com.sms_activate.response.api_activation.enums.SMSActivateStatusNumber;
@@ -20,7 +21,6 @@ import com.sms_activate.response.api_activation.extra.SMSActivateServiceInfo;
 import com.sms_activate.response.api_rent.SMSActivateGetRentListResponse;
 import com.sms_activate.response.api_rent.SMSActivateGetRentServicesAndCountriesResponse;
 import com.sms_activate.response.api_rent.SMSActivateGetRentStatusResponse;
-import com.sms_activate.client_enums.SMSActivateClientRentStatus;
 import com.sms_activate.response.api_rent.enums.SMSActivateRentStatus;
 import com.sms_activate.response.api_rent.extra.SMSActivateRentActivation;
 import com.sms_activate.response.api_rent.extra.SMSActivateSMS;
@@ -428,116 +428,6 @@ public class SMSActivateApi {
   }
 
   /**
-   * Wait the sms on activation by minutes.
-   *
-   * @param activationId     activation id to get sms.
-   * @param maxWaitMinutes minutes to wait.
-   * @return code from sms.
-   * @throws SMSActivateWrongParameterException if one of parameters is incorrect.
-   * @throws SMSActivateUnknownException        if error type not documented.
-   */
-  @Nullable
-  public String waitSms(int activationId, int maxWaitMinutes) throws SMSActivateBaseException {
-    Calendar calendar = Calendar.getInstance();
-    calendar.add(Calendar.MINUTE, maxWaitMinutes);
-    SMSActivateGetStatusResponse statusResponse = getStatus(activationId);
-
-    while (System.currentTimeMillis() < calendar.getTime().getTime()) {
-      if (
-        statusResponse.getSMSActivateGetStatus() == SMSActivateGetStatusActivation.OK &&
-          !statusResponse.getCodeFromSMS().equalsIgnoreCase(SMSActivateMagicConstant.NO_CODE)
-      ) {
-
-        return statusResponse.getCodeFromSMS();
-      }
-
-      try {
-        Thread.sleep(5 * 1000);
-      } catch (Exception ignored) {
-      }
-      statusResponse = getStatus(activationId);
-    }
-
-    return statusResponse.getCodeFromSMS();
-  }
-
-  /**
-   * Wait the sms on activation by minutes.
-   *
-   * @param activation     activation to get sms.
-   * @param maxWaitMinutes minutes to wait.
-   * @return code from sms.
-   * @throws SMSActivateWrongParameterException if one of parameters is incorrect.
-   * @throws SMSActivateUnknownException        if error type not documented.
-   */
-  @Nullable
-  public String waitSms(@NotNull SMSActivateActivation activation, int maxWaitMinutes) throws SMSActivateBaseException {
-    return waitSms(activation.getId(), maxWaitMinutes);
-  }
-
-  /**
-   * Returns a list of sms that came for rent after a while.
-   *
-   * @param rentActivation rent for rent for which you need to return the list of sms.
-   * @param maxWaitMinutes how many minutes to wait.
-   * @return list of sms that came for rent.
-   * @throws SMSActivateWrongParameterException if one of parameters is incorrect.
-   * @throws SMSActivateUnknownException        if error type not documented.
-   */
-  @NotNull
-  public List<SMSActivateSMS> waitSmsForRent(@NotNull SMSActivateRentActivation rentActivation, int maxWaitMinutes) throws SMSActivateBaseException {
-    return this.waitSmsForRent(rentActivation.getId(), maxWaitMinutes);
-  }
-
-  /**
-   * Returns a list of sms that came for rent after a while.
-   *
-   * @param rentId rent for rent for which you need to return the list of sms.
-   * @param maxWaitMinutes how many minutes to wait.
-   * @return list of sms that came for rent.
-   * @throws SMSActivateWrongParameterException if one of parameters is incorrect.
-   * @throws SMSActivateUnknownException        if error type not documented.
-   */
-  @NotNull
-  public List<SMSActivateSMS> waitSmsForRent(int rentId, int maxWaitMinutes) throws SMSActivateBaseException {
-    Calendar calendar = Calendar.getInstance();
-    calendar.add(Calendar.MINUTE, maxWaitMinutes);
-    int countSMS = 0;
-    List<SMSActivateSMS> smsActivateSMS = new ArrayList<>();
-
-    try {
-      SMSActivateGetRentStatusResponse rentStatus = this.getRentStatus(rentId);
-      countSMS = rentStatus.getCountSms();
-      smsActivateSMS = rentStatus.getSmsActivateSMSList();
-    } catch (SMSActivateBaseException e) {
-      if (e.getTypeError() != SMSActivateBaseTypeError.WAIT_CODE) {
-        throw e;
-      }
-    }
-
-    while (System.currentTimeMillis() < calendar.getTime().getTime()) {
-      try {
-        SMSActivateGetRentStatusResponse rentStatus = this.getRentStatus(rentId);
-
-        if (rentStatus.getCountSms() != countSMS) {
-          return rentStatus.getSmsActivateSMSList();
-        }
-      } catch (SMSActivateBaseException e) {
-        if (e.getTypeError() != SMSActivateBaseTypeError.WAIT_CODE) {
-          throw e;
-        }
-      }
-
-      try {
-        Thread.sleep(5 * 1000);
-      } catch (Exception ignored) {
-      }
-    }
-
-    return smsActivateSMS;
-  }
-
-  /**
    * Returns the specified object id by countryId, multiService.<br/>
    * Separator for multiService is commas. <br/>
    *
@@ -842,9 +732,9 @@ public class SMSActivateApi {
     smsActivateURLBuilder.append(SMSActivateURLKey.STATUS, String.valueOf(status.getId()))
       .append(SMSActivateURLKey.ID, String.valueOf(activationId));
 
-      if (forwardPhone != null) {
-        smsActivateURLBuilder.append(SMSActivateURLKey.FORWARD, String.valueOf(forwardPhone));
-      }
+    if (forwardPhone != null) {
+      smsActivateURLBuilder.append(SMSActivateURLKey.FORWARD, String.valueOf(forwardPhone));
+    }
 
     String statusFromServer = new SMSActivateWebClient(smsActivateWebClientListener).getOrThrowCommonException(smsActivateURLBuilder, validator);
 
@@ -1577,9 +1467,33 @@ public class SMSActivateApi {
     return SMSActivateRentStatus.SUCCESS;
   }
 
+  /**
+   * Sets the status on rent.
+   *
+   * @param rentActivation rent to set status.
+   * @param status         status rent.
+   * @return response status from server.
+   * @throws SMSActivateWrongParameterException if one of parameters is incorrect.
+   * @throws SMSActivateUnknownException        if error type not documented.
+   *                                            <p>
+   *                                            Types errors:
+   *                                            <p>
+   *                                            Wrong parameter type error:
+   *                                              <ul>
+   *                                                <li>BAD_KEY - if your api-key is incorrect;</li>
+   *                                                <li>NO_ID_RENT - if is not input.</li>
+   *                                                <li>INCORRECT_STATUS - if status is incorrect.</li>
+   *                                                <li>CANT_CANCEL - if it is impossible to cancel the rent (more than 20 min.).</li>
+   *                                                <li>ALREADY_FINISH - if rent is finished.</li>
+   *                                                <li>ALREADY_CANCEL - if rent is canceled.</li>
+   *                                                <li>INVALID_PHONE - if id is incorrect.</li>
+   *                                              </ul>
+   *                                            </p>
+   *                                            </p>
+   */
   @NotNull
   public SMSActivateRentStatus setRentStatus(SMSActivateRentActivation rentActivation, @NotNull SMSActivateClientRentStatus status)
-      throws SMSActivateBaseException {
+    throws SMSActivateBaseException {
     return setRentStatus(rentActivation.getId(), status);
   }
 
@@ -1620,6 +1534,116 @@ public class SMSActivateApi {
 
     return jsonParser.tryParseJson(jsonFromServer, new TypeToken<SMSActivateGetRentListResponse>() {
     }.getType(), validator);
+  }
+
+  /**
+   * Wait the sms on activation by minutes.
+   *
+   * @param activationId   activation id to get sms.
+   * @param maxWaitMinutes minutes to wait.
+   * @return code from sms.
+   * @throws SMSActivateWrongParameterException if one of parameters is incorrect.
+   * @throws SMSActivateUnknownException        if error type not documented.
+   */
+  @Nullable
+  public String waitSms(int activationId, int maxWaitMinutes) throws SMSActivateBaseException {
+    Calendar calendar = Calendar.getInstance();
+    calendar.add(Calendar.MINUTE, maxWaitMinutes);
+    SMSActivateGetStatusResponse statusResponse = getStatus(activationId);
+
+    while (System.currentTimeMillis() < calendar.getTime().getTime()) {
+      if (
+        statusResponse.getSMSActivateGetStatus() == SMSActivateGetStatusActivation.OK &&
+          !statusResponse.getCodeFromSMS().equalsIgnoreCase(SMSActivateMagicConstant.NO_CODE)
+      ) {
+
+        return statusResponse.getCodeFromSMS();
+      }
+
+      try {
+        Thread.sleep(5 * 1000);
+      } catch (Exception ignored) {
+      }
+      statusResponse = getStatus(activationId);
+    }
+
+    return statusResponse.getCodeFromSMS();
+  }
+
+  /**
+   * Wait the sms on activation by minutes.
+   *
+   * @param activation     activation to get sms.
+   * @param maxWaitMinutes minutes to wait.
+   * @return code from sms.
+   * @throws SMSActivateWrongParameterException if one of parameters is incorrect.
+   * @throws SMSActivateUnknownException        if error type not documented.
+   */
+  @Nullable
+  public String waitSms(@NotNull SMSActivateActivation activation, int maxWaitMinutes) throws SMSActivateBaseException {
+    return waitSms(activation.getId(), maxWaitMinutes);
+  }
+
+  /**
+   * Returns a list of sms that came for rent after a while.
+   *
+   * @param rentActivation rent for rent for which you need to return the list of sms.
+   * @param maxWaitMinutes how many minutes to wait.
+   * @return list of sms that came for rent.
+   * @throws SMSActivateWrongParameterException if one of parameters is incorrect.
+   * @throws SMSActivateUnknownException        if error type not documented.
+   */
+  @NotNull
+  public List<SMSActivateSMS> waitSmsForRent(@NotNull SMSActivateRentActivation rentActivation, int maxWaitMinutes) throws SMSActivateBaseException {
+    return this.waitSmsForRent(rentActivation.getId(), maxWaitMinutes);
+  }
+
+  /**
+   * Returns a list of sms that came for rent after a while.
+   *
+   * @param rentId         rent for rent for which you need to return the list of sms.
+   * @param maxWaitMinutes how many minutes to wait.
+   * @return list of sms that came for rent.
+   * @throws SMSActivateWrongParameterException if one of parameters is incorrect.
+   * @throws SMSActivateUnknownException        if error type not documented.
+   */
+  @NotNull
+  public List<SMSActivateSMS> waitSmsForRent(int rentId, int maxWaitMinutes) throws SMSActivateBaseException {
+    Calendar calendar = Calendar.getInstance();
+    calendar.add(Calendar.MINUTE, maxWaitMinutes);
+    int countSMS = 0;
+    List<SMSActivateSMS> smsActivateSMS = new ArrayList<>();
+
+    try {
+      SMSActivateGetRentStatusResponse rentStatus = this.getRentStatus(rentId);
+      countSMS = rentStatus.getCountSms();
+      smsActivateSMS = rentStatus.getSmsActivateSMSList();
+    } catch (SMSActivateBaseException e) {
+      if (e.getTypeError() != SMSActivateBaseTypeError.WAIT_CODE) {
+        throw e;
+      }
+    }
+
+    while (System.currentTimeMillis() < calendar.getTime().getTime()) {
+      try {
+        SMSActivateGetRentStatusResponse rentStatus = this.getRentStatus(rentId);
+
+        if (rentStatus.getCountSms() != countSMS) {
+          return rentStatus.getSmsActivateSMSList();
+        }
+      } catch (SMSActivateBaseException e) {
+        if (e.getTypeError() != SMSActivateBaseTypeError.WAIT_CODE) {
+          throw e;
+        }
+      }
+
+      try {
+        Thread.sleep(5 * 1000);
+      } catch (Exception ignored) {
+      }
+    }
+
+    return smsActivateSMS;
   }
 
   /**

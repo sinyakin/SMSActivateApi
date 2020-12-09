@@ -14,7 +14,7 @@ import com.sms_activate.response.api_rent.extra.SMSActivateRentActivation;
 public class GetRentRun {
   public static void main(String[] args) {
     try {
-      SMSActivateApi smsActivateApi = new SMSActivateApi(System.getenv("API_KEY_SMS_ACTIVATE"));
+      SMSActivateApi smsActivateApi = new SMSActivateApi("API_KEY");
 
       // 1. Request to get rent number
       SMSActivateRentActivation rentActivation = smsActivateApi.getRentNumber(0, "vk", 6);

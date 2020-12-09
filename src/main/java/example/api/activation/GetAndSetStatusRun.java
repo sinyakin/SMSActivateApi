@@ -1,6 +1,7 @@
 package example.api.activation;
 
 import com.sms_activate.SMSActivateApi;
+import com.sms_activate.listener.SMSActivateWebClientListener;
 import com.sms_activate.response.api_activation.SMSActivateActivation;
 import com.sms_activate.response.api_activation.SMSActivateGetStatusResponse;
 import com.sms_activate.client_enums.SMSActivateClientStatus;
@@ -31,13 +32,13 @@ import org.jetbrains.annotations.NotNull;
 public class GetAndSetStatusRun {
   public static void main(String[] args) {
     try {
-      SMSActivateApi smsActivateApi = new SMSActivateApi(System.getenv("API_KEY_SMS_ACTIVATE"));
+      SMSActivateApi smsActivateApi = new SMSActivateApi("API_KEY");
 
       smsActivateApi.setSmsActivateExceptionListener(errorFromServer -> {
         System.out.println("Error from server: " + errorFromServer);
       });
 
-      smsActivateApi.setSmsActivateWebClientListener((int cid, @NotNull String request, int a, @NotNull String response) -> {
+      smsActivateApi.setSmsActivateWebClientListener((int cid, @NotNull String request, int statusCode, @NotNull String response) -> {
         System.out.printf(
           "CID: %d REQUEST: %s RESPONSE: %s\n",
           cid, request, response

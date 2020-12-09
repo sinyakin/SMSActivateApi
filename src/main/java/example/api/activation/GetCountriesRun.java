@@ -22,13 +22,9 @@ import org.jetbrains.annotations.NotNull;
 public class GetCountriesRun {
   public static void main(String[] args) {
     try {
-      SMSActivateApi smsActivateApi = new SMSActivateApi(System.getenv("API_KEY_SMS_ACTIVATE"));
-      smsActivateApi.setSmsActivateWebClientListener((cid, request, status, response) -> System.out.printf(
-        "CID: %d REQUEST: %s RESPONSE: %s STATUS_CODE: %d\n",
-        cid, request, response, status
-      ));
-      SMSActivateGetCountriesResponse smsActivateGetCountriesResponse = smsActivateApi.getCountries();
+      SMSActivateApi smsActivateApi = new SMSActivateApi("API_KEY");
 
+      SMSActivateGetCountriesResponse smsActivateGetCountriesResponse = smsActivateApi.getCountries();
 
       // 0 (id) - Russia
       // id is needed for request when you need to specify a specific country

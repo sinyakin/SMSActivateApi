@@ -21,7 +21,7 @@ import java.util.stream.Collectors;
 public class GetNumberRun {
   public static void main(String[] args) {
     try {
-      SMSActivateApi smsActivateApi = new SMSActivateApi(System.getenv("API_KEY_SMS_ACTIVATE"));
+      SMSActivateApi smsActivateApi = new SMSActivateApi("API_KEY");
 
       // 1. Set referral identifier if it was registered by sms-activate.
 //      smsActivateApi.setRef("YOUR_REFERRAL_IDENTIFIER");

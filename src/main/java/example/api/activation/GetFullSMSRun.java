@@ -17,7 +17,7 @@ import org.jetbrains.annotations.NotNull;
 public class GetFullSMSRun {
   public static void main(String[] args) {
     try {
-      SMSActivateApi smsActivateApi = new SMSActivateApi(System.getenv("API_KEY_SMS_ACTIVATE"));
+      SMSActivateApi smsActivateApi = new SMSActivateApi("API_KEY");
 
       smsActivateApi.setSmsActivateWebClientListener((cid, request, statusCode, response) -> System.out.printf(
         "CID: %d REQUEST: %s RESPONSE: %s STATUS_CODE: %d",
