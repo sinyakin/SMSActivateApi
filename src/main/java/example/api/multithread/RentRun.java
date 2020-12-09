@@ -19,7 +19,7 @@ public class RentRun {
     for (int i = 0; i < COUNT_THREAD; i++) {
       pool.submit(() -> {
         try {
-          smsActivateApi.setRentStatus(smsActivateApi.getRentNumberByCountryIdAndServiceShortName(0, "yw").getId(), SMSActivateClientRentStatus.CANCEL);
+          smsActivateApi.setRentStatus(smsActivateApi.getRentNumber(0, "yw").getId(), SMSActivateClientRentStatus.CANCEL);
         } catch (SMSActivateBaseException e) {
           e.printStackTrace();
         }

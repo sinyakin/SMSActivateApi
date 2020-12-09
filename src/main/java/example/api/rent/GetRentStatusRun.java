@@ -1,12 +1,13 @@
 package example.api.rent;
 
 import com.sms_activate.SMSActivateApi;
+import com.sms_activate.client_enums.SMSActivateClientRentStatus;
 import com.sms_activate.error.base.SMSActivateBaseException;
 import com.sms_activate.error.base.SMSActivateBaseTypeError;
 import com.sms_activate.error.wrong_parameter.SMSActivateWrongParameter;
 import com.sms_activate.error.wrong_parameter.SMSActivateWrongParameterException;
 import com.sms_activate.response.api_rent.SMSActivateGetRentStatusResponse;
-import com.sms_activate.response.api_rent.extra.SMSActivateGetRentNumber;
+import com.sms_activate.response.api_rent.extra.SMSActivateRentActivation;
 
 /**
  * The example shows how you can receive all SMS that came to a specific rental number.
@@ -17,16 +18,17 @@ public class GetRentStatusRun {
       SMSActivateApi smsActivateApi = new SMSActivateApi("API_KEY");
 
       // 1. Request to get rent number.
-      SMSActivateGetRentNumber smsActivateGetRentNumber = smsActivateApi.getRentNumberByCountryIdAndServiceShortName(0, "vk");
+      SMSActivateRentActivation rentActivation = smsActivateApi.getRentNumber(0, "vk");
 
       // print info
-      System.out.println(smsActivateGetRentNumber);
+      System.out.println(rentActivation);
 
-      System.out.println("Send SMS to the number: " + smsActivateGetRentNumber.getNumber());
+      System.out.println("Send SMS to the number: " + rentActivation.getNumber());
+      //todo НАПИШИ waitSmsForRent
       Thread.sleep(10000);
 
       // 2. Request to get all sms who came to the rented phone number
-      SMSActivateGetRentStatusResponse smsActivateGetRentStatusResponse = smsActivateApi.getRentStatus(smsActivateGetRentNumber.getId());
+      SMSActivateGetRentStatusResponse smsActivateGetRentStatusResponse = smsActivateApi.getRentStatus(rentActivation);
 
       // count sms in rent
       System.out.println("Count sms: " + smsActivateGetRentStatusResponse.getCountSms());
@@ -38,6 +40,9 @@ public class GetRentStatusRun {
         System.out.println("Date: " + smsActivateSMS.getDate());
         System.out.println("=========================================");
       });
+
+      //for the test we send CANCEL status
+      smsActivateApi.setRentStatus(rentActivation, SMSActivateClientRentStatus.CANCEL);
     } catch (SMSActivateWrongParameterException e) {
       if (e.getWrongParameter() == SMSActivateWrongParameter.BAD_ACTION) {
         System.out.println("Contact support.");

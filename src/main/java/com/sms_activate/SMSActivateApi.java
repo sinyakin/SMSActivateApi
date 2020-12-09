@@ -20,7 +20,7 @@ import com.sms_activate.response.api_rent.SMSActivateGetRentServicesAndCountries
 import com.sms_activate.response.api_rent.SMSActivateGetRentStatusResponse;
 import com.sms_activate.client_enums.SMSActivateClientRentStatus;
 import com.sms_activate.response.api_rent.enums.SMSActivateRentStatus;
-import com.sms_activate.response.api_rent.extra.SMSActivateGetRentNumber;
+import com.sms_activate.response.api_rent.extra.SMSActivateRentActivation;
 import com.sms_activate.response.qiwi.SMSActivateGetQiwiRequisitesResponse;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
@@ -96,10 +96,10 @@ public class SMSActivateApi {
   }
 
   /**
-   * If you are a partner of sms-activate set the referral link. For example ref=softgorregtelegram.
-   * The referral link are given by support.
+   * If you are a partner of sms-activate set the referral identifier. For example ref=softgorregtelegram.
+   * The referral identifier are given by support.
    *
-   * @param ref referral link.
+   * @param ref referral identifier.
    */
   public void setRef(@NotNull String ref) {
     this.ref = ref;
@@ -351,12 +351,6 @@ public class SMSActivateApi {
     @Nullable Set<String> operatorSet,
     @Nullable Set<String> phoneExceptionSet
   ) throws SMSActivateBaseException {
-    if (ref == null) {
-      throw new SMSActivateWrongParameterException(
-        "To receive activation, you need to set a referral ID.",
-        "Для получения активации нужно установить реферальный идентификатор."
-      );
-    }
 
     if (countryId < 0) {
       throw new SMSActivateWrongParameterException(SMSActivateWrongParameter.WRONG_COUNTRY_ID);
@@ -577,13 +571,6 @@ public class SMSActivateApi {
   ) throws SMSActivateBaseException {
     if (countryId < 0) {
       throw new SMSActivateWrongParameterException(SMSActivateWrongParameter.WRONG_COUNTRY_ID);
-    }
-
-    if (ref == null) {
-      throw new SMSActivateWrongParameterException(
-        "To receive multi-service activation, you need to set a referral ID.",
-        "Для получения мультисервисной активации нужно установить реферальный идентификатор."
-      );
     }
 
     multiServiceSet.removeIf(String::isEmpty);
@@ -1189,30 +1176,9 @@ public class SMSActivateApi {
   /**
    * Returns the rent object with countries supported rent and accessed services by country.
    *
-   * @return rent object with countries supported rent and accessed services by country.
-   * @throws SMSActivateWrongParameterException if one of parameters is incorrect.
-   * @throws SMSActivateUnknownException        if error type not documented.
-   *                                            <p>
-   *                                            Types errors:
-   *                                            <p>
-   *                                            Wrong parameter error types in this method:
-   *                                               <ul>
-   *                                                 <li>BAD_KEY - if your api-key is incorrect;</li>
-   *                                               </ul>
-   *                                             </p>
-   *                                            </p>
-   */
-  @NotNull
-  public SMSActivateGetRentServicesAndCountriesResponse getRentServicesAndCountries() throws SMSActivateBaseException {
-    return getRentServicesAndCountries(0, null, MINIMAL_RENT_TIME);
-  }
-
-  /**
-   * Returns the rent object with countries supported rent and accessed services by country.
-   *
    * @param countryId   id country (default 0).
    * @param operatorSet mobile operators.
-   * @param time        time rent in hours (default 1).
+   * @param hours       rent time in hours (default 1).
    *                    time >= 1
    * @return the rent object with countries supported rent and accessed services by country.
    * @throws SMSActivateWrongParameterException if one of parameters is incorrect.
@@ -1230,9 +1196,9 @@ public class SMSActivateApi {
    *                                             </p>
    */
   @NotNull
-  public SMSActivateGetRentServicesAndCountriesResponse getRentServicesAndCountries(int countryId, @Nullable Set<String> operatorSet, int time)
+  public SMSActivateGetRentServicesAndCountriesResponse getRentServicesAndCountries(int countryId, @Nullable Set<String> operatorSet, int hours)
     throws SMSActivateBaseException {
-    if (time < MINIMAL_RENT_TIME) {
+    if (hours < MINIMAL_RENT_TIME) {
       throw new SMSActivateWrongParameterException(
         "Time rent can't be negative or equals " + MINIMAL_RENT_TIME,
         "Время аренды не может быть меньше или равно " + MINIMAL_RENT_TIME
@@ -1255,7 +1221,7 @@ public class SMSActivateApi {
     SMSActivateURLBuilder smsActivateURLBuilder = new SMSActivateURLBuilder(apiKey, SMSActivateAction.GET_RENT_SERVICES_AND_COUNTRIES);
     smsActivateURLBuilder.append(SMSActivateURLKey.COUNTRY, String.valueOf(countryId))
       .append(SMSActivateURLKey.OPERATOR, operator)
-      .append(SMSActivateURLKey.RENT_TIME, String.valueOf(time));
+      .append(SMSActivateURLKey.RENT_TIME, String.valueOf(hours));
 
     String jsonFromServer = new SMSActivateWebClient().getOrThrowCommonException(smsActivateURLBuilder, validator);
     SMSActivateJsonParser jsonParser = new SMSActivateJsonParser();
@@ -1265,37 +1231,6 @@ public class SMSActivateApi {
   }
 
   /**
-   * Returns the object rent on {@value MINIMAL_RENT_TIME} (default countryId is Russia).
-   *
-   * @param service service to which you need to get a number.
-   * @return object rent.
-   * @throws SMSActivateWrongParameterException if one of parameters is incorrect.
-   * @throws SMSActivateUnknownException        if error type not documented.
-   *                                            <p>
-   *                                            Types errors:
-   *                                            <p>
-   *                                            Base type error in this method:
-   *                                              <ul>
-   *                                                <li>NO_NUMBERS - if currently no numbers;</li>
-   *                                                <li>NO_BALANCE - if your balance is less than the price;</li>
-   *                                              </ul>
-   *                                            </p>
-   *                                            <p>
-   *                                              Wrong parameter type error:
-   *                                              <ul>
-   *                                                <li>BAD_KEY - if your api-key is incorrect;</li>
-   *                                                <li>BAD_SERVICE - if service is incorrect;</li>
-   *                                                <li>ACCOUNT_INACTIVE  - if no free numbers.</li>
-   *                                              </ul>
-   *                                            </p>
-   *                                            </p>
-   */
-  @NotNull
-  public SMSActivateGetRentNumber getRentNumberByServiceShortName(@NotNull String service) throws SMSActivateBaseException {
-    return getRentNumberByCountryIdAndServiceShortName(0, service);
-  }
-
-  /**
    * Returns the object rent on {@value MINIMAL_RENT_TIME} by countryId and service short name.
    *
    * @param countryId id country.
@@ -1323,8 +1258,8 @@ public class SMSActivateApi {
    *                                            </p>
    */
   @NotNull
-  public SMSActivateGetRentNumber getRentNumberByCountryIdAndServiceShortName(int countryId, @NotNull String service) throws SMSActivateBaseException {
-    return getRentNumberByCountryIdAndServiceShortNameOnTime(countryId, service, MINIMAL_RENT_TIME);
+  public SMSActivateRentActivation getRentNumber(int countryId, @NotNull String service) throws SMSActivateBaseException {
+    return getRentNumber(countryId, service, MINIMAL_RENT_TIME);
   }
 
   /**
@@ -1332,7 +1267,7 @@ public class SMSActivateApi {
    *
    * @param countryId id country.
    * @param service   service to which you need to get a number.
-   * @param time      rent time.
+   * @param hours     rent time in hours.
    * @return object rent.
    * @throws SMSActivateWrongParameterException if one of parameters is incorrect.
    * @throws SMSActivateUnknownException        if error type not documented.
@@ -1356,8 +1291,8 @@ public class SMSActivateApi {
    *                                            </p>
    */
   @NotNull
-  public SMSActivateGetRentNumber getRentNumberByCountryIdAndServiceShortNameOnTime(int countryId, @NotNull String service, int time) throws SMSActivateBaseException {
-    return getRentNumber(countryId, service, null, time, null);
+  public SMSActivateRentActivation getRentNumber(int countryId, @NotNull String service, int hours) throws SMSActivateBaseException {
+    return getRentNumber(countryId, service, null, hours, null);
   }
 
   /**
@@ -1366,7 +1301,7 @@ public class SMSActivateApi {
    * @param countryId  id country (default 0 - Russia).
    * @param service    service to which you need to get a number.
    * @param operator   mobile operator.
-   * @param time       time rent (default MINIMAL_RENT_TIME hour).
+   * @param hours      rent time in hours (default MINIMAL_RENT_TIME hour).
    * @param urlWebhook url for webhook.
    * @return object rent.
    * @throws SMSActivateWrongParameterException if one of parameters is incorrect.
@@ -1393,18 +1328,18 @@ public class SMSActivateApi {
    *                                            </p>
    */
   @NotNull
-  public SMSActivateGetRentNumber getRentNumber(
+  public SMSActivateRentActivation getRentNumber(
     int countryId,
     @NotNull String service,
     @Nullable String operator,
-    int time,
+    int hours,
     @Nullable String urlWebhook
   ) throws SMSActivateBaseException {
     if (countryId < 0) {
       throw new SMSActivateWrongParameterException(SMSActivateWrongParameter.WRONG_COUNTRY_ID);
     }
 
-    if (time < MINIMAL_RENT_TIME) {
+    if (hours < MINIMAL_RENT_TIME) {
       throw new SMSActivateWrongParameterException(
         String.format("The rental time cannot be less than %d.", MINIMAL_RENT_TIME),
         String.format("Время аренды не может быть меньше чем %d.", MINIMAL_RENT_TIME)
@@ -1423,7 +1358,7 @@ public class SMSActivateApi {
     }
 
     SMSActivateURLBuilder smsActivateURLBuilder = new SMSActivateURLBuilder(apiKey, SMSActivateAction.GET_RENT_NUMBER);
-    smsActivateURLBuilder.append(SMSActivateURLKey.RENT_TIME, String.valueOf(time))
+    smsActivateURLBuilder.append(SMSActivateURLKey.RENT_TIME, String.valueOf(hours))
       .append(SMSActivateURLKey.COUNTRY, String.valueOf(countryId))
       .append(SMSActivateURLKey.OPERATOR, operator)
       .append(SMSActivateURLKey.URL, urlWebhook)
@@ -1483,6 +1418,11 @@ public class SMSActivateApi {
     }.getType(), validator);
   }
 
+  @NotNull
+  public SMSActivateGetRentStatusResponse getRentStatus(@NotNull SMSActivateRentActivation rentActivation) throws SMSActivateBaseException {
+    return getRentStatus(rentActivation.getId());
+  }
+
   /**
    * Sets the status on rent.
    *
@@ -1524,6 +1464,12 @@ public class SMSActivateApi {
     }
 
     return SMSActivateRentStatus.SUCCESS;
+  }
+
+  @NotNull
+  public SMSActivateRentStatus setRentStatus(SMSActivateRentActivation rentActivation, @NotNull SMSActivateClientRentStatus status)
+      throws SMSActivateBaseException {
+    return setRentStatus(rentActivation.getId(), status);
   }
 
   /**

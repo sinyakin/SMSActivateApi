@@ -31,71 +31,39 @@ public class GetAndSetStatusRun {
   public static void main(String[] args) {
     try {
       SMSActivateApi smsActivateApi = new SMSActivateApi("API_KEY");
-      // 1. Set referral link.
-      smsActivateApi.setRef("YOUR_REFERRAL_LINK");
+
+      // 1. Set referral identifier if it was registered by sms-activate.
+//      smsActivateApi.setRef("YOUR_REFERRAL_IDENTIFIER");
 
       // 2. Request to get number.
       SMSActivateActivation activation = smsActivateApi.getNumber(0, "ot");
       // print info about activation
       System.out.println(activation);
 
-      // after get number status your activation is WAIT_CODE
-      SMSActivateGetStatusResponse smsActivateGetStatusResponse = smsActivateApi.getStatus(activation);
-      assert smsActivateGetStatusResponse.getSMSActivateGetStatus() == SMSActivateGetStatusActivation.WAIT_CODE;
-
       // check: https://sms-activate.ru/ru/getNumber
 
       // 3. we set the status that the activation is ready to receive sms
-      SMSActivateSetStatusResponse smsActivateSetStatusResponse = smsActivateApi.setStatus(activation,
-        SMSActivateClientStatus.MESSAGE_WAS_SENT);
+      smsActivateApi.setStatus(activation, SMSActivateClientStatus.MESSAGE_WAS_SENT);
 
-      // now status is WAIT_CODE.
-      smsActivateGetStatusResponse = smsActivateApi.getStatus(activation);
-      assert smsActivateGetStatusResponse.getSMSActivateGetStatus() == SMSActivateGetStatusActivation.WAIT_CODE;
-
-      String code = null;
-
-      if (smsActivateSetStatusResponse.getSMSActivateAccessStatus() == SMSActivateServerStatus.READY) {
-        code = smsActivateApi.waitSms(activation, 5);
-
-        // after received sms status is OK
-        smsActivateGetStatusResponse = smsActivateApi.getStatus(activation);
-        assert smsActivateGetStatusResponse.getSMSActivateGetStatus() == SMSActivateGetStatusActivation.OK;
-
-        System.out.println("Code from sms: " + code);
-      }
+      String code = smsActivateApi.waitSms(activation, 5);
+      System.out.println("Code from sms: " + code);
 
       // 4. if your service timed out and you need a new code (repeated), then you can simply set the REQUEST_ONE_MORE_CODE status,
       // after which you can request a new SMS from your service.
-      // smsActivateSetStatusResponse = smsActivateApi.setStatus(activation, SMSActivateClientStatus.REQUEST_ONE_MORE_CODE);
-      // smsActivateGetStatusResponse = smsActivateApi.getStatus(activation);
-      // assert smsActivateGetStatusResponse.getSMSActivateGetStatus() == SMSActivateGetStatusActivation.WAIT_CODE;
-      // if (smsActivateSetStatusResponse.getSMSActivateAccessStatus() == SMSActivateServerStatus.RETRY_GET) {
-      //   code = smsActivateApi.waitSms(activation, 5);
-      //   System.out.println("New code from sms: " + code);
-      // }
-
+//       SMSActivateSetStatusResponse smsActivateSetStatusResponse = smsActivateApi.setStatus(activation, SMSActivateClientStatus.REQUEST_ONE_MORE_CODE);
+//       if (smsActivateSetStatusResponse.getSMSActivateAccessStatus() == SMSActivateServerStatus.RETRY_GET) {
+//         code = smsActivateApi.waitSms(activation, 5);
+//         System.out.println("New code from sms: " + code);
+//       }
 
       if (code == null)  {
-        smsActivateSetStatusResponse = smsActivateApi.setStatus(activation, SMSActivateClientStatus.FINISH);
-
-        if (smsActivateSetStatusResponse.getSMSActivateAccessStatus() == SMSActivateServerStatus.FINISH) {
-          System.out.println("Activation is finished.");
-        }
-
-        //after activation is completed, the status will be OK
-        smsActivateGetStatusResponse = smsActivateApi.getStatus(activation);
-        assert smsActivateGetStatusResponse.getSMSActivateGetStatus() == SMSActivateGetStatusActivation.OK;
+        // if you have not received any messages you need sending CANCEL status
+        smsActivateApi.setStatus(activation, SMSActivateClientStatus.CANCEL);
+        System.out.println("activation is canceled");
       } else {
-        smsActivateSetStatusResponse = smsActivateApi.setStatus(activation, SMSActivateClientStatus.CANCEL);
-
-        if (smsActivateSetStatusResponse.getSMSActivateAccessStatus() == SMSActivateServerStatus.CANCEL) {
-          System.out.println("Activation is canceled.");
-        }
-
-        // after activation is canceled, the status will be CANCEL
-        smsActivateGetStatusResponse = smsActivateApi.getStatus(activation);
-        assert smsActivateGetStatusResponse.getSMSActivateGetStatus() == SMSActivateGetStatusActivation.CANCEL;
+        // activation is paid if you have at least one message. You need sending FINISH status
+        smsActivateApi.setStatus(activation, SMSActivateClientStatus.FINISH);
+        System.out.println("activation is finished successfully");
       }
     } catch (Exception ex) {
       if (ex instanceof SMSActivateBaseException) {
