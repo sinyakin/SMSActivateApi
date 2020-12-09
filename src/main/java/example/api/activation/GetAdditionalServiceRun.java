@@ -23,11 +23,12 @@ import com.sms_activate.response.api_activation.enums.SMSActivateGetStatusActiva
  * <small>
  *   Services with redirection for which this service is available:
  *   <ul>
- *     <li>other</li>
- *     <li>avito</li>
- *     <li>yandex</li>
- *     <li>ym</li>
+ *     <li>other (ot)</li>
+ *     <li>avito (av)</li>
+ *     <li>yandex (ya)</li>
+ *     <li>youla (ym)</li>
  *   </ul>
+ * <p>For the ot + redirect service, you can send the FAKE_SMS status.</p>
  * </small>
  */
 public class GetAdditionalServiceRun {
@@ -36,16 +37,17 @@ public class GetAdditionalServiceRun {
       // create SMSActivateApi object for requests
       SMSActivateApi smsActivateApi = new SMSActivateApi("API_KEY");
 
-      // 1. Set the referral link.
-      smsActivateApi.setRef("YOUR_REFERRAL_LINK");
+      // 1. Set referral identifier if it was registered by sms-activate.
+//      smsActivateApi.setRef("YOUR_REFERRAL_IDENTIFIER");
 
       // 2. Request to get number.
-      //SMSActivateActivation activation = smsActivateApi.getNumber(0, "ot", true);
-      SMSActivateActivation activation = new SMSActivateActivation(355858072, 0, "");
+      SMSActivateActivation activation = smsActivateApi.getNumber(0, "ot", true);
       // print info
       System.out.println(activation);
 
       // 3. send MESSAGE_WAS_SENT status after you sent a sms to the number
+      // if you are using 'ot' service with redirection and you don't need sms, send FAKE_SMS status
+//      smsActivateApi.setStatus(activation, SMSActivateClientStatus.MESSAGE_WAS_SENT);
       smsActivateApi.setStatus(activation, SMSActivateClientStatus.FAKE_SMS);
       // check: https://sms-activate.ru/ru/getNumber
 
@@ -55,11 +57,12 @@ public class GetAdditionalServiceRun {
       // print info about additional activation
       System.out.println(childActivation);
 
-      // 4. finish parent activation.
+      // after using numbers send finish status or cancel
+      // 5. finish parent activation.
       smsActivateApi.setStatus(activation, SMSActivateClientStatus.FINISH);
       SMSActivateGetStatusResponse smsActivateGetStatusResponse = smsActivateApi.getStatus(childActivation);
 
-      // 4.1 finish or cancel child activation.
+      // 5.1 finish or cancel child activation.
       if (smsActivateGetStatusResponse.getSMSActivateGetStatus() == SMSActivateGetStatusActivation.OK) {
         smsActivateApi.setStatus(childActivation, SMSActivateClientStatus.FINISH);
       } else {

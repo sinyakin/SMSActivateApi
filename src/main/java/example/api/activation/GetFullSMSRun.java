@@ -17,14 +17,14 @@ public class GetFullSMSRun {
     try {
       SMSActivateApi smsActivateApi = new SMSActivateApi("API_KEY");
 
-      // 1. Set referral link.
-      smsActivateApi.setRef("YOUR_REFERRAL_LINK");
+      // 1. Set referral identifier if it was registered by sms-activate.
+//      smsActivateApi.setRef("YOUR_REFERRAL_IDENTIFIER");
 
       // 2. Request to get number.
       SMSActivateActivation activation = smsActivateApi.getNumber(0, "vk");
 
       // 3. Set status SEND_READY_NUMBER.
-      // To receive SMS with a code from the service, you must first set the SEND_READY_NUMBER
+      // To receive SMS with a code from the service, you must first set the MESSAGE_WAS_SENT
       // status after your activation will be ready to receive SMS.
       // the number must be used on the service for which you took it, else SMS will not come to it
       System.out.println("Please use your activation " + activation.getNumber() + " with ID " + activation.getId());
@@ -33,10 +33,12 @@ public class GetFullSMSRun {
       String code = smsActivateApi.waitSms(activation, 3);
 
       if (code == null) {
+        // if you have not received any messages you need sending CANCEL status
         smsActivateApi.setStatus(activation, SMSActivateClientStatus.CANCEL);
       } else {
         SMSActivateGetFullSmsResponse smsActivateGetFullSmsResponse = smsActivateApi.getFullSms(activation);
         System.out.println("Full sms: " + smsActivateGetFullSmsResponse.getText());
+        // activation is paid if you have at least one message. You need sending FINISH status
         smsActivateApi.setStatus(activation, SMSActivateClientStatus.FINISH);
       }
     }  catch (SMSActivateWrongParameterException e) {

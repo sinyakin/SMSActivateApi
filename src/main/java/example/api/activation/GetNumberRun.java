@@ -1,6 +1,7 @@
 package example.api.activation;
 
 import com.sms_activate.SMSActivateApi;
+import com.sms_activate.client_enums.SMSActivateClientStatus;
 import com.sms_activate.response.api_activation.SMSActivateActivation;
 import com.sms_activate.error.SMSActivateBannedException;
 import com.sms_activate.error.base.SMSActivateBaseException;
@@ -16,8 +17,8 @@ public class GetNumberRun {
     try {
       SMSActivateApi smsActivateApi = new SMSActivateApi("API_KEY");
 
-      // 1. Set referral link.
-      smsActivateApi.setRef("YOUR_REFERRAL_LINK");
+      // 1. Set referral identifier if it was registered by sms-activate.
+//      smsActivateApi.setRef("YOUR_REFERRAL_IDENTIFIER");
 
       /*Set<String> operatorSet = new HashSet<>();
       operatorSet.add("mts");
@@ -28,14 +29,17 @@ public class GetNumberRun {
       phoneExceptionSet.add("7928");*/
 
       // 2. Request to get number.
-      SMSActivateActivation smsActivateActivation = smsActivateApi.getNumber(
+      SMSActivateActivation activation = smsActivateApi.getNumber(
         0,
         "tn"
           /*operatorSet, phoneExceptionSet*/);
 
       // info about your activation.
-      System.out.println("Id activation: " + smsActivateActivation.getId());
-      System.out.println("Phone number: " + smsActivateActivation.getNumber());
+      System.out.println(activation);
+
+      //for the test we send CANCEL status
+      smsActivateApi.setStatus(activation, SMSActivateClientStatus.CANCEL);
+
       // check: https://sms-activate.ru/ru/getNumber
     } catch (SMSActivateWrongParameterException e) {
       if (e.getWrongParameter() == SMSActivateWrongParameter.BAD_ACTION) {

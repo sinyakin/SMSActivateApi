@@ -23,13 +23,13 @@ public class RentMultithreadTest {
 
     for (int i = 0; i < COUNT_THREAD; i++) {
       pool.submit(() -> {
-        try {
+        /*try {
           smsActivateApi.setRentStatus(
             smsActivateApi.getRentNumberByServiceShortName("sd").getId(),
             SMSActivateClientRentStatus.CANCEL
           );
         } catch (SMSActivateBaseException ignored) {
-        }
+        }*/
       });
     }
   }

@@ -7,22 +7,15 @@ import com.sms_activate.error.wrong_parameter.SMSActivateWrongParameterException
 import com.sms_activate.response.api_rent.SMSActivateGetRentServicesAndCountriesResponse;
 
 /**
- * Чтобы получить сервисы и страны, которые поддерживают аренду воспользуетесь методом getRentServicesAndCountries.
+ * To get all countries with rent and data about services by country use the getRentServicesAndCountries method.
  */
 public class GetRentServicesAndCountriesRun {
   public static void main(String[] args) {
     try {
       SMSActivateApi smsActivateApi = new SMSActivateApi("API_KEY");
       // request services and countries where rent is supported
-      SMSActivateGetRentServicesAndCountriesResponse smsActivateGetRentServicesAndCountriesResponse = smsActivateApi.getRentServicesAndCountries(
-/*        0, // 0 - Russia
-        // operators
-        new HashSet<String>() {{
-          add("mts");
-          add("tele2");
-        }},
-        SMSActivateApi.MINIMAL_RENT_TIME*/
-      );
+      SMSActivateGetRentServicesAndCountriesResponse smsActivateGetRentServicesAndCountriesResponse =
+          smsActivateApi.getRentServicesAndCountries(0, null, 4);
 
       // print info about service
       System.out.println("Services: ");
