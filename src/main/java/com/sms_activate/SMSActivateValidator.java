@@ -6,7 +6,7 @@ import com.sms_activate.error.base.SMSActivateBaseException;
 import com.sms_activate.error.base.SMSActivateBaseTypeError;
 import com.sms_activate.error.wrong_parameter.SMSActivateWrongParameter;
 import com.sms_activate.error.wrong_parameter.SMSActivateWrongParameterException;
-import com.sms_activate.listener.SMSActivateExceptionListener;
+import com.sms_activate.listener.SMSActivateErrorListener;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -29,15 +29,15 @@ class SMSActivateValidator {
   /**
    * Listener on error.
    */
-  private SMSActivateExceptionListener smsActivateExceptionListener;
+  private SMSActivateErrorListener smsActivateErrorListener;
 
   /**
    * Sets the listener on error.
    *
-   * @param smsActivateExceptionListener listener on error.
+   * @param smsActivateErrorListener listener on error.
    */
-  public void setSmsActivateExceptionListener(@NotNull SMSActivateExceptionListener smsActivateExceptionListener) {
-    this.smsActivateExceptionListener = smsActivateExceptionListener;
+  public void setSmsActivateErrorListener(@NotNull SMSActivateErrorListener smsActivateErrorListener) {
+    this.smsActivateErrorListener = smsActivateErrorListener;
   }
 
   /**
@@ -50,8 +50,8 @@ class SMSActivateValidator {
     SMSActivateWrongParameter wrongParameter = SMSActivateWrongParameter.getWrongParameterByName(name);
 
     if (wrongParameter != SMSActivateWrongParameter.UNKNOWN) {
-      if (smsActivateExceptionListener != null) {
-        smsActivateExceptionListener.handle(name);
+      if (smsActivateErrorListener != null) {
+        smsActivateErrorListener.onActivateError(name);
       }
 
       throw new SMSActivateWrongParameterException(wrongParameter);
@@ -70,8 +70,8 @@ class SMSActivateValidator {
     throwWrongParameterExceptionByName(name);
 
     if (name.toUpperCase().contains(SQL)) {
-      if (smsActivateExceptionListener != null) {
-        smsActivateExceptionListener.handle(name);
+      if (smsActivateErrorListener != null) {
+        smsActivateErrorListener.onActivateError(name);
       }
 
       throw new SMSActivateBaseException("Error SQL-server.", "Ошибка SQL-сервера.");
@@ -90,8 +90,8 @@ class SMSActivateValidator {
     throwCommonExceptionByName(name);
 
     if (name.toUpperCase().contains(BANNED)) {
-      if (smsActivateExceptionListener != null) {
-        smsActivateExceptionListener.handle(name);
+      if (smsActivateErrorListener != null) {
+        smsActivateErrorListener.onActivateError(name);
       }
 
       throw new SMSActivateBannedException("Your account has been banned", "Ваш акаунт был забанен", name.split(BANNED + ":")[1]);
@@ -109,8 +109,8 @@ class SMSActivateValidator {
     throwCommonExceptionByName(errorName);
     SMSActivateBaseTypeError error = SMSActivateBaseTypeError.getErrorByName(errorName);
 
-    if (smsActivateExceptionListener != null) {
-      smsActivateExceptionListener.handle(errorName);
+    if (smsActivateErrorListener != null) {
+      smsActivateErrorListener.onActivateError(errorName);
     }
 
     if (error != SMSActivateBaseTypeError.UNKNOWN) {

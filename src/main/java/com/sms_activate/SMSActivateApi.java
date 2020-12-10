@@ -9,7 +9,7 @@ import com.sms_activate.error.base.SMSActivateBaseException;
 import com.sms_activate.error.base.SMSActivateBaseTypeError;
 import com.sms_activate.error.wrong_parameter.SMSActivateWrongParameter;
 import com.sms_activate.error.wrong_parameter.SMSActivateWrongParameterException;
-import com.sms_activate.listener.SMSActivateExceptionListener;
+import com.sms_activate.listener.SMSActivateErrorListener;
 import com.sms_activate.listener.SMSActivateWebClientListener;
 import com.sms_activate.response.api_activation.*;
 import com.sms_activate.response.api_activation.enums.SMSActivateGetStatusActivation;
@@ -105,10 +105,10 @@ public class SMSActivateApi {
   /**
    * Sets the listener on error.
    *
-   * @param smsActivateExceptionListener listener on error.
+   * @param smsActivateErrorListener listener on error.
    */
-  public void setSmsActivateExceptionListener(@NotNull SMSActivateExceptionListener smsActivateExceptionListener) {
-    this.validator.setSmsActivateExceptionListener(smsActivateExceptionListener);
+  public void setSmsActivateExceptionListener(@NotNull SMSActivateErrorListener smsActivateErrorListener) {
+    this.validator.setSmsActivateErrorListener(smsActivateErrorListener);
   }
 
   /**

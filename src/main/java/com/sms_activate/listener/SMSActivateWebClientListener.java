@@ -11,5 +11,5 @@ public interface SMSActivateWebClientListener {
    * @param statusCode response code.
    * @param response   response from server.
    */
-  void handle(int cid, @NotNull String request, int statusCode, @NotNull String response);
+  void onActivateWebClient(int cid, @NotNull String request, int statusCode, @NotNull String response);
 }

@@ -7,9 +7,7 @@ import com.sms_activate.listener.SMSActivateWebClientListener;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
-import java.io.BufferedReader;
-import java.io.IOException;
-import java.io.InputStreamReader;
+import java.io.*;
 import java.net.HttpURLConnection;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.zip.GZIPInputStream;
@@ -59,7 +57,7 @@ class SMSActivateWebClient {
       String data = load(urlConnection);
 
       if (smsActivateWebClientListener != null) {
-        smsActivateWebClientListener.handle(cid, urlConnection.getURL().toString(), statusCode, data);
+        smsActivateWebClientListener.onActivateWebClient(cid, urlConnection.getURL().toString(), statusCode, data);
       }
 
       validator.throwCommonExceptionByName(data);
@@ -81,15 +79,12 @@ class SMSActivateWebClient {
   private String load(@NotNull HttpURLConnection urlConnection) throws IOException {
     InputStreamReader inputStreamReader;
 
-    if (urlConnection.getErrorStream() == null) {
-      if (urlConnection.getContentEncoding() != null && urlConnection.getContentEncoding().contains("gzip")) {
-        inputStreamReader = new InputStreamReader(new GZIPInputStream(urlConnection.getInputStream()));
-      } else {
-        inputStreamReader = new InputStreamReader(urlConnection.getInputStream());
-      }
-    } else {
-      inputStreamReader = new InputStreamReader(new GZIPInputStream(urlConnection.getErrorStream()));
+    boolean gzip = urlConnection.getContentEncoding().contains("gzip");
+    InputStream inputStream = urlConnection.getErrorStream() == null ? urlConnection.getInputStream() : urlConnection.getErrorStream();
+    if (gzip) {
+      inputStream = new GZIPInputStream(inputStream);
     }
+    inputStreamReader = new InputStreamReader(inputStream);
 
     try (BufferedReader reader = new BufferedReader(inputStreamReader)) {
       String data;
