@@ -6,9 +6,13 @@ import com.sms_activate.error.base.SMSActivateBaseException;
 import com.sms_activate.error.base.SMSActivateBaseTypeError;
 import com.sms_activate.error.wrong_parameter.SMSActivateWrongParameter;
 import com.sms_activate.error.wrong_parameter.SMSActivateWrongParameterException;
-import com.sms_activate.response.api_activation.*;
+import com.sms_activate.response.api_activation.SMSActivateActivation;
+import com.sms_activate.response.api_activation.SMSActivateGetMultiServiceNumberResponse;
 
-import java.util.*;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.Map;
+import java.util.Set;
 
 /**
  * In addition to simple activation,
@@ -49,10 +53,11 @@ public class GetMultiServiceRun {
         smsActivateApi.setStatus(activation, SMSActivateClientStatus.CANCEL);
       }
 
-    }  catch (SMSActivateWrongParameterException e) {
+    } catch (SMSActivateWrongParameterException e) {
       if (e.getWrongParameter() == SMSActivateWrongParameter.BAD_ACTION) {
         System.out.println("Contact support.");
-      } if (e.getWrongParameter() == SMSActivateWrongParameter.BAD_KEY) {
+      }
+      if (e.getWrongParameter() == SMSActivateWrongParameter.BAD_KEY) {
         System.out.println("Your api-key is incorrect.");
       }
 

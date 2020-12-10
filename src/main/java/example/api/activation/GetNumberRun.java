@@ -2,18 +2,12 @@ package example.api.activation;
 
 import com.sms_activate.SMSActivateApi;
 import com.sms_activate.client_enums.SMSActivateClientStatus;
-import com.sms_activate.response.api_activation.SMSActivateActivation;
 import com.sms_activate.error.SMSActivateBannedException;
 import com.sms_activate.error.base.SMSActivateBaseException;
 import com.sms_activate.error.base.SMSActivateBaseTypeError;
 import com.sms_activate.error.wrong_parameter.SMSActivateWrongParameter;
 import com.sms_activate.error.wrong_parameter.SMSActivateWrongParameterException;
-import org.jetbrains.annotations.NotNull;
-
-import java.io.FileWriter;
-import java.io.IOException;
-import java.util.Map;
-import java.util.stream.Collectors;
+import com.sms_activate.response.api_activation.SMSActivateActivation;
 
 /**
  * To get activation for a specific service, use the getNumber method.
@@ -38,7 +32,7 @@ public class GetNumberRun {
       SMSActivateActivation activation = smsActivateApi.getNumber(
         0,
         "vk"
-          /*operatorSet, phoneExceptionSet*/);
+        /*operatorSet, phoneExceptionSet*/);
 
       // info about your activation.
       System.out.println(activation);
@@ -50,7 +44,8 @@ public class GetNumberRun {
     } catch (SMSActivateWrongParameterException e) {
       if (e.getWrongParameter() == SMSActivateWrongParameter.BAD_ACTION) {
         System.out.println("Contact support.");
-      } if (e.getWrongParameter() == SMSActivateWrongParameter.BAD_KEY) {
+      }
+      if (e.getWrongParameter() == SMSActivateWrongParameter.BAD_KEY) {
         System.out.println("Your api-key is incorrect.");
       } else {
         // todo check other wrong parameter

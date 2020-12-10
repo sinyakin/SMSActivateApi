@@ -9,7 +9,6 @@ import com.sms_activate.error.wrong_parameter.SMSActivateWrongParameterException
 import com.sms_activate.response.api_rent.SMSActivateGetRentStatusResponse;
 import com.sms_activate.response.api_rent.extra.SMSActivateRentActivation;
 import com.sms_activate.response.api_rent.extra.SMSActivateSMS;
-import org.jetbrains.annotations.NotNull;
 
 import java.util.List;
 

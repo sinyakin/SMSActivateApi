@@ -1,15 +1,10 @@
 package example.api.activation;
 
 import com.sms_activate.SMSActivateApi;
-import com.sms_activate.listener.SMSActivateWebClientListener;
-import com.sms_activate.response.api_activation.SMSActivateGetBalanceAndCashBackResponse;
 import com.sms_activate.error.base.SMSActivateBaseException;
-import org.jetbrains.annotations.NotNull;
+import com.sms_activate.response.api_activation.SMSActivateGetBalanceAndCashBackResponse;
 
-import java.io.IOException;
 import java.math.BigDecimal;
-import java.util.Map;
-import java.util.stream.Collectors;
 
 /**
  * This example shows how you can get your account balance.

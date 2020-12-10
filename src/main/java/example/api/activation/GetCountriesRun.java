@@ -1,11 +1,10 @@
 package example.api.activation;
 
 import com.sms_activate.SMSActivateApi;
-import com.sms_activate.listener.SMSActivateWebClientListener;
-import com.sms_activate.response.api_activation.SMSActivateGetCountriesResponse;
-import com.sms_activate.response.api_activation.extra.SMSActivateCountryInfo;
 import com.sms_activate.error.base.SMSActivateBaseException;
 import com.sms_activate.error.wrong_parameter.SMSActivateWrongParameterException;
+import com.sms_activate.response.api_activation.SMSActivateGetCountriesResponse;
+import com.sms_activate.response.api_activation.extra.SMSActivateCountryInfo;
 import org.jetbrains.annotations.NotNull;
 
 /**

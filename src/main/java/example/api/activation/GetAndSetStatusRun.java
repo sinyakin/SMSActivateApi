@@ -1,14 +1,9 @@
 package example.api.activation;
 
 import com.sms_activate.SMSActivateApi;
-import com.sms_activate.listener.SMSActivateWebClientListener;
-import com.sms_activate.response.api_activation.SMSActivateActivation;
-import com.sms_activate.response.api_activation.SMSActivateGetStatusResponse;
 import com.sms_activate.client_enums.SMSActivateClientStatus;
-import com.sms_activate.response.api_activation.SMSActivateSetStatusResponse;
 import com.sms_activate.error.base.SMSActivateBaseException;
-import com.sms_activate.response.api_activation.enums.SMSActivateGetStatusActivation;
-import com.sms_activate.response.api_activation.enums.SMSActivateServerStatus;
+import com.sms_activate.response.api_activation.SMSActivateActivation;
 import org.jetbrains.annotations.NotNull;
 
 /**
@@ -71,7 +66,7 @@ public class GetAndSetStatusRun {
 //         System.out.println("New code from sms: " + code);
 //       }
 
-      if (code == null)  {
+      if (code == null) {
         // if you have not received any messages you need sending CANCEL status
         smsActivateApi.setStatus(activation, SMSActivateClientStatus.CANCEL);
         System.out.println("activation is canceled");

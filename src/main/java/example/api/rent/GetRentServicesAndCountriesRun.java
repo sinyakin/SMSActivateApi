@@ -15,7 +15,7 @@ public class GetRentServicesAndCountriesRun {
       SMSActivateApi smsActivateApi = new SMSActivateApi("API_KEY");
       // request services and countries where rent is supported
       SMSActivateGetRentServicesAndCountriesResponse smsActivateGetRentServicesAndCountriesResponse =
-          smsActivateApi.getRentServicesAndCountries(0, null, 4);
+        smsActivateApi.getRentServicesAndCountries(0, null, 4);
 
       // print info about service
       System.out.println("Services: ");

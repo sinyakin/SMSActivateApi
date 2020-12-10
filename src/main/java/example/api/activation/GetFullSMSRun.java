@@ -1,15 +1,13 @@
 package example.api.activation;
 
 import com.sms_activate.SMSActivateApi;
-import com.sms_activate.listener.SMSActivateWebClientListener;
-import com.sms_activate.response.api_activation.SMSActivateActivation;
-import com.sms_activate.response.api_activation.SMSActivateGetFullSmsResponse;
 import com.sms_activate.client_enums.SMSActivateClientStatus;
 import com.sms_activate.error.base.SMSActivateBaseException;
 import com.sms_activate.error.base.SMSActivateBaseTypeError;
 import com.sms_activate.error.wrong_parameter.SMSActivateWrongParameter;
 import com.sms_activate.error.wrong_parameter.SMSActivateWrongParameterException;
-import org.jetbrains.annotations.NotNull;
+import com.sms_activate.response.api_activation.SMSActivateActivation;
+import com.sms_activate.response.api_activation.SMSActivateGetFullSmsResponse;
 
 /**
  * This example demonstrates how you can receive a full SMS on activation.
@@ -49,10 +47,11 @@ public class GetFullSMSRun {
         // activation is paid if you have at least one message. You need sending FINISH status
         smsActivateApi.setStatus(activation, SMSActivateClientStatus.FINISH);
       }
-    }  catch (SMSActivateWrongParameterException e) {
+    } catch (SMSActivateWrongParameterException e) {
       if (e.getWrongParameter() == SMSActivateWrongParameter.BAD_ACTION) {
         System.out.println("Contact support.");
-      } if (e.getWrongParameter() == SMSActivateWrongParameter.BAD_KEY) {
+      }
+      if (e.getWrongParameter() == SMSActivateWrongParameter.BAD_KEY) {
         System.out.println("Your api-key is incorrect.");
       } else {
         // todo check other wrong parameter

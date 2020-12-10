@@ -1,7 +1,7 @@
 package example.api.rent;
 
 import com.sms_activate.SMSActivateApi;
-import com.sms_activate.client_enums.*;
+import com.sms_activate.client_enums.SMSActivateClientRentStatus;
 import com.sms_activate.error.base.SMSActivateBaseException;
 import com.sms_activate.error.wrong_parameter.SMSActivateWrongParameter;
 import com.sms_activate.error.wrong_parameter.SMSActivateWrongParameterException;

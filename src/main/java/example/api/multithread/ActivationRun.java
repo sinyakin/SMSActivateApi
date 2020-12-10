@@ -1,10 +1,10 @@
 package example.api.multithread;
 
 import com.sms_activate.SMSActivateApi;
+import com.sms_activate.client_enums.SMSActivateClientStatus;
 import com.sms_activate.error.base.SMSActivateBaseException;
 import com.sms_activate.error.wrong_parameter.SMSActivateWrongParameterException;
 import com.sms_activate.response.api_activation.SMSActivateActivation;
-import com.sms_activate.client_enums.SMSActivateClientStatus;
 
 import java.util.ArrayList;
 import java.util.List;

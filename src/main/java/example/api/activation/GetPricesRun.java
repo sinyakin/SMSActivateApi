@@ -1,11 +1,11 @@
 package example.api.activation;
 
 import com.sms_activate.SMSActivateApi;
-import com.sms_activate.response.api_activation.SMSActivateGetPricesResponse;
-import com.sms_activate.response.api_activation.extra.SMSActivateGetPriceInfo;
 import com.sms_activate.error.base.SMSActivateBaseException;
 import com.sms_activate.error.wrong_parameter.SMSActivateWrongParameter;
 import com.sms_activate.error.wrong_parameter.SMSActivateWrongParameterException;
+import com.sms_activate.response.api_activation.SMSActivateGetPricesResponse;
+import com.sms_activate.response.api_activation.extra.SMSActivateGetPriceInfo;
 
 import java.util.Set;
 
@@ -54,7 +54,8 @@ public class GetPricesRun {
     } catch (SMSActivateWrongParameterException e) {
       if (e.getWrongParameter() == SMSActivateWrongParameter.BAD_ACTION) {
         System.out.println("Contact support.");
-      } if (e.getWrongParameter() == SMSActivateWrongParameter.BAD_KEY) {
+      }
+      if (e.getWrongParameter() == SMSActivateWrongParameter.BAD_KEY) {
         System.out.println("Your api-key is incorrect.");
       } else {
         // todo check other wrong parameter

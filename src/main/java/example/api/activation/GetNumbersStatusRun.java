@@ -1,13 +1,10 @@
 package example.api.activation;
 
 import com.sms_activate.SMSActivateApi;
+import com.sms_activate.error.base.SMSActivateBaseException;
 import com.sms_activate.response.api_activation.SMSActivateGetNumbersStatusResponse;
 import com.sms_activate.response.api_activation.extra.SMSActivateServiceInfo;
-import com.sms_activate.error.base.SMSActivateBaseException;
 import org.jetbrains.annotations.NotNull;
-
-import java.util.HashSet;
-import java.util.Set;
 
 /**
  * To find out information about the number of numbers in the service and their price, use the getNumbersStatus method.
@@ -24,7 +21,7 @@ public class GetNumbersStatusRun {
       });
 
       // set listener on requests
-      smsActivateApi.setSmsActivateWebClientListener((cid, request, statusCode, response) ->{
+      smsActivateApi.setSmsActivateWebClientListener((cid, request, statusCode, response) -> {
         System.out.println("Request: " + request + "   Response: " + response);
       });
 
