@@ -24,6 +24,7 @@ public class GetCountriesRun {
     try {
       SMSActivateApi smsActivateApi = new SMSActivateApi("API_KEY");
 
+      // set listener on requests
       smsActivateApi.setSmsActivateWebClientListener((cid, request, statusCode, response) -> {
         System.out.println("Response: " + response);
       });

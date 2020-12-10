@@ -18,10 +18,12 @@ public class GetNumbersStatusRun {
       SMSActivateApi smsActivateApi = new SMSActivateApi("API_KEY");
       System.out.println("Your api-key: " + smsActivateApi.getApiKey());
 
+      // set listener on error
       smsActivateApi.setSmsActivateExceptionListener(errorFromServer -> {
         System.out.println("Error name: " + errorFromServer);
       });
 
+      // set listener on requests
       smsActivateApi.setSmsActivateWebClientListener((cid, request, statusCode, response) ->{
         System.out.println("Request: " + request + "   Response: " + response);
       });

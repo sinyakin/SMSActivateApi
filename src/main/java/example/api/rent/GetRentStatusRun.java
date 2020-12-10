@@ -21,10 +21,12 @@ public class GetRentStatusRun {
     try {
       SMSActivateApi smsActivateApi = new SMSActivateApi("API_KEY");
 
+      // set listener on error
       smsActivateApi.setSmsActivateExceptionListener(errorFromServer -> {
         System.out.println("Error: " + errorFromServer);
       });
 
+      // set listener on requests
       smsActivateApi.setSmsActivateWebClientListener((cid, request, statusCode, response) -> {
         System.out.printf(
           "CID: %d REQUEST: %s STATUS_CODE: %d RESPONSE: %s\n",

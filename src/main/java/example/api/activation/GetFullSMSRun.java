@@ -19,6 +19,7 @@ public class GetFullSMSRun {
     try {
       SMSActivateApi smsActivateApi = new SMSActivateApi("API_KEY");
 
+      // set listener on requests
       smsActivateApi.setSmsActivateWebClientListener((cid, request, statusCode, response) -> System.out.printf(
         "CID: %d REQUEST: %s RESPONSE: %s STATUS_CODE: %d\n",
         cid, request, response, statusCode

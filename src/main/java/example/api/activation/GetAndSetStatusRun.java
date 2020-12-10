@@ -34,10 +34,12 @@ public class GetAndSetStatusRun {
     try {
       SMSActivateApi smsActivateApi = new SMSActivateApi("API_KEY");
 
+      // set listener on error
       smsActivateApi.setSmsActivateExceptionListener(errorFromServer -> {
         System.out.println("Error from server: " + errorFromServer);
       });
 
+      // set listener on requests
       smsActivateApi.setSmsActivateWebClientListener((int cid, @NotNull String request, int statusCode, @NotNull String response) -> {
         System.out.printf(
           "CID: %d REQUEST: %s RESPONSE: %s\n",
