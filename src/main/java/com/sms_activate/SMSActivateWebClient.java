@@ -88,31 +88,18 @@ class SMSActivateWebClient {
         inputStreamReader = new InputStreamReader(urlConnection.getInputStream());
       }
     } else {
-      inputStreamReader = new InputStreamReader(urlConnection.getErrorStream());
+      inputStreamReader = new InputStreamReader(new GZIPInputStream(urlConnection.getErrorStream()));
     }
 
-    BufferedReader reader = new BufferedReader(inputStreamReader);
-    String data = read(reader);
-    reader.close();
-    return data;
-  }
+    try (BufferedReader reader = new BufferedReader(inputStreamReader)) {
+      String data;
+      StringBuilder builder = new StringBuilder();
 
-  /**
-   * Reads the data from stream.
-   *
-   * @param reader reader.
-   * @return data.
-   * @throws IOException if an I/O exception occurs.
-   */
-  @NotNull
-  private String read(@NotNull BufferedReader reader) throws IOException {
-    String data;
-    StringBuilder builder = new StringBuilder();
+      while ((data = reader.readLine()) != null) {
+        builder.append(data);
+      }
 
-    while ((data = reader.readLine()) != null) {
-      builder.append(data);
+      return builder.toString();
     }
-
-    return builder.toString();
   }
 }

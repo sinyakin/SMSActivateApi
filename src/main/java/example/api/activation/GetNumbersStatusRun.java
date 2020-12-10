@@ -18,6 +18,14 @@ public class GetNumbersStatusRun {
       SMSActivateApi smsActivateApi = new SMSActivateApi("API_KEY");
       System.out.println("Your api-key: " + smsActivateApi.getApiKey());
 
+      smsActivateApi.setSmsActivateExceptionListener(errorFromServer -> {
+        System.out.println("Error name: " + errorFromServer);
+      });
+
+      smsActivateApi.setSmsActivateWebClientListener((cid, request, statusCode, response) ->{
+        System.out.println("Request: " + request + "   Response: " + response);
+      });
+
       // 1. Request to get count available numbers in service.
       SMSActivateGetNumbersStatusResponse smsActivateGetNumbersStatusResponse = smsActivateApi.getNumbersStatusByDefaultSettingFromSite();
 

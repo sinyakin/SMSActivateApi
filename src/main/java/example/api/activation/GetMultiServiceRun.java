@@ -25,16 +25,16 @@ public class GetMultiServiceRun {
 
       // multi-service number is an activation that can be used for more than 1 service.
 
-      /*Set<String> operatorSet = new HashSet<>();
+      Set<String> operatorSet = new HashSet<>();
       operatorSet.add("mts");
-      operatorSet.add("tele2");*/
+      operatorSet.add("tele2");
 
       Map<String, Boolean> serviceMap = new HashMap<>();
       serviceMap.put("av", false); // true - number with forward.
       serviceMap.put("sd", false);
 
       // 2. Request to get multi-service number.
-      SMSActivateGetMultiServiceNumberResponse smsActivateGetMultiServiceNumberResponse = smsActivateApi.getMultiServiceNumber(0, serviceMap);
+      SMSActivateGetMultiServiceNumberResponse smsActivateGetMultiServiceNumberResponse = smsActivateApi.getMultiServiceNumber(0, serviceMap, operatorSet);
 
       // print info about activations
       smsActivateGetMultiServiceNumberResponse.getSMSActivateActivationList().forEach(activation -> {

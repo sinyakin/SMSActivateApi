@@ -7,8 +7,6 @@ import com.sms_activate.error.base.SMSActivateBaseException;
 import com.sms_activate.error.base.SMSActivateBaseTypeError;
 import com.sms_activate.error.wrong_parameter.SMSActivateWrongParameter;
 import com.sms_activate.error.wrong_parameter.SMSActivateWrongParameterException;
-import com.sms_activate.listener.SMSActivateExceptionListener;
-import com.sms_activate.listener.SMSActivateWebClientListener;
 import com.sms_activate.response.api_activation.SMSActivateActivation;
 import org.jetbrains.annotations.NotNull;
 
@@ -42,24 +40,18 @@ public class GetAdditionalServiceRun {
       // All listeners must be set before requests!!!!
 
       // listener to each error (SMSActivateExceptionListener).
-      smsActivateApi.setSmsActivateExceptionListener(new SMSActivateExceptionListener() {
-        @Override
-        public void handle(@NotNull String errorFromServer) {
-          // write to log files or print to console.
-          System.out.println("Error response: " + errorFromServer);
-        }
+      smsActivateApi.setSmsActivateExceptionListener((@NotNull String errorFromServer) -> {
+        // write to log files or print to console.
+        System.out.println("Error response: " + errorFromServer);
       });
 
       // listener to each request (SMSActivateWebClientListener)
-      smsActivateApi.setSmsActivateWebClientListener(new SMSActivateWebClientListener() {
-        @Override
-        public void handle(int cid, @NotNull String request, int statusCode, @NotNull String response) {
-          // write to log files or print to console.
-          System.out.printf(
-            "NUMBER_OF_REQUEST: %d || REQUEST: %s || STATUS_CODE: %d || RESPONSE: %s\n",
-            cid, request, statusCode, response
-          );
-        }
+      smsActivateApi.setSmsActivateWebClientListener((int cid, @NotNull String request, int statusCode, @NotNull String response) -> {
+        // write to log files or print to console.
+        System.out.printf(
+          "NUMBER_OF_REQUEST: %d || REQUEST: %s || STATUS_CODE: %d || RESPONSE: %s\n",
+          cid, request, statusCode, response
+        );
       });
 
       // 1. Set referral identifier if it was registered by sms-activate.

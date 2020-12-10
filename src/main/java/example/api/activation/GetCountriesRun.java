@@ -24,6 +24,10 @@ public class GetCountriesRun {
     try {
       SMSActivateApi smsActivateApi = new SMSActivateApi("API_KEY");
 
+      smsActivateApi.setSmsActivateWebClientListener((cid, request, statusCode, response) -> {
+        System.out.println("Response: " + response);
+      });
+
       SMSActivateGetCountriesResponse smsActivateGetCountriesResponse = smsActivateApi.getCountries();
 
       // 0 (id) - Russia
